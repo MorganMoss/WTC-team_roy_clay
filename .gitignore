@@ -1,0 +1,20 @@
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+
+#IntelliJ Files
+.idea/
+*.iml
+target/
+
+#VSCode Files
+.vscode/
+.classpath
+.project
+.settings/
+
+#OS files
+.DS_Store
