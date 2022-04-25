@@ -2,6 +2,8 @@ package za.co.wethinkcode.robotworlds;
 
 import za.co.wethinkcode.robotworlds.maze.*;
 import za.co.wethinkcode.robotworlds.world.*;
+import za.co.wethinkcode.robotworlds.world.AbstractWorld;
+
 import java.util.Scanner;
 
 
@@ -12,10 +14,9 @@ public class Play {
 
         scanner = new Scanner(System.in);
 
-
         String name = getInput("What do you want to name your robot?");
         System.out.println("Hello Kiddo!");
-        AbstractWorld world = worldSelecter(args);
+        AbstractWorld world = worldSelector(args);
         Robot robot= new Robot(name,world);
 
         System.out.println(robot.toString());
@@ -62,7 +63,7 @@ public class Play {
     }
 
 
-    public static AbstractWorld worldSelecter(String[] args){
+    public static AbstractWorld worldSelector(String[] args){
         AbstractWorld world = null;
 
         if (args.length == 0 || args[0].equalsIgnoreCase("text"))
@@ -106,5 +107,4 @@ public class Play {
         }
         return world;
     }
-
 }

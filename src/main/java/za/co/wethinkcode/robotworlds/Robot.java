@@ -1,6 +1,5 @@
 package za.co.wethinkcode.robotworlds;
 
-import za.co.wethinkcode.robotworlds.maze.*;
 import za.co.wethinkcode.robotworlds.world.*;
 
 import java.util.ArrayList;
