@@ -1,6 +1,7 @@
 package za.co.wethinkcode.robotworlds.world;
 
 import za.co.wethinkcode.robotworlds.Position;
+import za.co.wethinkcode.robotworlds.Robot;
 import za.co.wethinkcode.robotworlds.maze.Maze;
 
 import java.util.List;
@@ -87,6 +88,25 @@ public class AbstractWorld implements IWorld{
 
 
     @Override
+    public Position resetPosition(int nrSteps) {
+        int newX = this.position.getX();
+        int newY = this.position.getY();
+
+        if (Direction.UP.equals(this.currentDirection)) {
+            newY = newY - nrSteps;
+        }else if(Direction.DOWN.equals(this.currentDirection)) {
+            newY = newY + nrSteps;
+        }else if(Direction.LEFT.equals(this.currentDirection)) {
+            newX = newX + nrSteps;
+        }else if(Direction.RIGHT.equals(this.currentDirection)) {
+            newX = newX - nrSteps;
+        }
+
+        return this.position = new Position(newX, newY);
+    }
+
+
+    @Override
     public Direction getCurrentDirection() {
         return this.currentDirection;
     }
@@ -130,14 +150,23 @@ public class AbstractWorld implements IWorld{
             int y= newObstacle.get(i).getBottomLeftY();
             System.out.println("- At position"+ x+","+y+" (to"+ x+4+","+y+4+")");
         }
+    }
 
+
+    @Override
+    public void removeObstacle(Robot target){
+        for (int i = 0; i <getObstacles().size(); i++) {
+            System.out.println(getObstacles().get(i));
+            if (target.getWorld().getPosition() ==getObstacles().get(i)){
+                getObstacles().remove(i);
+            }
+        }
     }
 
 
     public void showObstacles(List<Obstacle> maze) {
         List<Obstacle> newObstacle= maze;
         System.out.println("There are some obstacles :");
-
         for (int i = 0; i < newObstacle.size(); i++) {
            int x= newObstacle.get(i).getBottomLeftX();
            int y= newObstacle.get(i).getBottomLeftY();

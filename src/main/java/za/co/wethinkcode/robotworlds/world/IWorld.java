@@ -1,6 +1,7 @@
 package za.co.wethinkcode.robotworlds.world;
 
 import za.co.wethinkcode.robotworlds.Position;
+import za.co.wethinkcode.robotworlds.Robot;
 
 import java.util.List;
 
@@ -44,6 +45,8 @@ public interface IWorld {
      */
     Position getPosition();
 
+    Position resetPosition(int nrSteps);
+
     /**
      * Gets the current direction the robot is facing in relation to a world edge.
      * @return Direction.UP, RIGHT, DOWN, or LEFT
@@ -80,4 +83,11 @@ public interface IWorld {
      * Gives opportunity to world to draw or list obstacles.
      */
     void showObstacles();
+
+
+    /**
+     * Shoots the obstacle:
+     * - Removes obstacle
+     */
+    void removeObstacle(Robot target);
 }

@@ -52,6 +52,8 @@ public abstract class Command {
                 return new SprintCommand(args[1]);
             case "replay":
                 return new ReplayCommand(args.length == 2 ? args[1] : "");
+            case "shoot":
+                return new ShootCommand();
             default:
                 throw new IllegalArgumentException("Unsupported command: " + instruction);
         }

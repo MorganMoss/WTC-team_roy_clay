@@ -1,6 +1,7 @@
 package za.co.wethinkcode.robotworlds.maze;
 
 import za.co.wethinkcode.robotworlds.Position;
+import za.co.wethinkcode.robotworlds.Robot;
 import za.co.wethinkcode.robotworlds.world.*;
 
 import java.util.ArrayList;
@@ -41,4 +42,13 @@ public class RandomMaze implements Maze {
 
     }return this.obstacle;
     }
+
+//    public void removeObstacle(Robot target){
+//        for (int i = 0; i <getObstacles().size(); i++) {
+//            if (target.getWorld().getPosition() == getObstacles().get(i)){
+//                getObstacles().remove(i);
+//            }
+//        }
+//
+//    }
 }
