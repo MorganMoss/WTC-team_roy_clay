@@ -14,6 +14,7 @@ public class HelpCommand extends Command {
                 "FORWARD - move forward by specified number of steps, e.g. 'FORWARD 10'\n" +
                 "BACK - move backward by specified number of steps, e.g. 'BACKWARD 10'\n" +
                 "LEFT - turns left, e.g. 'TURNED LEFT'\n" +
+                "SHOOT - Shoot the opponent, e.g. 'Target shot\n" +
                 "RIGHT - turns right, e.g. 'TURNED RIGHT'\n"+
                 "REPLAY - replays the commands\n" +
                 "REPLAY REVERSED - replays the commands reversed\n" +

@@ -14,6 +14,11 @@ public class Robot {
     private ArrayList<String> History;
     public IWorld world;
 
+
+    int shots= 5;
+
+    private int shield = 3;
+
     public String getPrint = "";
 
     public Robot(String name,IWorld world) {
@@ -23,18 +28,28 @@ public class Robot {
         this.world=world;
     }
 
+
     public Robot(String name) {
         this.name = name;
         this.status = "Ready";
         this.History = new ArrayList<>();
-
     }
 
+
+    public int shot(){
+        return this.shots=this.shots-1;
+    }
+
+
+    public  void reload(){
+        this.shots=5;
+    }
 
 
     public String getStatus() {
         return this.status;
     }
+
 
     public ArrayList<String> getHistory() {
         return this.History;
