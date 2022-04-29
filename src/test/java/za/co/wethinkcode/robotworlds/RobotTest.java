@@ -1,13 +1,11 @@
 package za.co.wethinkcode.robotworlds;
-
 import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.Assert.*;
+
 
 import za.co.wethinkcode.robotworlds.maze.EmptyMaze;
 import za.co.wethinkcode.robotworlds.world.IWorld;
 import za.co.wethinkcode.robotworlds.world.TextWorld;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 class RobotTest {
     IWorld maze = new TextWorld(new EmptyMaze());
@@ -78,14 +76,8 @@ class RobotTest {
                 "FORWARD - move forward by specified number of steps, e.g. 'FORWARD 10'\n" +
                 "BACK - move backward by specified number of steps, e.g. 'BACKWARD 10'\n" +
                 "LEFT - turns left, e.g. 'TURNED LEFT'\n" +
-                "SHOOT - Shoot the opponent, e.g. 'Target shot\n" +
-                "RIGHT - turns right, e.g. 'TURNED RIGHT'\n"+
-                "REPLAY - replays the commands\n" +
-                "REPLAY REVERSED - replays the commands reversed\n" +
-                "REPLAY 1 - replays the last 1 commands\n" +
-                "REPLAY 2-1 - replays the last 1 commands\n" +
-                "REPLAY REVERSED 2-1 - replays the last 1 commands reversed'\n"+
-                "REPLAY REVERSED 1- replays the last 1 commands reversed", robot.getStatus());
+                "FIRE - Shoot the opponent, e.g. 'Target shot\n" +
+                "RIGHT - turns right, e.g. 'TURNED RIGHT'", robot.getStatus());
     }
     @Test
     void Right() {
@@ -106,43 +98,5 @@ class RobotTest {
         Robot robot = new Robot("CrashTestDummy",maze);
         assertTrue(robot.handleCommand(new SprintCommand("1")));
         assertEquals("Moved forward by 1 steps.", robot.getStatus());
-    }
-    @Test
-    void Replay() {
-        Robot robot = new Robot("CrashTestDummy");
-        assertTrue(robot.handleCommand(new ReplayCommand("replay")));
-        assertEquals("replayed 0 commands.", robot.getStatus());
-    }
-    @Test
-    void Replaynumber() {
-        Robot robot = new Robot("CrashTestDummy");
-        assertTrue(robot.handleCommand(new ReplayCommand("replay 1")));
-        assertEquals("replayed 0 commands.", robot.getStatus());
-    }
-
-    @Test
-    void Replaynumbers() {
-        Robot robot = new Robot("CrashTestDummy");
-        assertTrue(robot.handleCommand(new ReplayCommand("replay 2-1")));
-        assertEquals("replayed 0 commands.", robot.getStatus());
-    }
-
-    @Test
-    void Replayreverse() {
-        Robot robot = new Robot("CrashTestDummy");
-        assertTrue(robot.handleCommand(new ReplayCommand("replay reversed")));
-        assertEquals("replayed 0 commands.", robot.getStatus());
-    }
-    @Test
-    void Replayreverseargument() {
-        Robot robot = new Robot("CrashTestDummy");
-        assertTrue(robot.handleCommand(new ReplayCommand("replay reversed 1")));
-        assertEquals("replayed 0 commands.", robot.getStatus());
-    }
-    @Test
-    void Replayreversearguments() {
-        Robot robot = new Robot("CrashTestDummy");
-        assertTrue(robot.handleCommand(new ReplayCommand("replay reversed 2-1")));
-        assertEquals("replayed 0 commands.", robot.getStatus());
     }
 }

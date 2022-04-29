@@ -50,10 +50,8 @@ public abstract class Command {
                 return new RightCommand();
             case "sprint":
                 return new SprintCommand(args[1]);
-            case "replay":
-                return new ReplayCommand(args.length == 2 ? args[1] : "");
-            case "shoot":
-                return new ShootCommand();
+            case "fire":
+                return new FireCommand();
             case "reload":
                 return new ReloadCommand();
             default:

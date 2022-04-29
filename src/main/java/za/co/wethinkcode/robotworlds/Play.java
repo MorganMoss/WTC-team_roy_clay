@@ -38,11 +38,6 @@ public class Play {
                     System.out.println(robot.getPrint.trim());
                     robot.getPrint = "";
                 }
-                else if (command.getName()== "replay" || command.getName()=="mazerun")
-                {
-                    System.out.println(robot.getPrint.trim());
-//                    robot.getPrint = "";
-                }
             } catch (IllegalArgumentException e) {
                 robot.setStatus("Sorry, I did not understand '" + instruction + "'.");
             }

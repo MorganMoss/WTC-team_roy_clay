@@ -1,11 +1,12 @@
 package za.co.wethinkcode.robotworlds;
 
-
 import org.junit.jupiter.api.Test;
 import za.co.wethinkcode.robotworlds.maze.EmptyMaze;
 import za.co.wethinkcode.robotworlds.world.IWorld;
 import za.co.wethinkcode.robotworlds.world.TextWorld;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.*;
 
 class CommandTest {
@@ -25,11 +26,11 @@ class CommandTest {
     }
 
     @Test
-    void executeShoot() {
+    void executeFire() {
         IWorld maze = new TextWorld(new EmptyMaze());
         Robot robot = new Robot("CrashTestDummy", maze);
-        Command shoot = Command.create("shoot");
-        assertTrue(shoot.execute(robot));
+        Command Fire = Command.create("fire");
+        assertTrue(Fire.execute(robot));
         Position expectedPosition = new Position(Robot.CENTRE.getX(), Robot.CENTRE.getY());
         assertEquals(expectedPosition, robot.getWorld().getPosition());
         assertEquals("bullet missed target by 4 steps.", robot.getStatus());
@@ -39,7 +40,7 @@ class CommandTest {
         IWorld maze = new TextWorld(new EmptyMaze());
         Robot robot = new Robot("CrashTestDummy", maze);
         Command reload = Command.create("reload");
-        Command shoot = Command.create("shoot");
+        Command shoot = Command.create("fire");
         shoot.execute(robot);
         assertTrue(reload.execute(robot));
         Position expectedPosition = new Position(Robot.CENTRE.getX(), Robot.CENTRE.getY());
@@ -94,14 +95,8 @@ class CommandTest {
                 "FORWARD - move forward by specified number of steps, e.g. 'FORWARD 10'\n" +
                 "BACK - move backward by specified number of steps, e.g. 'BACKWARD 10'\n" +
                 "LEFT - turns left, e.g. 'TURNED LEFT'\n" +
-                "SHOOT - Shoot the opponent, e.g. 'Target shot\n" +
-                "RIGHT - turns right, e.g. 'TURNED RIGHT'\n"+
-                "REPLAY - replays the commands\n" +
-                "REPLAY REVERSED - replays the commands reversed\n" +
-                "REPLAY 1 - replays the last 1 commands\n" +
-                "REPLAY 2-1 - replays the last 1 commands\n" +
-                "REPLAY REVERSED 2-1 - replays the last 1 commands reversed'\n"+
-                "REPLAY REVERSED 1- replays the last 1 commands reversed", robot.getStatus());
+                "FIRE - Shoot the opponent, e.g. 'Target shot\n" +
+                "RIGHT - turns right, e.g. 'TURNED RIGHT'", robot.getStatus());
     }
 
     @Test
@@ -126,7 +121,7 @@ class CommandTest {
         Command left = Command.create("left");                                                 //<6>
         assertEquals("left", left.getName());
 
-        Command shot = Command.create("shoot");                                                 //<6>
+        Command shot = Command.create("fire");                                                 //<6>
         assertEquals("shoot", shot.getName());
 
         Command reload = Command.create("reload");                                                 //<6>

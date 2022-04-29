@@ -2,13 +2,13 @@ package za.co.wethinkcode.robotworlds;
 
 import za.co.wethinkcode.robotworlds.world.IWorld;
 
-public class ShootCommand extends Command{
+public class FireCommand extends Command{
 
-    public ShootCommand() {
+    public FireCommand() {
         super("shoot");
     }
 
-//    public ShootCommand(String name, String argument) {
+//    public FireCommand(String name, String argument) {
 //        super(name, argument);
 //    }
 
