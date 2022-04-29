@@ -52,6 +52,8 @@ public abstract class Command {
                 return new SprintCommand(args[1]);
             case "fire":
                 return new FireCommand();
+            case "look":
+                return new LookCommand();
             case "reload":
                 return new ReloadCommand();
             default:
