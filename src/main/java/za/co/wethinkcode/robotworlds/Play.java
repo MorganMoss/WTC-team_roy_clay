@@ -4,16 +4,22 @@ import za.co.wethinkcode.robotworlds.maze.*;
 import za.co.wethinkcode.robotworlds.world.*;
 import za.co.wethinkcode.robotworlds.world.AbstractWorld;
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.net.Socket;
 import java.util.Scanner;
 
 
 public class Play {
     static Scanner scanner;
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
+
+        Socket s=new Socket("localhost",3333);
+        DataInputStream din=new DataInputStream(s.getInputStream());
+        DataOutputStream dout=new DataOutputStream(s.getOutputStream());
 
         scanner = new Scanner(System.in);
-
         String name = getInput("What do you want to name your robot?");
         System.out.println("Hello Kiddo!");
         AbstractWorld world = worldSelector(args);
@@ -22,12 +28,22 @@ public class Play {
         System.out.println(robot.toString());
 
         Command command;
+
         boolean shouldContinue = true;
         do {
             String instruction = getInput(robot.getName() + "> What must I do next?").strip().toLowerCase();
+            String str="";
+            Boolean str2=true;
             try {
+
+                dout.writeUTF(instruction);
+                dout.flush();
+                str2= Boolean.valueOf(din.readUTF());
+
+
+//                System.out.println("Server says: ");
                 command = Command.create(instruction);
-                shouldContinue = robot.handleCommand(command);
+                shouldContinue = str2;
 
                 if (instruction.split(" ")[0].equalsIgnoreCase( "replay")
                         ||instruction.split(" ")[0].equalsIgnoreCase( "mazerun")){
@@ -43,20 +59,22 @@ public class Play {
             }
             System.out.println(robot);
         } while (shouldContinue);
+        dout.close();
+        s.close();
     }
 
 
-    private static String getInput(String prompt) {
+
+    static String getInput(String prompt) {
+        Scanner scanner = new Scanner(System.in);
         System.out.println(prompt);
         String input = scanner.nextLine();
-
         while (input.isBlank()) {
             System.out.println(prompt);
             input = scanner.nextLine();
         }
         return input;
     }
-
 
     public static AbstractWorld worldSelector(String[] args){
         AbstractWorld world = null;
