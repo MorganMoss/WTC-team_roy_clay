@@ -7,8 +7,8 @@ import za.co.wethinkcode.robotworlds.maze.Maze;
 import java.util.List;
 
 public class AbstractWorld implements IWorld{
-    protected final Position TOP_LEFT = new Position(-100,200);
-    protected final Position BOTTOM_RIGHT = new Position(100,-200);
+    public Position TOP_LEFT = new Position(-100,200);
+    public Position BOTTOM_RIGHT = new Position(100,-200);
 
     public static final Position CENTRE = new Position(0,0);
     protected Position position;

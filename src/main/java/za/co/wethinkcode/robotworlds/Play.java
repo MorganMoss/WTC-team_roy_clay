@@ -1,5 +1,9 @@
 package za.co.wethinkcode.robotworlds;
 
+import netscape.javascript.JSObject;
+import org.json.JSONObject;
+import org.json.JSONString;
+import org.json.JSONStringer;
 import za.co.wethinkcode.robotworlds.maze.*;
 import za.co.wethinkcode.robotworlds.world.*;
 import za.co.wethinkcode.robotworlds.world.AbstractWorld;
@@ -13,20 +17,27 @@ import java.util.Scanner;
 public class Play {
     static Scanner scanner;
 
+
     public static void main(String[] args) throws Exception {
 
         Socket s=new Socket("localhost",3333);
         DataInputStream din=new DataInputStream(s.getInputStream());
         DataOutputStream dout=new DataOutputStream(s.getOutputStream());
+        JSONObject json = new JSONObject();
+
+
 
         scanner = new Scanner(System.in);
         String name = getInput("What do you want to name your robot?");
         System.out.println("Hello Kiddo!");
         AbstractWorld world = worldSelector(args);
-        Robot robot= new Robot(name,world);
-
+        Robot robot = new Robot(name,world);
         System.out.println(robot.toString());
 
+        json.put("name",name);
+        json.put("world",world);
+
+        dout.writeUTF(String.valueOf(json));
         Command command;
 
         boolean shouldContinue = true;
@@ -43,7 +54,7 @@ public class Play {
 
 //                System.out.println("Server says: ");
                 command = Command.create(instruction);
-                shouldContinue = str2;
+                shouldContinue = str2.booleanValue();
 
                 if (instruction.split(" ")[0].equalsIgnoreCase( "replay")
                         ||instruction.split(" ")[0].equalsIgnoreCase( "mazerun")){
