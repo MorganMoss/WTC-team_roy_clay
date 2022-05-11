@@ -1,6 +1,7 @@
 package za.co.wethinkcode.robotworlds.Server;
 
 import za.co.wethinkcode.robotworlds.Command;
+import za.co.wethinkcode.robotworlds.Robot;
 import za.co.wethinkcode.robotworlds.world.AbstractWorld;
 
 import java.net.*;
@@ -11,9 +12,10 @@ import org.json.JSONObject;
 import static za.co.wethinkcode.robotworlds.Play.getInput;
 import static za.co.wethinkcode.robotworlds.Play.worldSelector;
 
-class Server implements Runnable{
+public class Server implements Runnable{
 
     public static final int PORT = 3333;
+    private static Robot robot;
     private final BufferedReader in;
     private final PrintStream out;
     private final String clientMachine;
