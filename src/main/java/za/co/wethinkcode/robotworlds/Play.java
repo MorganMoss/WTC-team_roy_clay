@@ -71,7 +71,7 @@ public class Play {
 
 
 
-    static String getInput(String prompt) {
+    public static String getInput(String prompt) {
         Scanner scanner = new Scanner(System.in);
         System.out.println(prompt);
         String input = scanner.nextLine();
@@ -82,7 +82,7 @@ public class Play {
         return input;
     }
 
-    public static AbstractWorld worldSelector(String []args){
+    public static AbstractWorld worldSelector(String[] args){
         AbstractWorld world = null;
 
         if (args.length == 0 || args[0].equalsIgnoreCase("text"))
