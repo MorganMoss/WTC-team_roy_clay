@@ -84,6 +84,7 @@ public interface IWorld {
      */
     void showObstacles();
 
+    void SetPositions(int tlx, int tly, int blx, int bly);
 
     /**
      * Shoots the obstacle:

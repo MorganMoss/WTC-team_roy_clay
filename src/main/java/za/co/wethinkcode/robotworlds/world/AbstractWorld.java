@@ -7,8 +7,8 @@ import za.co.wethinkcode.robotworlds.maze.Maze;
 import java.util.List;
 
 public class AbstractWorld implements IWorld{
-    public Position TOP_LEFT = new Position(-100,200);
-    public Position BOTTOM_RIGHT = new Position(100,-200);
+    protected Position TOP_LEFT = new Position(-100,200);
+    protected Position BOTTOM_RIGHT = new Position(100,-200);
 
     public static final Position CENTRE = new Position(0,0);
     protected Position position;
@@ -16,7 +16,11 @@ public class AbstractWorld implements IWorld{
     protected final List<Obstacle> obstacles;
     protected final Maze maze;
 
-
+    @Override
+    public void SetPositions(int tlx, int tly, int blx, int bly){
+        TOP_LEFT = new Position(tlx,tly);
+        BOTTOM_RIGHT = new Position(blx,bly);
+    }
     AbstractWorld(Maze maze){
         this.maze = maze;
         this.position = IWorld.CENTRE;
