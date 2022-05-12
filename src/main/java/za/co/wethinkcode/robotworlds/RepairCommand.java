@@ -1,6 +1,6 @@
 package za.co.wethinkcode.robotworlds;
 
-public class RepairCommand implements Command {
+public class RepairCommand extends Command {
 
     public RepairCommand() {
         super("repair");
@@ -9,6 +9,7 @@ public class RepairCommand implements Command {
 
     @Override
     public boolean execute(Robot target) {
-        return false;
+        target.repair();
+        return true;
     }
 }

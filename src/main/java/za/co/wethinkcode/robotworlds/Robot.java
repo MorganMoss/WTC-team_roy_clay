@@ -45,6 +45,10 @@ public class Robot {
         this.shots=5;
     }
 
+    public  void repair(){
+        this.shield=3;
+    }
+
 
     public String getStatus() {
         return this.status;
