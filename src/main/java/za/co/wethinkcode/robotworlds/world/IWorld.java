@@ -3,7 +3,6 @@ package za.co.wethinkcode.robotworlds.world;
 import za.co.wethinkcode.robotworlds.Position;
 import za.co.wethinkcode.robotworlds.Robot;
 
-import java.awt.*;
 import java.util.List;
 
 /**

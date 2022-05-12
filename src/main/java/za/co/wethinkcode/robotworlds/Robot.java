@@ -1,11 +1,12 @@
 package za.co.wethinkcode.robotworlds;
 
+import org.json.JSONObject;
 import za.co.wethinkcode.robotworlds.world.*;
 
 import java.util.ArrayList;
 
 
-public class Robot {
+public class Robot extends JSONObject {
 
     public static final Position CENTRE = new Position(0,0);
 
@@ -43,10 +44,6 @@ public class Robot {
 
     public  void reload(){
         this.shots=5;
-    }
-
-    public  void repair(){
-        this.shield=3;
     }
 
 

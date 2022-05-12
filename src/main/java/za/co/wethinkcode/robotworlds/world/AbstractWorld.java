@@ -21,7 +21,7 @@ public class AbstractWorld implements IWorld{
         TOP_LEFT = new Position(tlx,tly);
         BOTTOM_RIGHT = new Position(blx,bly);
     }
-    AbstractWorld(Maze maze){
+    public AbstractWorld(Maze maze){
         this.maze = maze;
         this.position = IWorld.CENTRE;
         this.currentDirection = Direction.UP;

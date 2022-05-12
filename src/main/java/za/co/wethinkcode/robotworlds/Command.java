@@ -56,8 +56,6 @@ public abstract class Command {
                 return new LookCommand();
             case "reload":
                 return new ReloadCommand();
-            case "repair":
-                return new RepairCommand();
             default:
                 throw new IllegalArgumentException("Unsupported command: " + instruction);
         }

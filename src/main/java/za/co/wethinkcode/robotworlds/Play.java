@@ -16,62 +16,71 @@ public class Play {
     
 
     public static void main(String[] args) throws Exception {
+        int count = 0;
         scanner = new Scanner(System.in);
-
-
+        //create socket
         Socket s=new Socket("localhost",3333);
-        Command command;
 
         DataInputStream din=new DataInputStream(s.getInputStream());
         DataOutputStream dout=new DataOutputStream(s.getOutputStream());
-        String name = getInput("What do you want to name your robot?");
 
+        //set robot
+        String name = getInput("What do you want to name your robot?");
         System.out.println("Hello Kiddo!");
         AbstractWorld world = worldSelector(args);
         Robot robot= new Robot(name,world);
 
+        //creating and sending json with starting info for robot
+
         JSONObject json = new JSONObject();
         json.put("robot",robot);
-        dout.writeUTF(json.toString());
-        dout.flush();
+        json.put("name",name);
+        json.put("world",world);
+        while (count ==0){
+            count++;
+            dout.writeUTF(json.toString());
+            dout.flush();
+        }
+
+
 
 
         boolean shouldContinue = true;
-        Boolean str2=true;
         do {
             String instruction = getInput(robot.getName() + "> What must I do next?").strip().toLowerCase();
-            String str="";
             json.put("command",instruction);
-
             try {
+
+                Command command = Command.create(instruction);
+                shouldContinue=robot.handleCommand(command);
+
+
+
+                dout.writeUTF(json.toString());
                 dout.flush();
-                command = Command.create(instruction);
-                shouldContinue = robot.handleCommand(command);
 
-                if (instruction.split(" ")[0].equalsIgnoreCase( "replay")
-                        ||instruction.split(" ")[0].equalsIgnoreCase( "mazerun")){
-                }else {
-                    robot.appendToHistory(instruction);
-                }
-                if (command.getName()== "sprint"){
-                    System.out.println(robot.getPrint.trim());
-                    robot.getPrint = "";
-                }
+                String in;
+
+                shouldContinue = din.readBoolean();
+                System.out.println("doing thing");
+//                System.out.println(shouldContinue);
 
 
-                dout.close();
-                s.close();
+
             } catch (IllegalArgumentException e) {
                 robot.setStatus("Sorry, I did not understand '" + instruction + "'.");
             }
             System.out.println(robot);
         } while (shouldContinue);
+        dout.close();
+        s.close();
 
     }
 
 
 
-    public static String getInput(String prompt) {
+
+    static String getInput(String prompt) {
         Scanner scanner = new Scanner(System.in);
         System.out.println(prompt);
         String input = scanner.nextLine();
@@ -82,7 +91,7 @@ public class Play {
         return input;
     }
 
-    public static AbstractWorld worldSelector(String[] args){
+    public static AbstractWorld worldSelector(String []args){
         AbstractWorld world = null;
 
         if (args.length == 0 || args[0].equalsIgnoreCase("text"))
