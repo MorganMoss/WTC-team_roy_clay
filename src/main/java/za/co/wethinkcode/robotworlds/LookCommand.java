@@ -10,6 +10,7 @@ public class LookCommand extends Command {
         return true;
     }
     public LookCommand() {
+
         super("look");
     }
 }
