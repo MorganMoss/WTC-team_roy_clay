@@ -1,6 +1,7 @@
 package za.co.wethinkcode.acceptancetests.protocoldrivers;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.*;
 import java.net.Socket;
@@ -60,7 +61,8 @@ public class RobotWorldJsonClient implements RobotWorldClient {
     @Override
     public JsonNode getResponse() {
         try {
-            return responses.readLine();
+            ObjectMapper mapper = new ObjectMapper();
+            return mapper.readValue(responses.readLine(), JsonNode.class);
         } catch (IOException e) {
             return null;
         }
