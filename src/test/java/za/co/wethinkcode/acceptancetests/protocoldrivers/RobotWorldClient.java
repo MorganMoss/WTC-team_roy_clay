@@ -9,7 +9,7 @@ public interface RobotWorldClient {
 
     /**
      * Connects to the Robot Worlds server on specified ip address and port
-     * @param ipAddress either `localhost` or actual IP address
+     * @param IPAddress either `localhost` or actual IP address
      * @param port port that server is configured to receive connections on
      */
     void connect(String IPAddress, int port);
@@ -21,7 +21,7 @@ public interface RobotWorldClient {
 
     /**
      * Checks if client is connected to server
-     * @return
+     * @return true if connected
      */
     boolean isConnected();
 
