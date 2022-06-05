@@ -1,5 +1,6 @@
 package za.co.wethinkcode.acceptancetests.protocoldrivers;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -42,7 +43,9 @@ public class RobotWorldJsonClient implements RobotWorldClient {
             responses.close();
             requests.close();
             socket.close();
-        } catch (IOException ignored) {
+        } catch (IOException e) {
+            //error connecting should just throw Runtime error and fail test
+            throw new RuntimeException("Error disconnecting from Robot Worlds server.", e);
         }
         connected = false;
     }
@@ -59,12 +62,25 @@ public class RobotWorldJsonClient implements RobotWorldClient {
     }
 
     @Override
+    public String sendRequestAsString(String requestString) {
+        try {
+            requests.println(requestString);
+            requests.flush();
+            return responses.readLine();
+        } catch (IOException e) {
+            throw new RuntimeException("Error reading server response.", e);
+        }
+    }
+
+    @Override
     public JsonNode getResponse() {
         try {
             ObjectMapper mapper = new ObjectMapper();
             return mapper.readValue(responses.readLine(), JsonNode.class);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException("Error parsing server response as JSON.", e);
         } catch (IOException e) {
-            return null;
+            throw new RuntimeException("Error reading server response.", e);
         }
     }
 
