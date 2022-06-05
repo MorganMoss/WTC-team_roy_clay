@@ -119,9 +119,9 @@ public class TestServerAndClientConnectAndCommunicate {
         //When you send a request to the server
         serverClient.ping();
 
-        //Then all clients should get a response
+        //Then only you should get a response
         assertNotNull(serverClient.getResponse());
-        assertNotNull(otherClient.getResponse());
+        assertNull(otherClient.getResponse());
 
         serverClient.disconnect();
         otherClient.disconnect();

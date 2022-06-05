@@ -21,7 +21,7 @@ public interface RobotWorldClient {
 
     /**
      * Checks if client is connected to server
-     * @return
+     * @return true if connected
      */
     boolean isConnected();
 
