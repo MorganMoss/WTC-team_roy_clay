@@ -9,7 +9,7 @@ public class RepairCommand extends Command {
 
     @Override
     public boolean execute(Robot target) {
-        target.repair();
+        //target.repair(); //commented out to compile project and run acceptance test against reference server
         return true;
     }
 }
