@@ -8,7 +8,7 @@ import za.co.wethinkcode.robotworlds.maze.EmptyMaze;
 import za.co.wethinkcode.robotworlds.world.AbstractWorld;
 import za.co.wethinkcode.robotworlds.world.IWorld;
 
-public class Server implements Runnable {
+public class MainServerThread implements Runnable {
 
     public static final int PORT = 3333;
 
@@ -47,7 +47,7 @@ public class Server implements Runnable {
 
 
 
-    public Server(Socket socket) throws IOException {
+    public MainServerThread(Socket socket) throws IOException {
         clientMachine = socket.getInetAddress().getHostName();
         System.out.println("Connection from " + clientMachine);
         System.out.println("Waiting for client...");
