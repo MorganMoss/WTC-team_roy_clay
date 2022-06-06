@@ -3,7 +3,7 @@ main: build reference_acceptance_tests own_acceptance_tests version_software_for
 build:
 	#This will build our project
 
-    mvn compile
+	mvn build
 
 	@echo "Project has been built."
 	##############################################

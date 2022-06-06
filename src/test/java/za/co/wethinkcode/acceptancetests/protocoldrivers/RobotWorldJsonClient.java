@@ -1,6 +1,5 @@
 package za.co.wethinkcode.acceptancetests.protocoldrivers;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -8,7 +7,6 @@ import java.io.*;
 import java.net.Socket;
 
 public class RobotWorldJsonClient implements RobotWorldClient {
-//    private JsonNode lastResponse;
 
     private Socket socket;
     private boolean connected = false;
@@ -22,7 +20,7 @@ public class RobotWorldJsonClient implements RobotWorldClient {
 
     private void setupComms(){
         try {
-//            responses = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            responses = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             requests = new PrintStream(socket.getOutputStream());
         } catch (IOException ignored) {
         }
