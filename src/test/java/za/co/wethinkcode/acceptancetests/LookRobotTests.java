@@ -131,11 +131,6 @@ public class LookRobotTests {
 
         //And there is no other robot and no obstacle in the world.
 
-
-
-
-
-
         //And I send a valid look request, "look", to the server.
         String request = "{" +
                 "\"robot\": \"HAL\"," +
