@@ -11,7 +11,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * As a player I want to be able to play the game with other players.
  * Thus I will connect to a server.
  */
-public class TestServerAndClientConnectAndCommunicate {
+public class ConnectionTests {
     private final static int DEFAULT_PORT = 5000;
 
     private final static String DEFAULT_IP = "localhost";
