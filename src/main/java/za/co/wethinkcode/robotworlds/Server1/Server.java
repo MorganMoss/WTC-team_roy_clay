@@ -8,9 +8,9 @@ import java.net.*;
 import java.io.*;
 import java.util.Scanner;
 import org.json.JSONObject;
-//
-//import static za.co.wethinkcode.robotworlds.Play.getInput;
-//import static za.co.wethinkcode.robotworlds.Play.worldSelector;
+
+import static za.co.wethinkcode.robotworlds.Play.getInput;
+import static za.co.wethinkcode.robotworlds.Play.worldSelector;
 
 public class Server implements Runnable{
 

@@ -21,6 +21,12 @@
             <version>RELEASE</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>io.strikt</groupId>
+            <artifactId>strikt-jackson</artifactId>
+            <version>0.34.1</version>
+            <scope>compile</scope>
+        </dependency>
     </dependencies>
     <properties>
         <maven.compiler.source>11</maven.compiler.source>
