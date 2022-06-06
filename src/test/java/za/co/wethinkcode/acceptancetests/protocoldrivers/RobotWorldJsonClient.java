@@ -1,5 +1,6 @@
 package za.co.wethinkcode.acceptancetests.protocoldrivers;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -11,6 +12,8 @@ public class RobotWorldJsonClient implements RobotWorldClient {
 
     private Socket socket;
     private boolean connected = false;
+
+    private JsonNode lastResponse = null;
 
     private BufferedReader responses;
     private PrintStream requests;
@@ -42,7 +45,9 @@ public class RobotWorldJsonClient implements RobotWorldClient {
             responses.close();
             requests.close();
             socket.close();
-        } catch (IOException ignored) {
+        } catch (IOException e) {
+            //error connecting should just throw Runtime error and fail test
+            throw new RuntimeException("Error disconnecting from Robot Worlds server.", e);
         }
         connected = false;
     }
@@ -53,19 +58,22 @@ public class RobotWorldJsonClient implements RobotWorldClient {
     }
 
     @Override
-    public void sendRequest(String request) {
-        requests.print(request);
-        requests.flush();
+    public JsonNode sendRequest(String requestString) {
+        lastResponse = null;
+        try {
+            requests.println(requestString);
+            requests.flush();
+            ObjectMapper mapper = new ObjectMapper();
+            lastResponse = mapper.readValue(responses.readLine(), JsonNode.class);
+        } catch (IOException e) {
+            throw new RuntimeException("Error reading server response.", e);
+        }
+        return lastResponse;
     }
 
     @Override
     public JsonNode getResponse() {
-        try {
-            ObjectMapper mapper = new ObjectMapper();
-            return mapper.readValue(responses.readLine(), JsonNode.class);
-        } catch (IOException e) {
-            return null;
-        }
+        return lastResponse;
     }
 
     @Override

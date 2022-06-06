@@ -28,12 +28,19 @@ public interface RobotWorldClient {
 
     /**
      * Sends a request presented by the Json object to the server
-     * @param requestJsonString a String representing the Json string to send to server
+     * @param requestString a String representing the Json string to send to server
      * @return the response as a JsonNode
      */
-    void sendRequest(String requestJsonString);
+    JsonNode sendRequest(String requestString);
 
+    /**
+     * get a response from the server
+     * @return
+     */
     JsonNode getResponse();
 
+    /**
+     * send a ping to the server to check if it is alive
+     */
     void ping();
 }
