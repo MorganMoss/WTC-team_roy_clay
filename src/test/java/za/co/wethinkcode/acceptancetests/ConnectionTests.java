@@ -1,5 +1,6 @@
 package za.co.wethinkcode.acceptancetests;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import za.co.wethinkcode.acceptancetests.protocoldrivers.RobotWorldClient;
 import za.co.wethinkcode.acceptancetests.protocoldrivers.RobotWorldJsonClient;
