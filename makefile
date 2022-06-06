@@ -1,25 +1,69 @@
-main: build reference_acceptance_tests own_acceptance_tests version_software_for_release package_software_for_release tag_version_number_on_git
+version = 0.0.0
 
-build:
+define run
+java -jar ${1} &
+endef
+
+define close
+pkill -15 ${1}
+#@echo ${1}
+#@echo ps -ef | grep ${1}
+#kill $(ps -ef | grep ${1} | cut -c 12-18)
+endef
+
+#main: build reference_acceptance_tests own_acceptance_tests version_software_for_release package_software_for_release tag_version_number_on_git
+main : build reference_acceptance_tests
+
+build: clean init compile
 	#This will build our project
 
-	mvn build
+#	mvn build
 
 	@echo "Project has been built."
 	##############################################
+clean:
+	#clear up artifacts from old builds
+
+	mvn clean
+
+	@echo "Project has been cleaned."
+	##############################################
+init:
+	#idk
+
+	mvn initialize
+
+	@echo "Project has been initialized."
+	##############################################
+compile:
+	#compiling the project
+
+	mvn compile
+
+	@echo "Project has been compiled."
+	##############################################
+
+run_reference_server:
+
 
 reference_acceptance_tests:
 	#This is where we will put all the scripting
 	#In order to run the acceptance tests on
 	#The Reference Server
 
-	java -jar reference-server-0.1.0.jar &
-	ps -ef | grep java | grep reference-server | cut -c 12-18
-	ps -ef | grep java | grep reference-server | cut -c 12-18
-	grep xyz abc.txt | while read -r line ; do
-		echo "Processing $line"
-		# your code goes here
-	done
+	$(call run, reference-server-0.1.0.jar)
+#	sleep 2
+#	mvn test -Dtest="ConnectionTests"
+	$(call close, reference-server-0.1.0)
+#	mvn test -Dtest="LookRobotTests#invalidLookCommandShouldFail"
+
+#	id=$(ps -ef | grep reference-server-0.1.0.jar)
+#	kill id
+#	ps -ef | grep java | grep reference-server | cut -c 12-18
+#	grep xyz abc.txt | while read -r line ; do
+#		echo "Processing $line"
+#		# your code goes here
+#	done
 #	for /f %%i in (ps -ef | grep java | grep reference-server | cut -c 12-18) do taskkill %%i
 #	kill $(ps -ef | grep reference-server-0.1.0.jar)
 #	mvn test -Dexec: TestServerAndClient
