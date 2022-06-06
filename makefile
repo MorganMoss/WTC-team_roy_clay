@@ -13,6 +13,27 @@ reference_acceptance_tests:
 	#In order to run the acceptance tests on
 	#The Reference Server
 
+	java -jar reference-server-0.1.0.jar &
+	ps -ef | grep java | grep reference-server | cut -c 12-18
+	ps -ef | grep java | grep reference-server | cut -c 12-18
+	grep xyz abc.txt | while read -r line ; do
+		echo "Processing $line"
+		# your code goes here
+	done
+#	for /f %%i in (ps -ef | grep java | grep reference-server | cut -c 12-18) do taskkill %%i
+#	kill $(ps -ef | grep reference-server-0.1.0.jar)
+#	mvn test -Dexec: TestServerAndClient
+#	rem Run as killpid.cmd reference-server-0.1.0.jar
+#	@echo off
+#	jps -l |findstr %1 > %TEMP%\pid.txt
+#
+#	echo FOUND:
+#	type %TEMP%\pid.txt
+#
+#	for /f %%i in (%TEMP%\pid.txt) do taskkill /pid %%i
+#	java -jar reference-server-0.1.0.jar &
+#	kill $(ps -ef | grep java | grep reference-server | cut -c 12-18)
+
 
 
 	@echo "Completed Run of acceptance tests on reference server."

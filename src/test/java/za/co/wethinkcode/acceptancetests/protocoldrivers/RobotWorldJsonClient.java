@@ -13,6 +13,8 @@ public class RobotWorldJsonClient implements RobotWorldClient {
     private Socket socket;
     private boolean connected = false;
 
+    private JsonNode lastResponse = null;
+
     private BufferedReader responses;
     private PrintStream requests;
     public RobotWorldJsonClient(){
@@ -56,32 +58,22 @@ public class RobotWorldJsonClient implements RobotWorldClient {
     }
 
     @Override
-    public void sendRequest(String request) {
-        requests.print(request);
-        requests.flush();
-    }
-
-    @Override
-    public String sendRequestAsString(String requestString) {
+    public JsonNode sendRequest(String requestString) {
+        lastResponse = null;
         try {
             requests.println(requestString);
             requests.flush();
-            return responses.readLine();
+            ObjectMapper mapper = new ObjectMapper();
+            lastResponse = mapper.readValue(responses.readLine(), JsonNode.class);
         } catch (IOException e) {
             throw new RuntimeException("Error reading server response.", e);
         }
+        return lastResponse;
     }
 
     @Override
     public JsonNode getResponse() {
-        try {
-            ObjectMapper mapper = new ObjectMapper();
-            return mapper.readValue(responses.readLine(), JsonNode.class);
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException("Error parsing server response as JSON.", e);
-        } catch (IOException e) {
-            throw new RuntimeException("Error reading server response.", e);
-        }
+        return lastResponse;
     }
 
     @Override
