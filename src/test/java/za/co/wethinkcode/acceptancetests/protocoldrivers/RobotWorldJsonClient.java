@@ -32,6 +32,7 @@ public class RobotWorldJsonClient implements RobotWorldClient {
             connected = true;
         } catch (IOException notConnected) {
             connected = false;
+            return;
         }
 
         setupComms();

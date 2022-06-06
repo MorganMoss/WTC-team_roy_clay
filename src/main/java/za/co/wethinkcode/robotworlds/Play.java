@@ -80,7 +80,7 @@ public class Play {
 
 
 
-    static String getInput(String prompt) {
+    public static String getInput(String prompt) {
         Scanner scanner = new Scanner(System.in);
         System.out.println(prompt);
         String input = scanner.nextLine();
