@@ -25,4 +25,5 @@ pretest_report.txt
 out.txt
 err.txt
 in.txt
-pid.txt
+run.pid
+Test\ Results*

@@ -6,7 +6,7 @@ ours=server.jar
 define run
 	@touch in.txt
 	@./start.sh "${1}"
-	@echo "Running ${1}"
+	@echo "[1;33mRunning Jar:[m[1;31m${1}[m"
 endef
 
 # Sends input to in.txt for running jar
@@ -19,15 +19,15 @@ define close
 	@$(call send_input, "quit")
 	@./stop.sh
 	@rm in.txt
-	@echo "Closed Running Java Application!"
+	@echo "[1;37mClosed Running Jar[m"
 endef
 
 #Runs the test file with the given name
 #(add "#methodName" to have it run a single test)
 define test
-	@echo "Running Test: ${1}"
-	@-mvn test -Dtest="${1}" -q
-	@echo "Test Complete!"
+	@echo "[1;33mRunning Test:[m[1;31m${1}[m"
+	@-mvn test -Dtest="${1}" > "Test Results -${1}.txt"
+	@cat "Test Results -${1}.txt" | grep "Tests run" | grep "Time"
 endef
 
 define runNJ
@@ -72,17 +72,18 @@ reference_acceptance_tests:
 #This is where we will put all the scripting
 #In order to run the acceptance tests on
 #The Reference Server
-	@echo "Starting Run of acceptance tests on reference server."
-
-	-$(call run, $(reference) --size=1)
+	##############################################
+	@echo "[1mStarting Run of acceptance tests on reference server.[m"
+	##############################################
+	$(call run, $(reference) --size=1)
 	-$(call test, "ConnectionTests")
 	-$(call close)
-
-	-$(call run, $(reference) --size=10)
+	##############################################
+	$(call run, $(reference) --size=10)
 	-$(call test, "LookRobotTests#invalidLookCommandShouldFail")
 	-$(call close)
-
-	@echo "Completed Run of acceptance tests on reference server."
+	##############################################
+	@echo "[1mCompleted Run of acceptance tests on reference server.[m"
 	##############################################
 #TODO: Need to package our server as a jar before we run acceptance tests on it.
 own_acceptance_tests:
@@ -91,11 +92,11 @@ own_acceptance_tests:
 #Our server
 	@echo "Starting Run of acceptance tests on our server."
 
-	-$(call run, $(ours) --size=1)
+	$(call run, $(ours) --size=1)
 	-$(call test, "ConnectionTests")
 	-$(call close)
 
-	-$(call run, $(ours) --size=10)
+	$(call run, $(ours) --size=10)
 	-$(call test, "LookRobotTests#invalidLookCommandShouldFail")
 	-$(call close)
 
