@@ -28,48 +28,67 @@ public class StateRobotTests {
         }
 
     @Test
-    void invalidStateCommandShouldFail(){
+    void validStateCommandShouldSucceed(){
+        // Given that I am connected to a running Robot Worlds server
         assertTrue(serverClient.isConnected());
 
-        // When I send an invalid state request with the command "statte" instead of "state"
-        String request = "{" +
-                "\"robot\": \"HAL\"," +
-                "\"command\": \"statte\"," +
-                "\"arguments\": []" +
+        //And I have successfully launched a robot to the server
+        String launch_request = "{" +
+                "  \"robot\": \"HAL\"," +
+                "  \"command\": \"launch\"," +
+                "  \"arguments\": [\"shooter\",\"5\",\"5\"]" +
                 "}";
-        serverClient.sendRequest(request);
-        JsonNode response = serverClient.getResponse();
+        serverClient.sendRequest(launch_request);
+        JsonNode launch_response = serverClient.getResponse();
+        assertNotNull(launch_response.get("result"));
+        assertEquals("OK", launch_response.get("result").asText());
 
-        // Then I should get an error message
-        assertNotNull(response.get("result"));
-        assertEquals("OK", response.get("result").asText());
+        // When I send a valid state request to the server
+        String state_request = "{" +
+                "  \"robot\": \"HAL\"," +
+                "  \"command\": \"state\"," +
+                "  \"arguments\": [\"shooter\",\"5\",\"5\"]" +
+                "}";
+        serverClient.sendRequest(state_request);
 
-        // And the message "Unsupported command"
-        assertNotNull(response.get("data"));
-        assertNotNull(response.get("data").get("message"));
-        assertTrue(response.get("data").get("message").asText().contains("Unsupported command"));
+        // Then I should get a valid response from server
+        JsonNode state_response = serverClient.getResponse();
+        assertEquals("OK", state_response.get("result").asText());
+
+        // And I should get the state of the robot
+        assertNotNull(state_response.get("state"));
     }
 
-        @Test
-        void validStateCommandShouldSucceed(){
-            // Given that I am connected to a running Robot Worlds server
-            assertTrue(serverClient.isConnected());
+    @Test
+    void invalidStateCommandShouldFail() {
+        //Given that I am connected to a running Robot Worlds server.
+        assertTrue(serverClient.isConnected());
 
-            // When I send a valid state request to the server
-            // And the robot does exist in the world
-            String request = "{" +
-                    "  \"robot\": \"HAL\"," +
-                    "  \"command\": \"state\"," +
-                    "  \"arguments\": []" +
-                    "}";
-            serverClient.sendRequest(request);
-            JsonNode response = serverClient.getResponse();
-            assertEquals("ERROR", response.get("result").asText());
+        //And I have successfully launched a robot to the server
+        String launch_request = "{" +
+                "  \"robot\": \"HAL\"," +
+                "  \"command\": \"launch\"," +
+                "  \"arguments\": [\"shooter\",\"5\",\"5\"]" +
+                "}";
+        serverClient.sendRequest(launch_request);
+        JsonNode launch_response = serverClient.getResponse();
+        assertNotNull(launch_response.get("result"));
+        assertEquals("OK", launch_response.get("result").asText());
 
-            //Then I should receive the state of the robot
-            assertNotNull(response.get("state"));
+        //When I send an invalid state request with a command such as "statte" instead of "state".
+        String state_request = "{" +
+                "\"robot\": \"HAL\"," +
+                "\"command\": \"statte\"," +
+                "  \"arguments\": []" +
+                "}";
+        serverClient.sendRequest(state_request);
 
-        }
+        //Then I should get an "ERROR" response.
+        JsonNode state_response = serverClient.getResponse();
+        assertNotNull(state_response.get("result"));
+        assertEquals("ERROR", state_response.get("result").asText());
+        assertTrue(state_response.get("data").get("message").asText().contains("Unsupported command"));
+    }
 
         @Test
         void stateCommandForInvalidRobot(){
@@ -78,12 +97,16 @@ public class StateRobotTests {
             assertTrue(serverClient.isConnected());
 
 
-            // When I send a valid state request to a robot that has not been launched
-            // And the robot does not exist in the world
+            // When I send a state request to a robot that has not been launched
+            String request = "{" +
+                    "\"robot\": \"\"," +
+                    "\"command\": \"state\"," +
+                    "\"arguments\": []" +
+                    "}";
+            JsonNode response = serverClient.sendRequest(request);
 
-
-
-            // Then I should get an empty list of robots state as a response
-
+            // Then I should get an error message
+            assertNotNull(response.get("result"));
+            assertEquals("ERROR", response.get("result").asText());
         }
 }
