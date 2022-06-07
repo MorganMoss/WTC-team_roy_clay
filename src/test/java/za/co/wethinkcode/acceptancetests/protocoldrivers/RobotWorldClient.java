@@ -1,6 +1,5 @@
 package za.co.wethinkcode.acceptancetests.protocoldrivers;
 
-
 import com.fasterxml.jackson.databind.JsonNode;
 
 /**
@@ -35,7 +34,7 @@ public interface RobotWorldClient {
 
     /**
      * get a response from the server
-     * @return
+     * @return JsonNode serialised object
      */
     JsonNode getResponse();
 
