@@ -57,6 +57,7 @@ reference_acceptance_tests:
 	#In order to run the acceptance tests on
 	#The Reference Server
 	$(call run, $(reference) --size=10)
+#	-mvn test
 	-mvn test -Dtest="ConnectionTests"
 	$(call close)
 
