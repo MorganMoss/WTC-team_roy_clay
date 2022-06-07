@@ -1,15 +1,25 @@
-version = 0.0.0
+version=0.0.0
+reference=reference-server-0.1.0.jar
 
+# Runs a java jar file with in.txt as System In
 define run
-java -jar ${1} &
+	@touch in.txt
+	@./start.sh "${1}"
+	@echo "'${1}' is running."
 endef
 
-define close
-pkill -15 ${1}
-#@echo ${1}
-#@echo ps -ef | grep ${1}
-#kill $(ps -ef | grep ${1} | cut -c 12-18)
+# Sends input to in.txt for running jar
+define send_input
+	@echo ${1} > in.txt
 endef
+
+# exits running jar
+define close
+	@$(call send_input, "quit")
+	@./stop.sh
+	@rm in.txt
+endef
+
 
 #main: build reference_acceptance_tests own_acceptance_tests version_software_for_release package_software_for_release tag_version_number_on_git
 main : build reference_acceptance_tests
@@ -42,47 +52,18 @@ compile:
 
 	@echo "Project has been compiled."
 	##############################################
-
-run_reference_server:
-
-
 reference_acceptance_tests:
 	#This is where we will put all the scripting
 	#In order to run the acceptance tests on
 	#The Reference Server
+	$(call run, $(reference) --size=10)
+	-mvn test -Dtest="ConnectionTests"
+	$(call close)
 
-	$(call run, reference-server-0.1.0.jar)
-#	sleep 2
-#	mvn test -Dtest="ConnectionTests"
-	$(call close, reference-server-0.1.0)
 #	mvn test -Dtest="LookRobotTests#invalidLookCommandShouldFail"
-
-#	id=$(ps -ef | grep reference-server-0.1.0.jar)
-#	kill id
-#	ps -ef | grep java | grep reference-server | cut -c 12-18
-#	grep xyz abc.txt | while read -r line ; do
-#		echo "Processing $line"
-#		# your code goes here
-#	done
-#	for /f %%i in (ps -ef | grep java | grep reference-server | cut -c 12-18) do taskkill %%i
-#	kill $(ps -ef | grep reference-server-0.1.0.jar)
-#	mvn test -Dexec: TestServerAndClient
-#	rem Run as killpid.cmd reference-server-0.1.0.jar
-#	@echo off
-#	jps -l |findstr %1 > %TEMP%\pid.txt
-#
-#	echo FOUND:
-#	type %TEMP%\pid.txt
-#
-#	for /f %%i in (%TEMP%\pid.txt) do taskkill /pid %%i
-#	java -jar reference-server-0.1.0.jar &
-#	kill $(ps -ef | grep java | grep reference-server | cut -c 12-18)
-
-
 
 	@echo "Completed Run of acceptance tests on reference server."
 	##############################################
-
 own_acceptance_tests:
 	#This is where we will put all the scripting
 	#In order to run the acceptance tests on
@@ -92,7 +73,6 @@ own_acceptance_tests:
 
 	@echo "Completed Run of acceptance tests on our server."
 	##############################################
-
 version_software_for_release:
 	#This must be able to distinguish
 	#between a release build and a development build.
@@ -108,12 +88,10 @@ version_software_for_release:
 
 	@echo "Completed versioning of our software."
 	##############################################
-
 package_software_for_release:
 	#This packages the software for release.
 	@echo "Completed packaging of software."
 	##############################################
-
 tag_version_number_on_git:
 	#Tag the version number on git as release-x.y.z
 	#for software that has been successfully built
