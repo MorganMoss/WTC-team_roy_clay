@@ -21,3 +21,8 @@ pretest_report.txt
 
 #OS files
 .DS_Store
+
+out.txt
+err.txt
+in.txt
+pid.txt
