@@ -53,7 +53,7 @@ all : build test
 build: clean init compile verify
 #This will build our project
 
-	@echo "Project has been built."
+	@echo "[1;32mProject build complete![m"
 	##############################################
 clean:
 #clear up artifacts from old builds
@@ -86,7 +86,7 @@ verify:
 
 
 test : reference_acceptance_tests own_acceptance_tests
-	@echo "[1mAll testing complete![m"
+	@echo "[1;32mAll testing complete![m"
 	##############################################
 reference_acceptance_tests:
 #This is where we will put all the scripting
