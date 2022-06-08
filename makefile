@@ -38,9 +38,18 @@ define runNJ
 	@echo "[1;33mRunning with Maven:[m[1;34m${1}[m"
 endef
 
+
+help :
+	@echo "[1mList of commands:[m"
+	@echo " - [1;34m'make build'[m\tbuilds our project"
+	@echo " - [1;34m'make test'[m\ttests our and the reference projects"
+	@echo " - [1;34m'make all'[m\tdoes all of the above"
+
 #main: build reference_acceptance_tests own_acceptance_tests version_software_for_release package_software_for_release tag_version_number_on_git
-all : build reference_acceptance_tests
+all : build test
 	##############################################
+
+
 build: clean init compile verify
 #This will build our project
 
@@ -76,6 +85,11 @@ verify:
 
 	@echo "Project has been verified."
 	##############################################
+
+
+test : reference_acceptance_tests own_acceptance_tests
+	@echo "[1mAll testing complete![m"
+	##############################################
 reference_acceptance_tests:
 #This is where we will put all the scripting
 #In order to run the acceptance tests on
@@ -100,8 +114,6 @@ reference_acceptance_tests:
 	##############################################
 	@echo "[1mCompleted Run of acceptance tests on reference server.[m"
 	##############################################
-
-#TODO: Need to package our server as a jar before we run acceptance tests on it.
 own_acceptance_tests:
 #This is where we will put all the scripting
 #In order to run the acceptance tests on
@@ -116,8 +128,10 @@ own_acceptance_tests:
 	-$(call test, "LookRobotTests#invalidLookCommandShouldFail")
 	-$(call close)
 
-	@echo "Completed Run of acceptance tests on our server."
+	@echo "[1mCompleted Run of acceptance tests on our server.[m"
 	##############################################
+
+
 #TODO
 version_software_for_release:
 #This must be able to distinguish
@@ -132,9 +146,10 @@ version_software_for_release:
 
 	@echo "Completed versioning of our software."
 	##############################################
-#TODO
 package_software_for_release:
 #This packages the software for release.
+
+	mvn package
 
 	@echo "Completed packaging of software."
 	##############################################
