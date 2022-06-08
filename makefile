@@ -120,10 +120,17 @@ own_acceptance_tests:
 	##############################################
 	$(call runNJ, $(ours) --size=1)
 	-$(call test, "ConnectionTests")
+	-$(call test, "LaunchRobotTests")
+	-$(call test, "StateRobotTests")
+	-$(call test, "LookRobotTests#invalidLookCommandShouldFail")
+	-$(call close)
+	##############################################
+	$(call runNJ, $(ours) --size=10 --obstacle=0$(,)1)
+	-$(call test, "LookRobotTests#validLookOtherArtifacts")
 	-$(call close)
 	##############################################
 	$(call runNJ, $(ours) --size=10)
-	-$(call test, "LookRobotTests#invalidLookCommandShouldFail")
+	-$(call test, "LookRobotTests#validLookNoOtherArtifacts")
 	-$(call close)
 	##############################################
 	@echo "[1mCompleted Run of acceptance tests on our server.[m"
