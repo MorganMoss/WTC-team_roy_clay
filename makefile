@@ -1,6 +1,6 @@
 version=0.0.0
 reference=reference-server-0.1.0.jar
-ours=MultiServer
+ours=libs/robotworld-0.1.0-SNAPSHOT-jar-with-dependencies.jar
 # This script is very angry about commas as arguments
 ,:=,
 
@@ -178,10 +178,16 @@ version_software_for_release:
 #You can also use different bash scripts too.
 #The choice is yours.
 
+	#mvn clean deploy -Drevision=".$TRAVIS_BUILD_ID"
+	mvn versions:set -DnewVersion=1.0.0-${revision}
+
 	@echo "Completed versioning of our software."
 	##############################################
 package_software_for_release:
 #This packages the software for release.
+#For now we are skiping the tests
+
+	mvn package -Dmaven.test.skip=true
 
 	mvn package
 
