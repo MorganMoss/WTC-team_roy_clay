@@ -9,17 +9,10 @@ import za.co.wethinkcode.acceptancetests.protocoldrivers.RobotWorldJsonClient;
 import com.fasterxml.jackson.databind.JsonNode;
 
 
-<<<<<<< HEAD
-import java.util.HashMap;
-
 import static org.junit.Assert.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-=======
-//import static org.junit.Assert.*;
-import static org.junit.jupiter.api.Assertions.*;
->>>>>>> 9a6ec037c0bf4f61cc3c5dbf38cbc22f67131a13
 
 
 public class LookRobotTests {
@@ -140,10 +133,7 @@ public class LookRobotTests {
 
 
         //And there is no other robot and no obstacle in the world.
-<<<<<<< HEAD
-=======
 
->>>>>>> 9a6ec037c0bf4f61cc3c5dbf38cbc22f67131a13
         //And I send a valid look request, "look", to the server.
         String request = "{" +
                 "\"robot\": \"HAL\"," +
