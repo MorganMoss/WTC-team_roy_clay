@@ -115,7 +115,7 @@ public class StateRobotTests {
         assertNotNull(response.get("result"));
         assertEquals("ERROR", response.get("result").asText());
 
-        System.out.println(response.toString());
+
         // And the message "Robot does not exist"
         assertNotNull(response.get("data"));
         assertNotNull(response.get("data").get("message"));
