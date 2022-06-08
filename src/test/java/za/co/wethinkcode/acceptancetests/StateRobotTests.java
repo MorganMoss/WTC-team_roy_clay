@@ -42,6 +42,7 @@ public class StateRobotTests {
     @Test
     void validStateCommandShouldSucceed(){
         // Given that I am connected to a running Robot Worlds server
+        assertTrue(serverClient.isConnected());
 
         //And I have successfully launched a robot to the server
         launchRobot();
@@ -113,5 +114,11 @@ public class StateRobotTests {
         // Then I should get an error message
         assertNotNull(response.get("result"));
         assertEquals("ERROR", response.get("result").asText());
+
+        System.out.println(response.toString());
+        // And the message "Robot does not exist"
+        assertNotNull(response.get("data"));
+        assertNotNull(response.get("data").get("message"));
+        assertTrue(response.get("data").get("message").asText().contains("Robot does not exist"));
     }
 }
