@@ -4,6 +4,13 @@ ours=MultiServer
 # This script is very angry about commas as arguments
 ,:=,
 
+ifeq (run_test,$(firstword $(MAKECMDGOALS)))
+  # use the rest as arguments for "run"
+  RUN_ARGS := $(wordlist 2,$(words $(MAKECMDGOALS)),$(MAKECMDGOALS))
+  # ...and turn them into do-nothing targets
+  $(eval $(RUN_ARGS):;@:)
+endif
+
 # Runs a java jar file with in.txt as System In
 define run
 	@touch in.txt
@@ -45,6 +52,28 @@ help :
 	@echo " - [1;34m'make build'[m\tbuilds our project"
 	@echo " - [1;34m'make test'[m\ttests our and the reference projects"
 	@echo " - [1;34m'make all'[m\tdoes all of the above"
+	@echo " - [1;34m'make run_test <Test Class#Method>'[m\tAllows manual testing"
+	##############################################
+
+run_test:
+	##############################################
+	@echo "[1mStarting Run of custom tests on reference server.[m"
+	##############################################
+	$(call run, $(reference) --size=1)
+	-$(call test, "$(RUN_ARGS)")
+	-$(call close)
+	##############################################
+	@echo "[1mCompleted Run of custom tests on reference server.[m"
+	##############################################
+	@echo "[1mStarting Run of custom tests on own server.[m"
+	##############################################
+	$(call runNJ, $(own) --size=1)
+	-$(call test, "$(RUN_ARGS)")
+	-$(call close)
+	##############################################
+	@echo "[1mCompleted Run of custom tests on own server.[m"
+	##############################################
+	@echo "[1;32mAll testing complete![m"
 	##############################################
 
 all : build test
@@ -169,3 +198,4 @@ tag_version_number_on_git:
 
 	@echo "Completed tagging version number on git."
 	##############################################
+
