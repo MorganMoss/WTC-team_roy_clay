@@ -40,20 +40,18 @@ endef
 
 
 help :
+	##############################################
 	@echo "[1mList of commands:[m"
 	@echo " - [1;34m'make build'[m\tbuilds our project"
 	@echo " - [1;34m'make test'[m\ttests our and the reference projects"
 	@echo " - [1;34m'make all'[m\tdoes all of the above"
+	##############################################
 
-#main: build reference_acceptance_tests own_acceptance_tests version_software_for_release package_software_for_release tag_version_number_on_git
 all : build test
 	##############################################
 
-
 build: clean init compile verify
 #This will build our project
-
-#	mvn build
 
 	@echo "Project has been built."
 	##############################################
@@ -118,16 +116,16 @@ own_acceptance_tests:
 #This is where we will put all the scripting
 #In order to run the acceptance tests on
 #Our server
-	@echo "Starting Run of acceptance tests on our server."
-
+	@echo "[1mStarting Run of acceptance tests on own server.[m"
+	##############################################
 	$(call runNJ, $(ours) --size=1)
 	-$(call test, "ConnectionTests")
 	-$(call close)
-
+	##############################################
 	$(call runNJ, $(ours) --size=10)
 	-$(call test, "LookRobotTests#invalidLookCommandShouldFail")
 	-$(call close)
-
+	##############################################
 	@echo "[1mCompleted Run of acceptance tests on our server.[m"
 	##############################################
 
