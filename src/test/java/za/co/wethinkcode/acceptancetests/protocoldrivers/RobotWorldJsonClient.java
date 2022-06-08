@@ -7,7 +7,7 @@ import java.io.*;
 import java.net.Socket;
 
 public class RobotWorldJsonClient implements RobotWorldClient {
-
+    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
     private Socket socket;
     private boolean connected = false;
 
@@ -62,8 +62,8 @@ public class RobotWorldJsonClient implements RobotWorldClient {
         try {
             requests.println(requestString);
             requests.flush();
-            ObjectMapper mapper = new ObjectMapper();
-            lastResponse = mapper.readValue(responses.readLine(), JsonNode.class);
+//            ObjectMapper mapper = new ObjectMapper();
+            lastResponse = OBJECT_MAPPER.readTree(responses.readLine());
         } catch (IOException e) {
             throw new RuntimeException("Error reading server response.", e);
         }

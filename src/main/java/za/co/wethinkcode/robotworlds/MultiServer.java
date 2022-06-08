@@ -6,8 +6,6 @@ import java.io.*;
 
 
 public class MultiServer {
-
-
     public static void main(String[] args) throws IOException {
 
         ServerSocket s = new ServerSocket( MainServerThread.PORT);

@@ -1,12 +1,37 @@
-# Robot Worlds
+# Robot Worlds Brownfield
 
 
 
 ## Getting started
 
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
+Working through iteration one to achieve the following four goals:
+- [ ] Define or setup features or issues (aka stories)
+    - [ ] Using the issues page on Gitlab
+    - [ ] We did this today - although incomplete [build script and codescene hotspots issues and scenario missing]
+- [ ] Refactor the "existing Robot World Server"
+    - [ ] We must only refactor the given code and not write our own code from scratch
+    - [ ] The code we refactor is what we test against the acceptance test with the provided server jar
+    - [ ] Any code refactored for this iteration will only be for the Server side of the codebase
+- [ ] Create a build script to compile codebase, run test and create package binaries
+    - [ ] We must create a build script at the end of this iteration
+    - [ ] The build script must only do the preliminaries for now using the Build Script instruction page
+    - [ ] THIS IS NOT INCLUDED: at the next iteration we will automate the build script using a build pipeline
+- [ ] Use code analysis to identify the "top 3 hotspots"
+    - [ ] we must work through the code analysis page for how to achieve this goal
+    - [ ] We must prepare a short presentation on the health of the code
 
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
+You can edit this README.md and add more information. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
+
+## Run the makefile
+
+```
+run from terminal while in the folder where the makefile is. Just type, then enter:
+> make
+
+to pipe the test output to a text file use this command format:
+> [command] | tee [options] [filename]
+e.g: > make | tee acceptancetests_results.txt
+```
 
 ## Add your files
 

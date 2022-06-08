@@ -5,8 +5,8 @@ import za.co.wethinkcode.robotworlds.maze.EmptyMaze;
 import za.co.wethinkcode.robotworlds.world.IWorld;
 import za.co.wethinkcode.robotworlds.world.TextWorld;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+//import static org.junit.Assert.assertEquals;
+//import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.*;
 
 class CommandTest {

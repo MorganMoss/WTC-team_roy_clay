@@ -1,11 +1,13 @@
 package za.co.wethinkcode.robotworlds;
 import org.junit.jupiter.api.Test;
-import static org.junit.Assert.*;
+//import static org.junit.Assert.*;
 
 
 import za.co.wethinkcode.robotworlds.maze.EmptyMaze;
 import za.co.wethinkcode.robotworlds.world.IWorld;
 import za.co.wethinkcode.robotworlds.world.TextWorld;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 class RobotTest {
     IWorld maze = new TextWorld(new EmptyMaze());

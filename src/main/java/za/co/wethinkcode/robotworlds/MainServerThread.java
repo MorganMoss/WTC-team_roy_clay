@@ -10,7 +10,7 @@ import za.co.wethinkcode.robotworlds.world.IWorld;
 
 public class MainServerThread implements Runnable {
 
-    public static final int PORT = 3333;
+    public static final int PORT = 5000;
 
     DataInputStream din;
     DataOutputStream dout;

@@ -1,5 +1,6 @@
 package za.co.wethinkcode.acceptancetests;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import za.co.wethinkcode.acceptancetests.protocoldrivers.RobotWorldClient;
 import za.co.wethinkcode.acceptancetests.protocoldrivers.RobotWorldJsonClient;
@@ -10,7 +11,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * As a player I want to be able to play the game with other players.
  * Thus I will connect to a server.
  */
-public class TestServerAndClientConnectAndCommunicate {
+public class ConnectionTests {
     private final static int DEFAULT_PORT = 5000;
 
     private final static String DEFAULT_IP = "localhost";
@@ -36,10 +37,9 @@ public class TestServerAndClientConnectAndCommunicate {
     @Test
     void SingleClientConnectsToServerWithTheWrongIP() {
         // Given that the Port is the default used by the server
+        assertEquals(5000, DEFAULT_PORT);
         // And the address of the server is not used to connect by the client, a bad address is used
         String BAD_IP = "bad IP";
-
-        assertEquals(5000, DEFAULT_PORT);
         assertNotEquals("localhost", BAD_IP);
 
         // When the client tries to connect to the server
@@ -52,11 +52,11 @@ public class TestServerAndClientConnectAndCommunicate {
     @Test
     void SingleClientConnectsToServerWithTheWrongAddress() {
         // Given that the IP Adress is the default used by the server
+        assertEquals("localhost", DEFAULT_IP);
+
         // And the port of the server is not used to connect by the client, a bad port is used
         int BAD_PORT = 1000;
-
         assertNotEquals(5000, BAD_PORT);
-        assertEquals("localhost", DEFAULT_IP);
 
         // When the client tries to connect to the server
         serverClient.connect(DEFAULT_IP, BAD_PORT);
@@ -85,13 +85,12 @@ public class TestServerAndClientConnectAndCommunicate {
     @Test
     void YouConnectAfterAnotherClientConnects() {
         //Given that another client has connected using the Port and IP Address
-        //And you are using the correct IP and Port
-        assertEquals(5000, DEFAULT_PORT);
-        assertEquals("localhost", DEFAULT_IP);
-
         RobotWorldClient otherClient = new RobotWorldJsonClient();
         otherClient.connect(DEFAULT_IP,DEFAULT_PORT);
         assertTrue(otherClient.isConnected());
+        //And you are using the correct IP and Port
+        assertEquals(5000, DEFAULT_PORT);
+        assertEquals("localhost", DEFAULT_IP);
 
         // When you try to connect to the server
         serverClient.connect(DEFAULT_IP, DEFAULT_PORT);
