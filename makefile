@@ -1,12 +1,14 @@
 version=0.0.0
 reference=reference-server-0.1.0.jar
-ours=server.jar
+ours=MultiServer
+# This script is very angry about commas as arguments
+,:=,
 
 # Runs a java jar file with in.txt as System In
 define run
 	@touch in.txt
 	@./start.sh "${1}"
-	@echo "[1;33mRunning Jar:[m[1;31m${1}[m"
+	@echo "[1;33mRunning Jar:[m[1;34m${1}[m"
 endef
 
 # Sends input to in.txt for running jar
@@ -19,27 +21,27 @@ define close
 	@$(call send_input, "quit")
 	@./stop.sh
 	@rm in.txt
-	@echo "[1;37mClosed Running Jar[m"
+	@echo "[1;37mClosed Running Java Process[m"
 endef
 
 #Runs the test file with the given name
 #(add "#methodName" to have it run a single test)
 define test
-	@echo "[1;33mRunning Test:[m[1;31m${1}[m"
-	@-mvn test -Dtest="${1}" > "Test Results -${1}.txt"
-	@cat "Test Results -${1}.txt" | grep "Tests run" | grep "Time"
+	@echo "[1;33mRunning Test:[m[1;34m${1}[m"
+	@-mvn test -Dtest="${1}" > "Test Results -${1}.txt" || true
+	@cat "Test Results -${1}.txt" | grep "Tests run" | grep -v "Time elapsed"
 endef
 
 define runNJ
 	@touch in.txt
-	@./startNJ.sh "${1}"
-	@echo "Running ${1}"
+	@./startNJ.sh ${1}
+	@echo "[1;33mRunning with Maven:[m[1;34m${1}[m"
 endef
 
 #main: build reference_acceptance_tests own_acceptance_tests version_software_for_release package_software_for_release tag_version_number_on_git
-main : build reference_acceptance_tests
-
-build: clean init compile
+all : build reference_acceptance_tests
+	##############################################
+build: clean init compile verify
 #This will build our project
 
 #	mvn build
@@ -67,7 +69,13 @@ compile:
 
 	@echo "Project has been compiled."
 	##############################################
-#TODO: Add your reference tests to this
+verify:
+#verifying the project
+
+	mvn verify
+
+	@echo "Project has been verified."
+	##############################################
 reference_acceptance_tests:
 #This is where we will put all the scripting
 #In order to run the acceptance tests on
@@ -77,14 +85,22 @@ reference_acceptance_tests:
 	##############################################
 	$(call run, $(reference) --size=1)
 	-$(call test, "ConnectionTests")
+	-$(call test, "LaunchRobotTests")
+	-$(call test, "StateRobotTests")
+	-$(call test, "LookRobotTests#invalidLookCommandShouldFail")
+	-$(call close)
+	##############################################
+	$(call run, $(reference) --size=10 --obstacle=0$(,)1)
+	-$(call test, "LookRobotTests#validLookOtherArtifacts")
 	-$(call close)
 	##############################################
 	$(call run, $(reference) --size=10)
-	-$(call test, "LookRobotTests#invalidLookCommandShouldFail")
+	-$(call test, "LookRobotTests#validLookNoOtherArtifacts")
 	-$(call close)
 	##############################################
 	@echo "[1mCompleted Run of acceptance tests on reference server.[m"
 	##############################################
+
 #TODO: Need to package our server as a jar before we run acceptance tests on it.
 own_acceptance_tests:
 #This is where we will put all the scripting
@@ -92,11 +108,11 @@ own_acceptance_tests:
 #Our server
 	@echo "Starting Run of acceptance tests on our server."
 
-	$(call run, $(ours) --size=1)
+	$(call runNJ, $(ours) --size=1)
 	-$(call test, "ConnectionTests")
 	-$(call close)
 
-	$(call run, $(ours) --size=10)
+	$(call runNJ, $(ours) --size=10)
 	-$(call test, "LookRobotTests#invalidLookCommandShouldFail")
 	-$(call close)
 
