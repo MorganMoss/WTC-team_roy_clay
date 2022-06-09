@@ -16,6 +16,7 @@ define run_as_jar
 	@touch in.txt
 	@./run_as_jar.sh "${1}"
 	@echo "[1;33mRunning Jar:[m[1;34m${1}[m"
+	@test_running_in=jar
 endef
 
 # Sends input to in.txt for running jar
@@ -34,8 +35,8 @@ endef
 #(add "#methodName" to have it run a single test)
 define test
 	@echo "[1;33mRunning Test:[m[1;34m${1}[m"
-	@-mvn test -Dtest="${1}" > "Test Output/Test Results -${1}.txt" || true
-	@cat "Test Output/Test Results -${1}.txt" | grep "Tests run" | grep -v "Time elapsed"
+	@-mvn test -Dtest="${1}" > "Test Output/Test Results - ${test_running_in} -${1}.txt" || true
+	@cat "Test Output/Test Results - ${test_running_in} -${1}.txt" | grep "Tests run" | grep -v "Time elapsed"
 endef
 
 define run_with_maven
@@ -67,6 +68,7 @@ run_test: run_test_reference run_test_own
 	##############################################
 .PHONY: run_test_reference
 run_test_reference:
+	@$(eval test_running_in="ref")
 	@echo "[1mStarting Run of custom tests on reference server.[m"
 	##############################################
 	$(call run_as_jar, $(reference) $(a))
@@ -77,6 +79,7 @@ run_test_reference:
 	##############################################
 .PHONY: run_test_own
 run_test_own:
+	@$(eval test_running_in="own")
 	@echo "[1mStarting Run of custom tests on own server.[m"
 	##############################################
 	$(call run_with_maven, $(our_server_class) $(a))``
@@ -135,6 +138,7 @@ reference_acceptance_tests:
 #This is where we will put all the scripting
 #In order to run the acceptance tests on
 #The Reference Server
+	@$(eval test_running_in="ref")
 	##############################################
 	@echo "[1mStarting Run of acceptance tests on reference server.[m"
 	##############################################
@@ -159,6 +163,7 @@ own_acceptance_tests:
 #This is where we will put all the scripting
 #In order to run the acceptance tests on
 #Our server
+	@$(eval test_running_in="own")
 	@echo "[1mStarting Run of acceptance tests on own server.[m"
 	##############################################
 	$(call run_with_maven, $(our_server_class) --size=1)
