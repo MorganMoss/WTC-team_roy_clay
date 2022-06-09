@@ -5,10 +5,16 @@ ours=MultiServer
 ,:=,
 
 ifeq (run_test,$(firstword $(MAKECMDGOALS)))
-  # use the rest as arguments for "run"
-  RUN_ARGS := $(wordlist 2,$(words $(MAKECMDGOALS)),$(MAKECMDGOALS))
-  # ...and turn them into do-nothing targets
-  $(eval $(RUN_ARGS):;@:)
+  	# use the rest as arguments for "run"
+  	RUN_ARGS :=  $(wordlist 2,$(words $(MAKECMDGOALS)),$(MAKECMDGOALS))
+#  	TEST := $(firstword $(RUN_ARGS))
+#  	SERVER_PARAMS := $(wordlist 1,$(words $(RUN_ARGS)),$(RUN_ARGS))
+#  	SERVER_PARAMS := $(foreach t,$(SERVER_PARAMS),-$(t))
+  	# ...and turn them into do-nothing targets
+  	$(eval $(RUN_ARGS):dummy;@:),
+
+#  	$(eval $(TEST):;@:)
+# 	$(eval $(SERVER_PARAMS):;@:)
 endif
 
 # Runs a java jar file with in.txt as System In
@@ -52,23 +58,27 @@ help :
 	@echo " - [1;34m'make build'[m\tbuilds our project"
 	@echo " - [1;34m'make test'[m\ttests our and the reference projects"
 	@echo " - [1;34m'make all'[m\tdoes all of the above"
-	@echo " - [1;34m'make run_test <Test Class#Method>'[m\tAllows manual testing"
+	@echo " - [1;34m'make run_test <Test Class#Method> <Server Arg>'[m\tAllows manual testing"
+	@echo "[1;33m\tNote:[m\tDo server arg using the short versions of options, without a dash. i.e [1;34m's=10'[m"
 	##############################################
 
+.PHONY: run_test
 run_test:
+	@echo $(RUN_ARGS)
+
 	##############################################
 	@echo "[1mStarting Run of custom tests on reference server.[m"
 	##############################################
-	$(call run, $(reference) --size=1)
-	-$(call test, "$(RUN_ARGS)")
+	$(call run, $(reference) $(SERVER_PARAMS))
+	-$(call test, "$(TEST)")
 	-$(call close)
 	##############################################
 	@echo "[1mCompleted Run of custom tests on reference server.[m"
 	##############################################
 	@echo "[1mStarting Run of custom tests on own server.[m"
 	##############################################
-	$(call runNJ, $(own) --size=1)
-	-$(call test, "$(RUN_ARGS)")
+	$(call runNJ, $(own) $(SERVER_PARAMS))
+	-$(call test, "$(TEST)")
 	-$(call close)
 	##############################################
 	@echo "[1mCompleted Run of custom tests on own server.[m"
