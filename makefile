@@ -7,10 +7,12 @@ our_server_class="MultiServer"
 # This script is very angry about commas as arguments
 ,:=,
 
+output="Test Output"
 
 #Callables
 # Runs a java jar file with in.txt as System In
 define run_as_jar
+	@[ -d $(output) ] || mkdir -p $(output)
 	@touch in.txt
 	@./run_as_jar.sh "${1}"
 	@echo "[1;33mRunning Jar:[m[1;34m${1}[m"
@@ -32,11 +34,12 @@ endef
 #(add "#methodName" to have it run a single test)
 define test
 	@echo "[1;33mRunning Test:[m[1;34m${1}[m"
-	@-mvn test -Dtest="${1}" > "Test Results -${1}.txt" || true
-	@cat "Test Results -${1}.txt" | grep "Tests run" | grep -v "Time elapsed"
+	@-mvn test -Dtest="${1}" > "Test Output/Test Results -${1}.txt" || true
+	@cat "Test Output/Test Results -${1}.txt" | grep "Tests run" | grep -v "Time elapsed"
 endef
 
 define run_with_maven
+	@[ -d $(output) ] || mkdir -p $(output)
 	@touch in.txt
 	@./run_with_maven.sh ${1}
 	@echo "[1;33mRunning with Maven:[m[1;34m${1}[m"
@@ -139,14 +142,14 @@ reference_acceptance_tests:
 	-$(call test, "ConnectionTests")
 	-$(call test, "LaunchRobotTests")
 	-$(call test, "StateRobotTests")
-	-$(call test, "LookRobotTests#invalidLookCommandShouldFail")
+	-$(call test, "LookRobotTests#invalidLookCommandShouldFail+invalidLookArgumentsShouldFail")
 	-$(call close)
 	##############################################
-	$(call run_as_jar, $(reference) --size=10 --obstacle=0$(,)1)
+	$(call run_as_jar, $(reference) --size=2 --visibility=2 --obstacle=0$(,)1)
 	-$(call test, "LookRobotTests#validLookOtherArtifacts")
 	-$(call close)
 	##############################################
-	$(call run_as_jar, $(reference) --size=10)
+	$(call run_as_jar, $(reference) --size=2 --visibility=2)
 	-$(call test, "LookRobotTests#validLookNoOtherArtifacts")
 	-$(call close)
 	##############################################
@@ -162,14 +165,14 @@ own_acceptance_tests:
 	-$(call test, "ConnectionTests")
 	-$(call test, "LaunchRobotTests")
 	-$(call test, "StateRobotTests")
-	-$(call test, "LookRobotTests#invalidLookCommandShouldFail")
+	-$(call test, "LookRobotTests#invalidLookCommandShouldFail+invalidLookArgumentsShouldFail")
 	-$(call close)
 	##############################################
-	$(call run_with_maven, $(our_server_class) --size=10 --obstacle=0$(,)1)
+	$(call run_with_maven, $(our_server_class) --size=2 --visibility=2 --obstacle=0$(,)1)
 	-$(call test, "LookRobotTests#validLookOtherArtifacts")
 	-$(call close)
 	##############################################
-	$(call run_with_maven, $(our_server_class) --size=10)
+	$(call run_with_maven, $(our_server_class) --size=2 --visibility=2)
 	-$(call test, "LookRobotTests#validLookNoOtherArtifacts")
 	-$(call close)
 	##############################################

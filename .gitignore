@@ -22,8 +22,6 @@ pretest_report.txt
 #OS files
 .DS_Store
 
-out.txt
-err.txt
 in.txt
 run.pid
-Test\ Results*
+Test Output/
