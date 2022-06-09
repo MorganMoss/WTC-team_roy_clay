@@ -39,6 +39,7 @@ define test
 	@cat "Test Output/Test Results - ${test_running_in} -${1}.txt" | grep "Tests run" | grep -v "Time elapsed"
 endef
 
+# Runs a .java file that has a main using maven with in.txt as System In
 define run_with_maven
 	@[ -d $(output) ] || mkdir -p $(output)
 	@touch in.txt
