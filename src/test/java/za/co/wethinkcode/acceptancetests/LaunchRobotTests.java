@@ -26,11 +26,14 @@ public class LaunchRobotTests {
         serverClient.connect(DEFAULT_IP, DEFAULT_PORT);
     }
 
+
     @AfterEach
     void disconnectFromServer(){
         serverClient.disconnect();
     }
     @Test
+
+
     void validLaunchShouldSucceed(){
         // Given that I am connected to a running Robot Worlds server
         // And the world is of size 1x1 (The world is configured or hardcoded to this size)
