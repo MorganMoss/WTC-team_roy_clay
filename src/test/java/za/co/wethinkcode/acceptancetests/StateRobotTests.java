@@ -27,6 +27,7 @@ public class StateRobotTests {
         serverClient.disconnect();
     }
 
+
     void launchRobot(){
         String launch_request = "{" +
                 "  \"robot\": \"HAL\"," +
@@ -38,6 +39,9 @@ public class StateRobotTests {
         assertNotNull(launch_response.get("result"));
         assertEquals("OK", launch_response.get("result").asText());
     }
+
+
+
 
     @Test
     void validStateCommandShouldSucceed(){
@@ -75,6 +79,12 @@ public class StateRobotTests {
 
     @Test
     void invalidStateCommandShouldFail() {
+
+
+
+
+
+
         //Given that I am connected to a running Robot Worlds server.
         assertTrue(serverClient.isConnected());
 

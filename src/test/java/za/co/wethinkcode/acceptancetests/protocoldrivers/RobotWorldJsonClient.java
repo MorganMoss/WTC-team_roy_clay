@@ -3,10 +3,12 @@ package za.co.wethinkcode.acceptancetests.protocoldrivers;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import javax.crypto.spec.PSource;
 import java.io.*;
 import java.net.Socket;
 
 public class RobotWorldJsonClient implements RobotWorldClient {
+
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
     private Socket socket;
     private boolean connected = false;
@@ -15,6 +17,7 @@ public class RobotWorldJsonClient implements RobotWorldClient {
 
     private BufferedReader responses;
     private PrintStream requests;
+
     public RobotWorldJsonClient(){
     }
 
@@ -25,6 +28,7 @@ public class RobotWorldJsonClient implements RobotWorldClient {
         } catch (IOException ignored) {
         }
     }
+
     @Override
     public void connect(String IPAddress, int port) {
         try {
@@ -79,4 +83,21 @@ public class RobotWorldJsonClient implements RobotWorldClient {
     public void ping() {
         sendRequest("ping");
     }
+
+    @Override
+    public boolean launchRobot() {
+
+        //Successfully launching a robot to the server
+        String launch_request = "{" +
+                "  \"robot\": \"HAL\"," +
+                "  \"command\": \"launch\"," +
+                "  \"arguments\": [\"shooter\",\"5\",\"5\"]" +
+                "}";
+        sendRequest(launch_request);
+        JsonNode launch_response = getResponse();
+
+        return (launch_response.get("result") != null && launch_response.get("result").asText().equalsIgnoreCase("OK"));
+
+    }
+
 }
