@@ -1,21 +1,18 @@
+# Variables
 version=1.0.1
 change-list=release
-reference=reference-server-0.1.0.jar
-ours=libs/robotworld-0.1.0-SNAPSHOT-jar-with-dependencies.jar
+reference=libs/reference-server-0.1.0.jar
+ours="libs/robotworld-0.1.0-SNAPSHOT-jar-with-dependencies.jar"
+our_server_class="MultiServer"
 # This script is very angry about commas as arguments
 ,:=,
 
-ifeq (run_test,$(firstword $(MAKECMDGOALS)))
-  # use the rest as arguments for "run"
-  RUN_ARGS := $(wordlist 2,$(words $(MAKECMDGOALS)),$(MAKECMDGOALS))
-  # ...and turn them into do-nothing targets
-  $(eval $(RUN_ARGS):;@:)
-endif
 
+#Callables
 # Runs a java jar file with in.txt as System In
-define run
+define run_as_jar
 	@touch in.txt
-	@./start.sh "${1}"
+	@./run_as_jar.sh "${1}"
 	@echo "[1;33mRunning Jar:[m[1;34m${1}[m"
 endef
 
@@ -29,7 +26,6 @@ define close
 	@$(call send_input, "quit")
 	@./stop.sh
 	@rm in.txt
-	@echo "[1;37mClosed Running Java Process[m"
 endef
 
 #Runs the test file with the given name
@@ -40,9 +36,9 @@ define test
 	@cat "Test Results -${1}.txt" | grep "Tests run" | grep -v "Time elapsed"
 endef
 
-define runNJ
+define run_with_maven
 	@touch in.txt
-	@./startNJ.sh ${1}
+	@./run_with_maven.sh ${1}
 	@echo "[1;33mRunning with Maven:[m[1;34m${1}[m"
 endef
 
@@ -52,24 +48,29 @@ help :
 	@echo "[1mList of commands:[m"
 	@echo " - [1;34m'make build'[m\tbuilds our project"
 	@echo " - [1;34m'make test'[m\ttests our and the reference projects"
+	@echo " - [1;34m'make release'[m\tversions and packages our project"
 	@echo " - [1;34m'make all'[m\tdoes all of the above"
-	@echo " - [1;34m'make run_test <Test Class#Method>'[m\tAllows manual testing"
+	@echo " - [1;34m'make run_test'[m\tAllows manual testing"
+	@echo "    > [1;33margument:[m\tTest Class to Run:\t[1;34m't=\"ConnectionTests\"'[m"
+	@echo "    > [1;33margument:[m\tServer Arguments:\t[1;34m'a=\"--size=10\"'[m"
 	##############################################
 
+.PHONY: run_test
 run_test:
+#Running tests against both servers in a more dynamic way
 	##############################################
 	@echo "[1mStarting Run of custom tests on reference server.[m"
 	##############################################
-	$(call run, $(reference) --size=1)
-	-$(call test, "$(RUN_ARGS)")
+	$(call run_as_jar, $(reference) $(a))
+	-$(call test, "$(t)")
 	-$(call close)
 	##############################################
 	@echo "[1mCompleted Run of custom tests on reference server.[m"
 	##############################################
 	@echo "[1mStarting Run of custom tests on own server.[m"
 	##############################################
-	$(call runNJ, $(own) --size=1)
-	-$(call test, "$(RUN_ARGS)")
+	$(call run_with_maven, $(our_server_class) $(a))``
+	-$(call test, "$(t)")
 	-$(call close)
 	##############################################
 	@echo "[1mCompleted Run of custom tests on own server.[m"
@@ -77,9 +78,12 @@ run_test:
 	@echo "[1;32mAll testing complete![m"
 	##############################################
 
-all : build test
+.PHONY: all
+all : build test release
+	@echo "[1;32mEverything is complete![m"
 	##############################################
 
+.PHONY: build
 build: clean init compile verify
 #This will build our project
 
@@ -114,7 +118,7 @@ verify:
 	@echo "Project has been verified."
 	##############################################
 
-
+.PHONY: test
 test : reference_acceptance_tests own_acceptance_tests
 	@echo "[1;32mAll testing complete![m"
 	##############################################
@@ -125,18 +129,18 @@ reference_acceptance_tests:
 	##############################################
 	@echo "[1mStarting Run of acceptance tests on reference server.[m"
 	##############################################
-	$(call run, $(reference) --size=1)
+	$(call run_as_jar, $(reference) --size=1)
 	-$(call test, "ConnectionTests")
 	-$(call test, "LaunchRobotTests")
 	-$(call test, "StateRobotTests")
 	-$(call test, "LookRobotTests#invalidLookCommandShouldFail")
 	-$(call close)
 	##############################################
-	$(call run, $(reference) --size=10 --obstacle=0$(,)1)
+	$(call run_as_jar, $(reference) --size=10 --obstacle=0$(,)1)
 	-$(call test, "LookRobotTests#validLookOtherArtifacts")
 	-$(call close)
 	##############################################
-	$(call run, $(reference) --size=10)
+	$(call run_as_jar, $(reference) --size=10)
 	-$(call test, "LookRobotTests#validLookNoOtherArtifacts")
 	-$(call close)
 	##############################################
@@ -148,26 +152,28 @@ own_acceptance_tests:
 #Our server
 	@echo "[1mStarting Run of acceptance tests on own server.[m"
 	##############################################
-	$(call runNJ, $(ours) --size=1)
+	$(call run_with_maven, $(our_server_class) --size=1)
 	-$(call test, "ConnectionTests")
 	-$(call test, "LaunchRobotTests")
 	-$(call test, "StateRobotTests")
 	-$(call test, "LookRobotTests#invalidLookCommandShouldFail")
 	-$(call close)
 	##############################################
-	$(call runNJ, $(ours) --size=10 --obstacle=0$(,)1)
+	$(call run_with_maven, $(our_server_class) --size=10 --obstacle=0$(,)1)
 	-$(call test, "LookRobotTests#validLookOtherArtifacts")
 	-$(call close)
 	##############################################
-	$(call runNJ, $(ours) --size=10)
+	$(call run_with_maven, $(our_server_class) --size=10)
 	-$(call test, "LookRobotTests#validLookNoOtherArtifacts")
 	-$(call close)
 	##############################################
 	@echo "[1mCompleted Run of acceptance tests on our server.[m"
 	##############################################
 
-
-#TODO
+.PHONY: release
+release: version_software_for_release package_software_for_release tag_version_number_on_git
+	@echo "[1;32mProject packaging and versioning complete![m"
+	##############################################
 version_software_for_release:
 #This must be able to distinguish
 #between a release build and a development build.
@@ -193,7 +199,6 @@ package_software_for_release:
 
 	@echo "Completed packaging of software."
 	##############################################
-#TODO
 tag_version_number_on_git:
 #Tag the version number on git as release-x.y.z
 #for software that has been successfully built

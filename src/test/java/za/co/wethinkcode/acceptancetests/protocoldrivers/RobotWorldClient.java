@@ -42,4 +42,6 @@ public interface RobotWorldClient {
      * send a ping to the server to check if it is alive
      */
     void ping();
+
+    boolean launchRobot();
 }
