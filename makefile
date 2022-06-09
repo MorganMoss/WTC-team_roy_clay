@@ -8,6 +8,7 @@ our_server_class="MultiServer"
 ,:=,
 
 
+#Callables
 # Runs a java jar file with in.txt as System In
 define run_as_jar
 	@touch in.txt
