@@ -53,12 +53,17 @@ help :
 	@echo " - [1;34m'make run_test'[m\tAllows manual testing"
 	@echo "    > [1;33margument:[m\tTest Class to Run:\t[1;34m't=\"ConnectionTests\"'[m"
 	@echo "    > [1;33margument:[m\tServer Arguments:\t[1;34m'a=\"--size=10\"'[m"
+	@echo " -- [1;33malternate:[m\t[1;34m'make run_test_reference'[m\tJust on reference server"
+	@echo " -- [1;33malternate:[m\t[1;34m'make run_test_own'[m\t\tJust on own server"
 	##############################################
 
 .PHONY: run_test
-run_test:
+run_test: run_test_reference run_test_own
 #Running tests against both servers in a more dynamic way
+	@echo "[1;32mAll testing complete![m"
 	##############################################
+.PHONY: run_test_reference
+run_test_reference:
 	@echo "[1mStarting Run of custom tests on reference server.[m"
 	##############################################
 	$(call run_as_jar, $(reference) $(a))
@@ -67,6 +72,8 @@ run_test:
 	##############################################
 	@echo "[1mCompleted Run of custom tests on reference server.[m"
 	##############################################
+.PHONY: run_test_own
+run_test_own:
 	@echo "[1mStarting Run of custom tests on own server.[m"
 	##############################################
 	$(call run_with_maven, $(our_server_class) $(a))``
@@ -75,8 +82,7 @@ run_test:
 	##############################################
 	@echo "[1mCompleted Run of custom tests on own server.[m"
 	##############################################
-	@echo "[1;32mAll testing complete![m"
-	##############################################
+
 
 .PHONY: all
 all : build test release
