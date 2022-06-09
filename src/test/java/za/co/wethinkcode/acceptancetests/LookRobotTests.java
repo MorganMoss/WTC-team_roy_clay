@@ -152,8 +152,8 @@ public class LookRobotTests {
         for (JsonNode item : look_response.get("data").get("objects")){
             assertTrue("EDGE".equalsIgnoreCase(item.get("type").asText())
                     || "OBSTACLE".equalsIgnoreCase(item.get("type").asText()));
-
-            if (item.get("type").asText() == "OBSTACLE"){
+            System.out.println(item.get("type").asText());
+            if (item.get("type").asText().equalsIgnoreCase("OBSTACLE")){
                 if (found_obstacle){
                     fail();
                 }
