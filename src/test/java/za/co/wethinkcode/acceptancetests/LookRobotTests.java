@@ -44,17 +44,9 @@ public class LookRobotTests {
         assertTrue(serverClient.isConnected());
 
         //And I have successfully launched a robot to the server
-        String launch_request = "{" +
-                "  \"robot\": \"HAL\"," +
-                "  \"command\": \"launch\"," +
-                "  \"arguments\": [\"shooter\",\"5\",\"5\"]" +
-                "}";
-        serverClient.sendRequest(launch_request);
-        JsonNode launch_response = serverClient.getResponse();
-        assertNotNull(launch_response.get("result"));
-        assertEquals("OK", launch_response.get("result").asText());
+        assertTrue(serverClient.launchRobot());
 
-        //When I send an invalid look request with a command such as "loook" instead of "look".
+//        When I send an invalid look request with a command such as "loook" instead of "look".
         String look_request = "{" +
                 "\"robot\": \"HAL\"," +
                 "\"command\": \"loook\"," +
@@ -62,13 +54,43 @@ public class LookRobotTests {
                 "}";
         serverClient.sendRequest(look_request);
 
-        //Then I should get an "ERROR" response.
+        //Then I should get an error result
         JsonNode look_response = serverClient.getResponse();
         assertNotNull(look_response.get("result"));
         assertEquals("ERROR", look_response.get("result").asText());
 
+        //And a message informing me that I entered an unsupported command
+        assertEquals("Unsupported command", look_response.get("data").get("message").asText());
+
     }
 
+    @Test
+    void invalidLookArgumentsShouldFail(){
+
+        //Given that I am connected to a running Robot Worlds server.
+        // And the world is of size 1x1 (The world is configured or hardcoded to this size)
+        assertTrue(serverClient.isConnected());
+
+        //And I have successfully launched a robot to the server
+        assertTrue(serverClient.launchRobot());
+
+        //When I send an invalid world arguments (i.e. a non-empty list, because the world command does not take any arguments)
+        String request = "{" +
+                "\"robot\": \"any\"," +
+                "\"command\": \"look\"," +
+                "  \"arguments\": [height, width]" +
+                "}";
+        serverClient.sendRequest(request);
+
+        //Then I should get an error result
+        JsonNode response = serverClient.getResponse();
+        assertNotNull(response.get("result"));
+        assertEquals("ERROR", response.get("result").asText());
+
+        //And a message informing me that server could not parse the request due to incorrect arguments
+        assertEquals("Invalid Request", response.get("data").get("message").asText());
+
+    }
 
     @Test
     void validLookNoOtherArtifacts(){
@@ -77,17 +99,7 @@ public class LookRobotTests {
         assertTrue(serverClient.isConnected());
 
         //And I have successfully launched a robot to the server
-        String launch_request = "{" +
-                "  \"robot\": \"HAL\"," +
-                "  \"command\": \"launch\"," +
-                "  \"arguments\": [\"shooter\",\"5\",\"5\"]" +
-                "}";
-
-        serverClient.sendRequest(launch_request);
-        JsonNode launch_response = serverClient.getResponse();
-        assertNotNull(launch_response.get("result"));
-        assertEquals("OK", launch_response.get("result").asText());
-
+        assertTrue(serverClient.launchRobot());
 
         //And there is no other robot and no obstacle in the world.
         //And I send a valid look request, "look", to the server.
@@ -97,13 +109,13 @@ public class LookRobotTests {
                 "  \"arguments\": []" +
                 "}";
         serverClient.sendRequest(request);
-//
-//        //Then I should get a valid/successful response, " "result" = "OK" " from the server.
+
+        //Then I should get a valid/successful response, " "result" = "OK" " from the server.
         JsonNode look_response = serverClient.getResponse();
         assertNotNull(look_response.get("result"));
         assertEquals("OK", look_response.get("result").asText());
-//
-//        //And the object field, which contains would contain present artefacts, should be empty.
+
+         //And the object field, which contains would contain present artefacts, should be empty.
         for (JsonNode item : look_response.get("data").get("objects")){
             assertEquals("EDGE", item.get("type").asText());
         }
@@ -115,24 +127,11 @@ public class LookRobotTests {
     void validLookOtherArtifacts(){
 
         //Given that I am connected to a running Robot Worlds server.
-        //And I have a world with size > 1x1 and at
-        // least one obstacle
+        //And I have a world with size > 1x1 (in this case 10x10) and an obstacle at (0, 1)
         assertTrue(serverClient.isConnected());
 
         //And I have successfully launched a robot to the server
-        String launch_request = "{" +
-                "  \"robot\": \"HAL\"," +
-                "  \"command\": \"launch\"," +
-                "  \"arguments\": [\"shooter\",\"5\",\"5\"]" +
-                "}";
-
-        serverClient.sendRequest(launch_request);
-        JsonNode launch_response = serverClient.getResponse();
-        assertNotNull(launch_response.get("result"));
-        assertEquals("OK", launch_response.get("result").asText());
-
-
-        //And there is no other robot and no obstacle in the world.
+        assertTrue(serverClient.launchRobot());
 
         //And I send a valid look request, "look", to the server.
         String request = "{" +
@@ -141,18 +140,24 @@ public class LookRobotTests {
                 "  \"arguments\": []" +
                 "}";
         serverClient.sendRequest(request);
-//
-//        //Then I should get a valid/successful response, " "result" = "OK" " from the server.
+
+        //Then I should get a valid/successful response, " "result" = "OK" " from the server.
         JsonNode look_response = serverClient.getResponse();
         assertNotNull(look_response.get("result"));
         assertEquals("OK", look_response.get("result").asText());
+
+
         boolean found_obstacle = false;
 //        //And the object field, which contains would contain present artefacts, should be empty.
         for (JsonNode item : look_response.get("data").get("objects")){
-//            assertEquals("EDGE", item.get("type").asText());
+            assertTrue("EDGE".equalsIgnoreCase(item.get("type").asText())
+                    || "OBSTACLE".equalsIgnoreCase(item.get("type").asText()));
+
             if (item.get("type").asText() == "OBSTACLE"){
+                if (found_obstacle){
+                    fail();
+                }
                 found_obstacle = true;
-                break;
             }
         }
         assertTrue(found_obstacle);
