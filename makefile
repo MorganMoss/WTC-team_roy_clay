@@ -1,22 +1,19 @@
 version=1.0.1
 change-list=release
-reference=reference-server-0.1.0.jar
-ours=libs/robotworld-0.1.0-SNAPSHOT-jar-with-dependencies.jar
+reference=libs/reference-server-0.1.0.jar
+ours="libs/robotworld-0.1.0-SNAPSHOT-jar-with-dependencies.jar"
 # This script is very angry about commas as arguments
 ,:=,
 
-ifeq (run_test,$(firstword $(MAKECMDGOALS)))
-  	# use the rest as arguments for "run"
-  	RUN_ARGS :=  $(wordlist 2,$(words $(MAKECMDGOALS)),$(MAKECMDGOALS))
-#  	TEST := $(firstword $(RUN_ARGS))
-#  	SERVER_PARAMS := $(wordlist 1,$(words $(RUN_ARGS)),$(RUN_ARGS))
-#  	SERVER_PARAMS := $(foreach t,$(SERVER_PARAMS),-$(t))
-  	# ...and turn them into do-nothing targets
-  	$(eval $(RUN_ARGS):dummy;@:),
-
-#  	$(eval $(TEST):;@:)
-# 	$(eval $(SERVER_PARAMS):;@:)
-endif
+#ifeq (run_test,$(firstword $(MAKECMDGOALS)))
+#  	# use the rest as arguments for "run"
+# RUN_ARGS :=  $(wordlist 2,$(words $(MAKECMDGOALS)),$(MAKECMDGOALS))
+# TEST := $(firstword $(RUN_ARGS))
+# SERVER_PARAMS := $(wordlist 2,$(words $(RUN_ARGS)),$(RUN_ARGS))
+#
+##  	$(eval $(TEST):;@:)
+## 	$(eval $(SERVER_PARAMS):;@:)
+#endif
 
 # Runs a java jar file with in.txt as System In
 define run
@@ -35,7 +32,6 @@ define close
 	@$(call send_input, "quit")
 	@./stop.sh
 	@rm in.txt
-	@echo "[1;37mClosed Running Java Process[m"
 endef
 
 #Runs the test file with the given name
@@ -58,28 +54,28 @@ help :
 	@echo "[1mList of commands:[m"
 	@echo " - [1;34m'make build'[m\tbuilds our project"
 	@echo " - [1;34m'make test'[m\ttests our and the reference projects"
+	@echo " - [1;34m'make release'[m\tversions and packages our project"
 	@echo " - [1;34m'make all'[m\tdoes all of the above"
-	@echo " - [1;34m'make run_test <Test Class#Method> <Server Arg>'[m\tAllows manual testing"
-	@echo "[1;33m\tNote:[m\tDo server arg using the short versions of options, without a dash. i.e [1;34m's=10'[m"
+	@echo " - [1;34m'make run_test'[m\tAllows manual testing"
+	@echo "    > [1;33margument:[m\tTest Class to Run:\t[1;34m't=\"ConnectionTests\"'[m"
+	@echo "    > [1;33margument:[m\tServer Arguments:\t[1;34m'a=\"--size=10\"'[m"
 	##############################################
 
 .PHONY: run_test
 run_test:
-	@echo $(RUN_ARGS)
-
 	##############################################
 	@echo "[1mStarting Run of custom tests on reference server.[m"
 	##############################################
-	$(call run, $(reference) $(SERVER_PARAMS))
-	-$(call test, "$(TEST)")
+	$(call run, $(reference) $(a))
+	-$(call test, "$(t)")
 	-$(call close)
 	##############################################
 	@echo "[1mCompleted Run of custom tests on reference server.[m"
 	##############################################
 	@echo "[1mStarting Run of custom tests on own server.[m"
 	##############################################
-	$(call runNJ, $(own) $(SERVER_PARAMS))
-	-$(call test, "$(TEST)")
+	$(call run, $(own) $(a))``
+	-$(call test, "$(t)")
 	-$(call close)
 	##############################################
 	@echo "[1mCompleted Run of custom tests on own server.[m"
@@ -87,9 +83,11 @@ run_test:
 	@echo "[1;32mAll testing complete![m"
 	##############################################
 
-all : build test
+.PHONY: all
+all : build test release
 	##############################################
 
+.PHONY: build
 build: clean init compile verify
 #This will build our project
 
@@ -124,7 +122,7 @@ verify:
 	@echo "Project has been verified."
 	##############################################
 
-
+.PHONY: test
 test : reference_acceptance_tests own_acceptance_tests
 	@echo "[1;32mAll testing complete![m"
 	##############################################
@@ -158,26 +156,28 @@ own_acceptance_tests:
 #Our server
 	@echo "[1mStarting Run of acceptance tests on own server.[m"
 	##############################################
-	$(call runNJ, $(ours) --size=1)
+	$(call run, $(ours) --size=1)
 	-$(call test, "ConnectionTests")
 	-$(call test, "LaunchRobotTests")
 	-$(call test, "StateRobotTests")
 	-$(call test, "LookRobotTests#invalidLookCommandShouldFail")
 	-$(call close)
 	##############################################
-	$(call runNJ, $(ours) --size=10 --obstacle=0$(,)1)
+	$(call run, $(ours) --size=10 --obstacle=0$(,)1)
 	-$(call test, "LookRobotTests#validLookOtherArtifacts")
 	-$(call close)
 	##############################################
-	$(call runNJ, $(ours) --size=10)
+	$(call run, $(ours) --size=10)
 	-$(call test, "LookRobotTests#validLookNoOtherArtifacts")
 	-$(call close)
 	##############################################
 	@echo "[1mCompleted Run of acceptance tests on our server.[m"
 	##############################################
 
-
-#TODO
+.PHONY: release
+release: version_software_for_release package_software_for_release tag_version_number_on_git
+	@echo "[1;32mProject packaging and versioning complete![m"
+	##############################################
 version_software_for_release:
 #This must be able to distinguish
 #between a release build and a development build.
@@ -203,7 +203,6 @@ package_software_for_release:
 
 	@echo "Completed packaging of software."
 	##############################################
-#TODO
 tag_version_number_on_git:
 #Tag the version number on git as release-x.y.z
 #for software that has been successfully built

@@ -9,7 +9,6 @@ import za.co.wethinkcode.acceptancetests.protocoldrivers.RobotWorldJsonClient;
 import com.fasterxml.jackson.databind.JsonNode;
 
 
-import static org.junit.Assert.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -150,13 +149,12 @@ public class LookRobotTests {
 //        //And the object field, which contains would contain present artefacts, should be empty.
         for (JsonNode item : look_response.get("data").get("objects")){
 //            assertEquals("EDGE", item.get("type").asText());
-            if (item.get("type").asText() == "OBSTACLE"){
+            if (item.get("type").asText().equals("OBSTACLE")){
                 found_obstacle = true;
                 break;
             }
         }
         assertTrue(found_obstacle);
-
     }
 
 
