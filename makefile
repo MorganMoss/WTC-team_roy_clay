@@ -1,3 +1,4 @@
+# Variables
 version=1.0.1
 change-list=release
 reference=libs/reference-server-0.1.0.jar
@@ -5,6 +6,7 @@ ours="libs/robotworld-0.1.0-SNAPSHOT-jar-with-dependencies.jar"
 our_server_class="MultiServer"
 # This script is very angry about commas as arguments
 ,:=,
+
 
 # Runs a java jar file with in.txt as System In
 define run_as_jar
@@ -54,6 +56,7 @@ help :
 
 .PHONY: run_test
 run_test:
+#Running tests against both servers in a more dynamic way
 	##############################################
 	@echo "[1mStarting Run of custom tests on reference server.[m"
 	##############################################
@@ -76,6 +79,7 @@ run_test:
 
 .PHONY: all
 all : build test release
+	@echo "[1;32mEverything is complete![m"
 	##############################################
 
 .PHONY: build
