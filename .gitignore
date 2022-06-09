@@ -12,6 +12,7 @@ target/
 #libs/
 precompile_report.txt
 pretest_report.txt
+dockDockBuildParams.json
 
 #VSCode Files
 .vscode/
