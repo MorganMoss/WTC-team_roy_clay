@@ -21,6 +21,7 @@ public class StateRobotTests {
         serverClient.connect(DEFAULT_IP, DEFAULT_PORT);
     }
 
+
     @AfterEach
     void disconnectFromServer(){
         // disconnects client from server after each test
@@ -28,27 +29,12 @@ public class StateRobotTests {
     }
 
 
-    void launchRobot(){
-        String launch_request = "{" +
-                "  \"robot\": \"HAL\"," +
-                "  \"command\": \"launch\"," +
-                "  \"arguments\": [\"shooter\",\"5\",\"5\"]" +
-                "}";
-        serverClient.sendRequest(launch_request);
-        JsonNode launch_response = serverClient.getResponse();
-        assertNotNull(launch_response.get("result"));
-        assertEquals("OK", launch_response.get("result").asText());
-    }
-
-
-
-
     @Test
     void validStateCommandShouldSucceed(){
         // Given that I am connected to a running Robot Worlds server
 
         //And I have successfully launched a robot to the server
-        launchRobot();
+        assertTrue(serverClient.launchRobot());
 
         // When I send a valid state request to the server
         String state_request = "{" +
@@ -76,19 +62,15 @@ public class StateRobotTests {
         assertEquals("TODO", state_response.get("state").get("status").asText());
     }
 
+
     @Test
     void invalidStateCommandShouldFail() {
-
-
-
-
-
 
         //Given that I am connected to a running Robot Worlds server.
         assertTrue(serverClient.isConnected());
 
         //And I have successfully launched a robot to the server
-        launchRobot();
+        assertTrue(serverClient.launchRobot());
 
         //When I send an invalid state request with a command such as "statte" instead of "state".
         String state_request = "{" +
@@ -105,12 +87,37 @@ public class StateRobotTests {
         assertTrue(state_response.get("data").get("message").asText().contains("Unsupported command"));
     }
 
+
+    @Test
+    void invalidStateArgumentsShouldFail() {
+
+        //Given that I am connected to a running Robot Worlds server.
+        assertTrue(serverClient.isConnected());
+
+        //And I have successfully launched a robot to the server
+        assertTrue(serverClient.launchRobot());
+
+        //When I send a valid state request with invalid arguments".
+        String state_request = "{" +
+                "\"robot\": \"HAL\"," +
+                "\"command\": \"state\"," +
+                "  \"arguments\": [steps]" +
+                "}";
+        serverClient.sendRequest(state_request);
+
+        //Then I should get an "ERROR" response.
+        JsonNode state_response = serverClient.getResponse();
+        assertNotNull(state_response.get("result"));
+        assertEquals("ERROR", state_response.get("result").asText());
+        assertTrue(state_response.get("data").get("message").asText().contains("Invalid Request"));
+    }
+
+
     @Test
     void stateCommandForInvalidRobot(){
 
         // Given that I am connected to a running Robot Worlds server
         assertTrue(serverClient.isConnected());
-
 
         // When I send a state request to a robot that has not been launched
         String request = "{" +
