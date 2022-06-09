@@ -4,10 +4,10 @@ change-list=release
 reference=libs/reference-server-0.1.0.jar
 ours="libs/robotworld-0.1.0-SNAPSHOT-jar-with-dependencies.jar"
 our_server_class="MultiServer"
+output="Test Output"
 # This script is very angry about commas as arguments
 ,:=,
 
-output="Test Output"
 
 #Callables
 # Runs a java jar file with in.txt as System In
