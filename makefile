@@ -42,7 +42,7 @@ endef
 define run_with_maven
 	@[ -d $(output) ] || mkdir -p $(output)
 	@touch in.txt
-	@./run_with_maven.sh ${1}
+	@./run_with_maven.sh ${firstword ${1}} "${wordlist 2,${words ${1}},${1}}"
 	@echo "[1;33mRunning with Maven:[m[1;34m${1}[m"
 endef
 
