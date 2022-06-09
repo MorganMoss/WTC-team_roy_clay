@@ -2,23 +2,14 @@ version=1.0.1
 change-list=release
 reference=libs/reference-server-0.1.0.jar
 ours="libs/robotworld-0.1.0-SNAPSHOT-jar-with-dependencies.jar"
+our_server_class="MultiServer"
 # This script is very angry about commas as arguments
 ,:=,
 
-#ifeq (run_test,$(firstword $(MAKECMDGOALS)))
-#  	# use the rest as arguments for "run"
-# RUN_ARGS :=  $(wordlist 2,$(words $(MAKECMDGOALS)),$(MAKECMDGOALS))
-# TEST := $(firstword $(RUN_ARGS))
-# SERVER_PARAMS := $(wordlist 2,$(words $(RUN_ARGS)),$(RUN_ARGS))
-#
-##  	$(eval $(TEST):;@:)
-## 	$(eval $(SERVER_PARAMS):;@:)
-#endif
-
 # Runs a java jar file with in.txt as System In
-define run
+define run_as_jar
 	@touch in.txt
-	@./start.sh "${1}"
+	@./run_as_jar.sh "${1}"
 	@echo "[1;33mRunning Jar:[m[1;34m${1}[m"
 endef
 
@@ -42,9 +33,9 @@ define test
 	@cat "Test Results -${1}.txt" | grep "Tests run" | grep -v "Time elapsed"
 endef
 
-define runNJ
+define run_with_maven
 	@touch in.txt
-	@./startNJ.sh ${1}
+	@./run_with_maven.sh ${1}
 	@echo "[1;33mRunning with Maven:[m[1;34m${1}[m"
 endef
 
@@ -66,7 +57,7 @@ run_test:
 	##############################################
 	@echo "[1mStarting Run of custom tests on reference server.[m"
 	##############################################
-	$(call run, $(reference) $(a))
+	$(call run_as_jar, $(reference) $(a))
 	-$(call test, "$(t)")
 	-$(call close)
 	##############################################
@@ -74,7 +65,7 @@ run_test:
 	##############################################
 	@echo "[1mStarting Run of custom tests on own server.[m"
 	##############################################
-	$(call run, $(own) $(a))``
+	$(call run_with_maven, $(our_server_class) $(a))``
 	-$(call test, "$(t)")
 	-$(call close)
 	##############################################
@@ -133,18 +124,18 @@ reference_acceptance_tests:
 	##############################################
 	@echo "[1mStarting Run of acceptance tests on reference server.[m"
 	##############################################
-	$(call run, $(reference) --size=1)
+	$(call run_as_jar, $(reference) --size=1)
 	-$(call test, "ConnectionTests")
 	-$(call test, "LaunchRobotTests")
 	-$(call test, "StateRobotTests")
 	-$(call test, "LookRobotTests#invalidLookCommandShouldFail")
 	-$(call close)
 	##############################################
-	$(call run, $(reference) --size=10 --obstacle=0$(,)1)
+	$(call run_as_jar, $(reference) --size=10 --obstacle=0$(,)1)
 	-$(call test, "LookRobotTests#validLookOtherArtifacts")
 	-$(call close)
 	##############################################
-	$(call run, $(reference) --size=10)
+	$(call run_as_jar, $(reference) --size=10)
 	-$(call test, "LookRobotTests#validLookNoOtherArtifacts")
 	-$(call close)
 	##############################################
@@ -156,18 +147,18 @@ own_acceptance_tests:
 #Our server
 	@echo "[1mStarting Run of acceptance tests on own server.[m"
 	##############################################
-	$(call run, $(ours) --size=1)
+	$(call run_with_maven, $(our_server_class) --size=1)
 	-$(call test, "ConnectionTests")
 	-$(call test, "LaunchRobotTests")
 	-$(call test, "StateRobotTests")
 	-$(call test, "LookRobotTests#invalidLookCommandShouldFail")
 	-$(call close)
 	##############################################
-	$(call run, $(ours) --size=10 --obstacle=0$(,)1)
+	$(call run_with_maven, $(our_server_class) --size=10 --obstacle=0$(,)1)
 	-$(call test, "LookRobotTests#validLookOtherArtifacts")
 	-$(call close)
 	##############################################
-	$(call run, $(ours) --size=10)
+	$(call run_with_maven, $(our_server_class) --size=10)
 	-$(call test, "LookRobotTests#validLookNoOtherArtifacts")
 	-$(call close)
 	##############################################
