@@ -1,6 +1,7 @@
-version=0.0.0
+version=1.0.1
+change-list=release
 reference=reference-server-0.1.0.jar
-ours=MultiServer
+ours=libs/robotworld-0.1.0-SNAPSHOT-jar-with-dependencies.jar
 # This script is very angry about commas as arguments
 ,:=,
 
@@ -188,12 +189,17 @@ version_software_for_release:
 #You can also use different bash scripts too.
 #The choice is yours.
 
+	mvn -Drevision=$(version) -Dchangelist=-$(change-list)
+
 	@echo "Completed versioning of our software."
 	##############################################
 package_software_for_release:
 #This packages the software for release.
+#For now we are skiping the tests
 
-	mvn package
+	#mvn package -Dmaven.test.skip=true
+
+	mvn clean package
 
 	@echo "Completed packaging of software."
 	##############################################
@@ -205,6 +211,8 @@ tag_version_number_on_git:
 #is one that has passed all acceptance tests
 #for this iteration running against the reference
 #server and your own server.
+
+	git tag -a $(change-list)-$(version) -m "stable version="$(version)
 
 	@echo "Completed tagging version number on git."
 	##############################################
