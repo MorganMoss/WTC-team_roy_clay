@@ -105,28 +105,28 @@ build: clean init compile verify
 clean:
 #clear up artifacts from old builds
 
-	mvn clean
+	-mvn clean
 
 	@echo "Project has been cleaned."
 	##############################################
 init:
 #idk
 
-	mvn initialize
+	-mvn initialize
 
 	@echo "Project has been initialized."
 	##############################################
 compile:
 #compiling the project
 
-	mvn compile
+	-mvn compile
 
 	@echo "Project has been compiled."
 	##############################################
 verify:
 #verifying the project
 
-	mvn verify
+	-mvn verify
 
 	@echo "Project has been verified."
 	##############################################
@@ -200,7 +200,7 @@ version_software_for_release:
 #You can also use different bash scripts too.
 #The choice is yours.
 
-	mvn -Drevision=$(version) -Dchangelist=-$(change-list)
+	-mvn -Drevision=$(version) -Dchangelist=-$(change-list)
 
 	@echo "Completed versioning of our software."
 	##############################################
@@ -210,7 +210,7 @@ package_software_for_release:
 
 	#mvn package -Dmaven.test.skip=true
 
-	mvn clean package
+	-mvn clean package
 
 	@echo "Completed packaging of software."
 	##############################################
@@ -222,7 +222,7 @@ tag_version_number_on_git:
 #for this iteration running against the reference
 #server and your own server.
 
-	git tag -a $(change-list)-$(version) -m "stable version="$(version)
+	-git tag -a $(change-list)-$(version) -m "stable version="$(version)
 
 	@echo "Completed tagging version number on git."
 	##############################################
