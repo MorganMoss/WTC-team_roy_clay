@@ -7,20 +7,25 @@ import org.json.*;
 import za.co.wethinkcode.robotworlds.maze.EmptyMaze;
 import za.co.wethinkcode.robotworlds.world.AbstractWorld;
 import za.co.wethinkcode.robotworlds.world.IWorld;
-
+//TODO: Better name?
 public class MainServerThread implements Runnable {
 
     public static final int PORT = 5000;
-
+    // din and dout could probably have better names.
     DataInputStream din;
     DataOutputStream dout;
     Robot robot;
+    // The client thread should not have ownership of the world
+    //TODO: Remove this ownership
     IWorld world;
     String in;
-
-
-
+    //Never used outside of constructor
     private final String clientMachine;
+
+    // This looks like a very bad place for this.
+    // It is serverside client connection.
+    // Seems to only be used in setposition, so could be easily removed
+    // TODO: Consider removing this functionality
     static String getInput(String prompt) {
         Scanner scanner = new Scanner(System.in);
         System.out.println(prompt);
@@ -31,6 +36,8 @@ public class MainServerThread implements Runnable {
         }
         return input;
     }
+
+    //TODO: Consider deletion
     void setposition (Robot robot ) throws IOException {
         int bry;
         int brx;
@@ -50,12 +57,17 @@ public class MainServerThread implements Runnable {
     public MainServerThread(Socket socket) throws IOException {
         clientMachine = socket.getInetAddress().getHostName();
         System.out.println("Connection from " + clientMachine);
+        //Is this a necessary line?
         System.out.println("Waiting for client...");
         din=new DataInputStream(socket.getInputStream());
         dout=new DataOutputStream(socket.getOutputStream());
 
     }
 
+
+    // Too many things are going on in here,
+    // should be split into multiple methods
+    //TODO: Consider splitting this up into more functions.
     public void run() {
         boolean cont;
 
@@ -96,6 +108,9 @@ public class MainServerThread implements Runnable {
                 }else {
                     robot.appendToHistory(instruction);
                 }
+                //TODO: Improve the if statements
+                // Sprint is not part of the specs.
+                //TODO: Consider removing sprint
                 if (command.getName()== "sprint"){
                     System.out.println(robot.getPrint.trim());
                     robot.getPrint = "";

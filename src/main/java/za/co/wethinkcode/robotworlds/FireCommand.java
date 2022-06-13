@@ -2,6 +2,8 @@ package za.co.wethinkcode.robotworlds;
 
 import za.co.wethinkcode.robotworlds.world.IWorld;
 
+//TODO: Should make an acceptance test for this,
+// then implement it correctly
 public class FireCommand extends Command{
 
     public FireCommand() {

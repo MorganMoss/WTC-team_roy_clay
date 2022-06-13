@@ -5,6 +5,9 @@ import za.co.wethinkcode.robotworlds.Robot;
 
 import java.util.List;
 
+
+//TODO: The entire world class is made for a single robot.
+// We need to adjust this to handle multiple robots.
 /**
  * Your Text and Turtle worlds must implement this interface.
  */

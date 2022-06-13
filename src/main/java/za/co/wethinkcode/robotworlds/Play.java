@@ -10,7 +10,7 @@ import java.io.DataOutputStream;
 import java.net.Socket;
 import java.util.Scanner;
 
-
+//TODO: leave the client alone until we need to use it.
 public class Play {
     static Scanner scanner;
     

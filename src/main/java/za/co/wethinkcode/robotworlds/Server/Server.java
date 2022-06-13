@@ -1,3 +1,7 @@
+// This has the same functionality as multiserver,
+// but does not work for more than 1 client.
+// TODO: Consider deletion
+
 package za.co.wethinkcode.robotworlds.Server;
 
 import za.co.wethinkcode.robotworlds.Command;

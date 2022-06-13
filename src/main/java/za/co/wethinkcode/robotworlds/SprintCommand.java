@@ -2,6 +2,8 @@ package za.co.wethinkcode.robotworlds;
 
 import za.co.wethinkcode.robotworlds.world.IWorld;
 
+//Out of spec
+//TODO: Consider removal.
 public class SprintCommand extends Command{
 
         @Override

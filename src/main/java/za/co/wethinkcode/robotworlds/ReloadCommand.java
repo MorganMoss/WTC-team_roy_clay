@@ -1,5 +1,6 @@
 package za.co.wethinkcode.robotworlds;
 
+//This is not the spec required. TODO: Fix once an acceptance test is made.
 public class ReloadCommand extends Command {
 
     public ReloadCommand() {

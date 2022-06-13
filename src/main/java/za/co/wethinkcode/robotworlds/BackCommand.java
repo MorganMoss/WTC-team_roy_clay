@@ -2,6 +2,8 @@ package za.co.wethinkcode.robotworlds;
 
 import za.co.wethinkcode.robotworlds.world.IWorld;
 
+//Has the same code as Forward Command.
+//TODO: make the world or server have a function that does this.
 public class BackCommand extends Command {
 
     @Override

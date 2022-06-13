@@ -28,7 +28,9 @@ public class Position {
         return y == position.y;
     }
 
-
+    //Position stores and handles a single x,y co-ordinate,
+    //it's functionality should reflect that
+    //TODO: Is this a method that belongs here? Should this be in a separate class?
     public boolean isIn(Position topLeft, Position bottomRight) {
         boolean withinTop = this.y <= topLeft.getY();
         boolean withinBottom = this.y >= bottomRight.getY();

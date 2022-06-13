@@ -1,5 +1,7 @@
 package za.co.wethinkcode.robotworlds;
-
+//Help should be client and not server-side
+//TODO: Make this a client side feature,
+// remove it as a command
 public class HelpCommand extends Command {
 
     public HelpCommand() {

@@ -5,7 +5,8 @@ import za.co.wethinkcode.robotworlds.maze.Maze;
 
 import java.util.List;
 import za.co.wethinkcode.robotworlds.Turtle.Turtle;
-
+//This can perhaps be used as a client, but for now, this is way out of spec.
+//TODO: Remove this class server-side, but keep it for clientside
 public class TurtleWorld extends AbstractWorld {
     Turtle tmt = new Turtle();;
     private final List<Obstacle> obstacles;

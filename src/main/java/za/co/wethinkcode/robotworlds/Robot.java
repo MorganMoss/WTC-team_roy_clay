@@ -15,7 +15,7 @@ public class Robot extends JSONObject {
     private ArrayList<String> History;
     public IWorld world;
 
-
+    //TODO: Get rid of hard-coded variables here. Change visibility
     int shots= 5;
 
     private int shield = 3;

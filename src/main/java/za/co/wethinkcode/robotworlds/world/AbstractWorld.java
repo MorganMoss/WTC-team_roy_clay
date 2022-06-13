@@ -6,6 +6,9 @@ import za.co.wethinkcode.robotworlds.maze.Maze;
 
 import java.util.List;
 
+//May need to redo this class, but we can reuse some of the methods
+// with minor tweaking.
+//TODO: Consider what we can use in this class
 public class AbstractWorld implements IWorld{
     protected Position TOP_LEFT = new Position(-100,200);
     protected Position BOTTOM_RIGHT = new Position(100,-200);

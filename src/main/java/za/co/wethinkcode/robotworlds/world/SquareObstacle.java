@@ -2,6 +2,9 @@ package za.co.wethinkcode.robotworlds.world;
 
 import za.co.wethinkcode.robotworlds.Position;
 
+
+//We need to remove hard-coded values from here.
+//i.e. TODO: Refactor to allow dynamic size.
 public class SquareObstacle implements Obstacle {
     int x;
     int y;
