@@ -1,20 +1,22 @@
+##############################################
 # Variables
+##############################################
 version=1.0.1
 change-list=release
 reference=libs/reference-server-0.2.3.jar
 ours="libs/robotworld-0.1.0-SNAPSHOT-jar-with-dependencies.jar"
 our_server_class="MultiServer"
-output="Test Output"
-# This script is very angry about commas as arguments
+output="Test_Output"
+build_args=""
 ,:=,
-
-
-#Callables
+##############################################
+# Callables
+##############################################
 # Runs a java jar file with in.txt as System In
 define run_as_jar
 	@[ -d $(output) ] || mkdir -p $(output)
 	@touch in.txt
-	@./run_as_jar.sh "${1}"
+	@./run_as_jar.sh "${1}" $(output)
 	@echo "[1;33mRunning Jar:[m[1;34m${1}[m"
 	@test_running_in=jar
 endef
@@ -35,19 +37,20 @@ endef
 #(add "#methodName" to have it run a single test)
 define test
 	@echo "[1;33mRunning Test:[m[1;34m${1}[m"
-	@-mvn test -Dtest="${1}" > "Test Output/Test Results - ${test_running_in} -${1}.txt" || true
-	@cat "Test Output/Test Results - ${test_running_in} -${1}.txt" | grep "Tests run" | grep -v "Time elapsed"
+	@-mvn test -Dtest="${1}" > "$(output)/Test Results - ${test_running_in} -${1}.txt" || true
+	@cat "$(output)/Test Results - ${test_running_in} -${1}.txt" | grep "Tests run" | grep -v "Time elapsed"
 endef
 
 # Runs a .java file that has a main using maven with in.txt as System In
 define run_with_maven
 	@[ -d $(output) ] || mkdir -p $(output)
 	@touch in.txt
-	@./run_with_maven.sh ${firstword ${1}} "${wordlist 2,${words ${1}},${1}}"
+	@./run_with_maven.sh ${firstword ${1}} "${wordlist 2,${words ${1}},${1}}" $(output)
 	@echo "[1;33mRunning with Maven:[m[1;34m${1}[m"
 endef
-
-
+##############################################
+# Commands
+##############################################
 help: ## List of commands
 	##############################################
 	@echo "[1mList of commands:[m"
@@ -55,6 +58,7 @@ help: ## List of commands
 	@echo " [1;34mtest[m\t\t\t\ttests our and the reference projects"
 	@echo " [1;34mrelease[m\t\t\tversions and packages our project"
 	@echo " [1;34mall[m\t\t\t\tdoes all of the above"
+	@echo "    > [1;33margument:[m\tBuild Arguments:\t[1;34m'build_args=\"-Dmaven.test.skip=true\"'[m"
 	@echo " - - - - - - - - - - - - - - - - - - - - - - - "
 	@echo " [1;34mrun_test[m\t\t\tAllows manual testing"
 	@echo " [1;34mrun_test_reference[m\t\tJust on reference server"
@@ -62,7 +66,6 @@ help: ## List of commands
 	@echo "    > [1;33margument:[m\tTest Class to Run:\t[1;34m't=\"ConnectionTests\"'[m"
 	@echo "    > [1;33margument:[m\tServer Arguments:\t[1;34m'a=\"--size=10\"'[m"
 	##############################################
-
 
 .PHONY: all
 all: build test release ## Builds, Tests and does versioning
@@ -78,28 +81,28 @@ build: clean init compile verify ## Builds our project
 clean:
 #clear up artifacts from old builds
 
-	-mvn clean
+	-@mvn clean $(build_args)
 
 	@echo "Project has been cleaned."
 	##############################################
 init:
 #idk
 
-	-mvn initialize
+	-@mvn initialize $(build_args)
 
 	@echo "Project has been initialized."
 	##############################################
 compile:
 #compiling the project
 
-	-mvn compile
+	-@mvn compile $(build_args)
 
 	@echo "Project has been compiled."
 	##############################################
 verify:
 #verifying the project
 
-	-mvn verify
+	-@mvn verify $(build_args)
 
 	@echo "Project has been verified."
 	##############################################
@@ -158,7 +161,6 @@ own_acceptance_tests:
 	@echo "[1mCompleted Run of acceptance tests on our server.[m"
 	##############################################
 
-
 .PHONY: run_test
 run_test: run_test_reference run_test_own ## Allows manual testing
 #Running tests against both servers in a more dynamic way
@@ -187,7 +189,6 @@ run_test_own: ## Allows manual testing from our server
 	@echo "[1mCompleted Run of custom tests on own server.[m"
 	##############################################
 
-
 .PHONY: release
 release: version_software_for_release package_software_for_release tag_version_number_on_git ## Versions and packages our project
 	@echo "[1;32mProject packaging and versioning complete![m"
@@ -203,7 +204,7 @@ version_software_for_release:
 #You can also use different bash scripts too.
 #The choice is yours.
 
-	-mvn -Drevision=$(version) -Dchangelist=-$(change-list)
+	-@mvn -Drevision=$(version) -Dchangelist=-$(change-list)
 
 	@echo "Completed versioning of our software."
 	##############################################
@@ -213,7 +214,7 @@ package_software_for_release:
 
 	#mvn package -Dmaven.test.skip=true
 
-	-mvn clean package
+	-@mvn clean package $(build_args)
 
 	@echo "Completed packaging of software."
 	##############################################
@@ -225,7 +226,7 @@ tag_version_number_on_git:
 #for this iteration running against the reference
 #server and your own server.
 
-	-git tag -a $(change-list)-$(version) -m "stable version="$(version)
+	-@git tag -a $(change-list)-$(version) -m "stable version="$(version)
 
 	@echo "Completed tagging version number on git."
 	##############################################

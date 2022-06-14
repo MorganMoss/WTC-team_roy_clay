@@ -1,0 +1,123 @@
+* Creating World.. [size: 1 x 1, obstacles: none, pits: none, mines: none, visibility: 10]
+* Initialized World
+Robot World server running and waiting for client connections on port 5000
+ > Client connection: Socket[addr=/127.0.0.1,port=46352,localport=5000]
+ > Connection from localhost:46352
+[localhost:46352] > Waiting for client...
+ > Client connection: Socket[addr=/127.0.0.1,port=46354,localport=5000]
+ > Connection from localhost:46354
+[localhost:46354] > Waiting for client...
+ > Client connection: Socket[addr=/127.0.0.1,port=46356,localport=5000]
+ > Connection from localhost:46356
+[localhost:46356] > Waiting for client...
+[localhost:46354] * Client connection closed.
+[localhost:46352] * Client connection closed.
+ > Client connection: Socket[addr=/127.0.0.1,port=46358,localport=5000]
+ > Connection from localhost:46358
+[localhost:46358] > Waiting for client...
+[localhost:46356] * Client connection closed.
+[localhost:46358] >> Message received: ping
+[localhost:46358] << Response: WorldResponse{result='ERROR', data={message=Invalid Request}, state=null}
+[localhost:46358] * Client connection closed.
+ > Client connection: Socket[addr=/127.0.0.1,port=46360,localport=5000]
+ > Connection from localhost:46360
+[localhost:46360] > Waiting for client...
+ > Client connection: Socket[addr=/127.0.0.1,port=46362,localport=5000]
+ > Connection from localhost:46362
+[localhost:46362] > Waiting for client...
+[localhost:46362] >> Message received: ping
+[localhost:46362] << Response: WorldResponse{result='ERROR', data={message=Invalid Request}, state=null}
+[localhost:46362] * Client connection closed.
+[localhost:46360] * Client connection closed.
+ > Client connection: Socket[addr=/127.0.0.1,port=46364,localport=5000]
+ > Connection from localhost:46364
+[localhost:46364] > Waiting for client...
+[localhost:46364] >> Message received: {  "robot": "HAL",  "command": "launch",  "arguments": ["shooter","5","5"]}
+"["+clientMachine+"] >* Launching Robot HAL
+[localhost:46364] << Response: WorldResponse{result='OK', data={visibility=1, position=[0, 0], objects=[]}, state=RobotStatus{position=[0, 0], direction='NORTH', shields=0, shots=0, status='TODO'}}
+[localhost:46364] >> Message received: {  "robot": "HAL",  "command": "launch",  "arguments": ["shooter","7","4"]}
+"["+clientMachine+"] >* Launching Robot HAL
+[localhost:46364] << Response: WorldResponse{result='ERROR', data={message=Too many of you in this world}, state=null}
+[localhost:46364] * Client disconnected: Removing robot: Robot{name='HAL', currentPosition=Pos{x=0, y=0}, currentDirection=NORTH}
+[localhost:46364] * Client connection closed.
+ > Client connection: Socket[addr=/127.0.0.1,port=46368,localport=5000]
+ > Connection from localhost:46368
+[localhost:46368] > Waiting for client...
+[localhost:46368] >> Message received: {  "robot": "HAL",  "command": "launch",  "arguments": ["shooter","5","5"]}
+"["+clientMachine+"] >* Launching Robot HAL
+[localhost:46368] << Response: WorldResponse{result='OK', data={visibility=1, position=[0, 0], objects=[]}, state=RobotStatus{position=[0, 0], direction='NORTH', shields=0, shots=0, status='TODO'}}
+[localhost:46368] * Client disconnected: Removing robot: Robot{name='HAL', currentPosition=Pos{x=0, y=0}, currentDirection=NORTH}
+[localhost:46368] * Client connection closed.
+ > Client connection: Socket[addr=/127.0.0.1,port=46370,localport=5000]
+ > Connection from localhost:46370
+[localhost:46370] > Waiting for client...
+[localhost:46370] >> Message received: {"robot": "HAL","command": "luanch","arguments": ["shooter","5","5"]}
+[localhost:46370] << Response: WorldResponse{result='ERROR', data={message=Unsupported command}, state=null}
+[localhost:46370] * Client connection closed.
+ > Client connection: Socket[addr=/127.0.0.1,port=46372,localport=5000]
+ > Connection from localhost:46372
+[localhost:46372] > Waiting for client...
+[localhost:46372] >> Message received: {  "robot": "HAL",  "command": "launch",  "arguments": ["shooter","5","5"]}
+"["+clientMachine+"] >* Launching Robot HAL
+[localhost:46372] << Response: WorldResponse{result='OK', data={visibility=1, position=[0, 0], objects=[]}, state=RobotStatus{position=[0, 0], direction='NORTH', shields=0, shots=0, status='TODO'}}
+[localhost:46372] >> Message received: {  "robot": "TRAVIS",  "command": "launch",  "arguments": ["shooter","7","4"]}
+"["+clientMachine+"] >* Launching Robot TRAVIS
+[localhost:46372] << Response: WorldResponse{result='ERROR', data={message=No more space in this world}, state=null}
+[localhost:46372] * Client disconnected: Removing robot: Robot{name='HAL', currentPosition=Pos{x=0, y=0}, currentDirection=NORTH}
+[localhost:46372] * Client connection closed.
+ > Client connection: Socket[addr=/127.0.0.1,port=46374,localport=5000]
+ > Connection from localhost:46374
+[localhost:46374] > Waiting for client...
+[localhost:46374] >> Message received: {  "robot": "HAL",  "command": "launch",  "arguments": ["shooter","5","5"]}
+"["+clientMachine+"] >* Launching Robot HAL
+[localhost:46374] << Response: WorldResponse{result='OK', data={visibility=1, position=[0, 0], objects=[]}, state=RobotStatus{position=[0, 0], direction='NORTH', shields=0, shots=0, status='TODO'}}
+[localhost:46374] >> Message received: {  "robot": "HAL",  "command": "state",  "arguments": ["shooter","5","5"]}
+[localhost:46374] << Response: WorldResponse{result='OK', data={visibility=1, position=[0, 0], objects=[]}, state=RobotStatus{position=[0, 0], direction='NORTH', shields=0, shots=0, status='TODO'}}
+[localhost:46374] * Client disconnected: Removing robot: Robot{name='HAL', currentPosition=Pos{x=0, y=0}, currentDirection=NORTH}
+[localhost:46374] * Client connection closed.
+ > Client connection: Socket[addr=/127.0.0.1,port=46376,localport=5000]
+ > Connection from localhost:46376
+[localhost:46376] > Waiting for client...
+[localhost:46376] >> Message received: {  "robot": "HAL",  "command": "launch",  "arguments": ["shooter","5","5"]}
+"["+clientMachine+"] >* Launching Robot HAL
+[localhost:46376] << Response: WorldResponse{result='OK', data={visibility=1, position=[0, 0], objects=[]}, state=RobotStatus{position=[0, 0], direction='NORTH', shields=0, shots=0, status='TODO'}}
+[localhost:46376] >> Message received: {"robot": "HAL","command": "state",  "arguments": [steps]}
+[localhost:46376] << Response: WorldResponse{result='ERROR', data={message=Invalid Request}, state=null}
+[localhost:46376] * Client disconnected: Removing robot: Robot{name='HAL', currentPosition=Pos{x=0, y=0}, currentDirection=NORTH}
+[localhost:46376] * Client connection closed.
+ > Client connection: Socket[addr=/127.0.0.1,port=46380,localport=5000]
+ > Connection from localhost:46380
+[localhost:46380] > Waiting for client...
+[localhost:46380] >> Message received: {  "robot": "HAL",  "command": "launch",  "arguments": ["shooter","5","5"]}
+"["+clientMachine+"] >* Launching Robot HAL
+[localhost:46380] << Response: WorldResponse{result='OK', data={visibility=1, position=[0, 0], objects=[]}, state=RobotStatus{position=[0, 0], direction='NORTH', shields=0, shots=0, status='TODO'}}
+[localhost:46380] >> Message received: {"robot": "HAL","command": "statte",  "arguments": []}
+[localhost:46380] << Response: WorldResponse{result='ERROR', data={message=Unsupported command}, state=null}
+[localhost:46380] * Client disconnected: Removing robot: Robot{name='HAL', currentPosition=Pos{x=0, y=0}, currentDirection=NORTH}
+[localhost:46380] * Client connection closed.
+ > Client connection: Socket[addr=/127.0.0.1,port=46382,localport=5000]
+ > Connection from localhost:46382
+[localhost:46382] > Waiting for client...
+[localhost:46382] >> Message received: {"robot": "","command": "state","arguments": []}
+[localhost:46382] << Response: WorldResponse{result='ERROR', data={message=Robot does not exist}, state=null}
+[localhost:46382] * Client connection closed.
+ > Client connection: Socket[addr=/127.0.0.1,port=46384,localport=5000]
+ > Connection from localhost:46384
+[localhost:46384] > Waiting for client...
+[localhost:46384] >> Message received: {  "robot": "HAL",  "command": "launch",  "arguments": ["shooter","5","5"]}
+"["+clientMachine+"] >* Launching Robot HAL
+[localhost:46384] << Response: WorldResponse{result='OK', data={visibility=1, position=[0, 0], objects=[]}, state=RobotStatus{position=[0, 0], direction='NORTH', shields=0, shots=0, status='TODO'}}
+[localhost:46384] >> Message received: {"robot": "HAL","command": "loook",  "arguments": []}
+[localhost:46384] << Response: WorldResponse{result='ERROR', data={message=Unsupported command}, state=null}
+[localhost:46384] * Client disconnected: Removing robot: Robot{name='HAL', currentPosition=Pos{x=0, y=0}, currentDirection=NORTH}
+[localhost:46384] * Client connection closed.
+ > Client connection: Socket[addr=/127.0.0.1,port=46386,localport=5000]
+ > Connection from localhost:46386
+[localhost:46386] > Waiting for client...
+[localhost:46386] >> Message received: {  "robot": "HAL",  "command": "launch",  "arguments": ["shooter","5","5"]}
+"["+clientMachine+"] >* Launching Robot HAL
+[localhost:46386] << Response: WorldResponse{result='OK', data={visibility=1, position=[0, 0], objects=[]}, state=RobotStatus{position=[0, 0], direction='NORTH', shields=0, shots=0, status='TODO'}}
+[localhost:46386] >> Message received: {"robot": "any","command": "look",  "arguments": [height, width]}
+[localhost:46386] << Response: WorldResponse{result='ERROR', data={message=Invalid Request}, state=null}
+[localhost:46386] * Client disconnected: Removing robot: Robot{name='HAL', currentPosition=Pos{x=0, y=0}, currentDirection=NORTH}
+[localhost:46386] * Client connection closed.
