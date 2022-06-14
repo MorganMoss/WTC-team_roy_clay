@@ -32,6 +32,8 @@ public interface RobotWorldClient {
      */
     JsonNode sendRequest(String requestString);
 
+    JsonNode sendRequest(String robot, String command, String args);
+
     /**
      * get a response from the server
      * @return JsonNode serialised object
@@ -44,4 +46,5 @@ public interface RobotWorldClient {
     void ping();
 
     boolean launchRobot();
+    boolean launchRobot(String name);
 }

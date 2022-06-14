@@ -45,8 +45,8 @@ public class RobotWorldJsonClient implements RobotWorldClient {
     @Override
     public void disconnect() {
         try {
-            responses.close();
-            requests.close();
+//            responses.close();
+//            requests.close();
             socket.close();
         } catch (IOException e) {
             //error connecting should just throw Runtime error and fail test
@@ -74,6 +74,17 @@ public class RobotWorldJsonClient implements RobotWorldClient {
         return lastResponse;
     }
 
+    public JsonNode sendRequest(String robot, String command, String args){
+        String request = "{" +
+                "\"robot\": \""+robot+"\"," +
+                "\"command\": \""+command+"\"," +
+                "  \"arguments\": "+args +
+                "}";
+        return sendRequest(request);
+    }
+
+
+
     @Override
     public JsonNode getResponse() {
         return lastResponse;
@@ -86,18 +97,16 @@ public class RobotWorldJsonClient implements RobotWorldClient {
 
     @Override
     public boolean launchRobot() {
-
-        //Successfully launching a robot to the server
-        String launch_request = "{" +
-                "  \"robot\": \"HAL\"," +
-                "  \"command\": \"launch\"," +
-                "  \"arguments\": [\"shooter\",\"5\",\"5\"]" +
-                "}";
-        sendRequest(launch_request);
-        JsonNode launch_response = getResponse();
-
-        return (launch_response.get("result") != null && launch_response.get("result").asText().equalsIgnoreCase("OK"));
-
+        return launchRobot("HAL");
     }
+    public boolean launchRobot(String name) {
+        //Successfully launching a robot to the server
+        JsonNode launch_response =  sendRequest(
+                name, "launch", "[\"shooter\",\"5\",\"5\"]");
 
+        return (
+            launch_response.get("result") != null
+            && launch_response.get("result").asText().equalsIgnoreCase("OK")
+        );
+    }
 }

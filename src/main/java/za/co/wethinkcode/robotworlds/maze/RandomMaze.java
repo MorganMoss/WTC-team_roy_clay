@@ -39,7 +39,6 @@ public class RandomMaze implements Maze {
             int obstacleX =random.nextInt(201)-100;
             int obstacleY=random.nextInt(401)-200;
         this.obstacle.add(new SquareObstacle(obstacleX,obstacleY));
-
     }return this.obstacle;
     }
 
