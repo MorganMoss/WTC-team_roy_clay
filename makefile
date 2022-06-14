@@ -48,56 +48,29 @@ define run_with_maven
 endef
 
 
-help :
+help: ## List of commands
 	##############################################
 	@echo "[1mList of commands:[m"
-	@echo " - [1;34m'make build'[m\tbuilds our project"
-	@echo " - [1;34m'make test'[m\ttests our and the reference projects"
-	@echo " - [1;34m'make release'[m\tversions and packages our project"
-	@echo " - [1;34m'make all'[m\tdoes all of the above"
-	@echo " - [1;34m'make run_test'[m\tAllows manual testing"
+	@echo " [1;34mbuild[m\t\t\t\tbuilds our project"
+	@echo " [1;34mtest[m\t\t\t\ttests our and the reference projects"
+	@echo " [1;34mrelease[m\t\t\tversions and packages our project"
+	@echo " [1;34mall[m\t\t\t\tdoes all of the above"
+	@echo " - - - - - - - - - - - - - - - - - - - - - - - "
+	@echo " [1;34mrun_test[m\t\t\tAllows manual testing"
+	@echo " [1;34mrun_test_reference[m\t\tJust on reference server"
+	@echo " [1;34mrun_test_own[m\t\t\tJust on own server"
 	@echo "    > [1;33margument:[m\tTest Class to Run:\t[1;34m't=\"ConnectionTests\"'[m"
 	@echo "    > [1;33margument:[m\tServer Arguments:\t[1;34m'a=\"--size=10\"'[m"
-	@echo " -- [1;33malternate:[m\t[1;34m'make run_test_reference'[m\tJust on reference server"
-	@echo " -- [1;33malternate:[m\t[1;34m'make run_test_own'[m\t\tJust on own server"
-	##############################################
-
-.PHONY: run_test
-run_test: run_test_reference run_test_own
-#Running tests against both servers in a more dynamic way
-	@echo "[1;32mAll testing complete![m"
-	##############################################
-.PHONY: run_test_reference
-run_test_reference:
-	@$(eval test_running_in="ref")
-	@echo "[1mStarting Run of custom tests on reference server.[m"
-	##############################################
-	$(call run_as_jar, $(reference) $(a))
-	-$(call test, "$(t)")
-	-$(call close)
-	##############################################
-	@echo "[1mCompleted Run of custom tests on reference server.[m"
-	##############################################
-.PHONY: run_test_own
-run_test_own:
-	@$(eval test_running_in="own")
-	@echo "[1mStarting Run of custom tests on own server.[m"
-	##############################################
-	$(call run_with_maven, $(our_server_class) $(a))``
-	-$(call test, "$(t)")
-	-$(call close)
-	##############################################
-	@echo "[1mCompleted Run of custom tests on own server.[m"
 	##############################################
 
 
 .PHONY: all
-all : build test release
+all: build test release ## Builds, Tests and does versioning
 	@echo "[1;32mEverything is complete![m"
 	##############################################
 
 .PHONY: build
-build: clean init compile verify
+build: clean init compile verify ## Builds our project
 #This will build our project
 
 	@echo "[1;32mProject build complete![m"
@@ -132,7 +105,7 @@ verify:
 	##############################################
 
 .PHONY: test
-test : reference_acceptance_tests own_acceptance_tests
+test: reference_acceptance_tests own_acceptance_tests ## Tests our and the reference projects
 	@echo "[1;32mAll testing complete![m"
 	##############################################
 reference_acceptance_tests:
@@ -185,8 +158,38 @@ own_acceptance_tests:
 	@echo "[1mCompleted Run of acceptance tests on our server.[m"
 	##############################################
 
+
+.PHONY: run_test
+run_test: run_test_reference run_test_own ## Allows manual testing
+#Running tests against both servers in a more dynamic way
+	@echo "[1;32mAll testing complete![m"
+	##############################################
+.PHONY: run_test_reference
+run_test_reference: ## Allows manual testing from reference server
+	@$(eval test_running_in="ref")
+	@echo "[1mStarting Run of custom tests on reference server.[m"
+	##############################################
+	$(call run_as_jar, $(reference) $(a))
+	-$(call test, "$(t)")
+	-$(call close)
+	##############################################
+	@echo "[1mCompleted Run of custom tests on reference server.[m"
+	##############################################
+.PHONY: run_test_own
+run_test_own: ## Allows manual testing from our server
+	@$(eval test_running_in="own")
+	@echo "[1mStarting Run of custom tests on own server.[m"
+	##############################################
+	$(call run_with_maven, $(our_server_class) $(a))``
+	-$(call test, "$(t)")
+	-$(call close)
+	##############################################
+	@echo "[1mCompleted Run of custom tests on own server.[m"
+	##############################################
+
+
 .PHONY: release
-release: version_software_for_release package_software_for_release tag_version_number_on_git
+release: version_software_for_release package_software_for_release tag_version_number_on_git ## Versions and packages our project
 	@echo "[1;32mProject packaging and versioning complete![m"
 	##############################################
 version_software_for_release:
