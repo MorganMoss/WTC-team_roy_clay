@@ -1,7 +1,7 @@
 # Variables
 version=1.0.1
 change-list=release
-reference=libs/reference-server-0.1.0.jar
+reference=libs/reference-server-0.2.3.jar
 ours="libs/robotworld-0.1.0-SNAPSHOT-jar-with-dependencies.jar"
 our_server_class="MultiServer"
 output="Test Output"

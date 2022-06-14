@@ -1,6 +1,3 @@
-// This has the same functionality as multiserver,
-// but does not work for more than 1 client.
-// TODO: Consider deletion
 
 package za.co.wethinkcode.robotworlds.Server;
 
@@ -16,6 +13,9 @@ import org.json.JSONObject;
 import static za.co.wethinkcode.robotworlds.Play.getInput;
 import static za.co.wethinkcode.robotworlds.Play.worldSelector;
 
+// This has the same functionality as multiserver,
+// but does not work for more than 1 client.
+// TODO: Consider deletion
 public class Server implements Runnable{
 
     public static final int PORT = 3333;
