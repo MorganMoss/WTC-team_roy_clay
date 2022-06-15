@@ -1,7 +1,7 @@
 package za.co.wethinkcode.server.handler.world.map;
 
-import za.co.wethinkcode.robotworlds.Position;
-import za.co.wethinkcode.robotworlds.world.Obstacle;
+import za.co.wethinkcode.server.handler.world.Position;
+import za.co.wethinkcode.server.handler.world.entity.immovable.Obstacle;
 
 import java.util.List;
 

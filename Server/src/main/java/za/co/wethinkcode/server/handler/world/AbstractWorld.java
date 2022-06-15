@@ -1,8 +1,8 @@
 package za.co.wethinkcode.server.handler.world;
 
-import za.co.wethinkcode.robotworlds.Position;
-import za.co.wethinkcode.robotworlds.Robot;
-import za.co.wethinkcode.robotworlds.maze.Maze;
+import za.co.wethinkcode.server.handler.world.Position;
+import za.co.wethinkcode.server.handler.world.entity.movable.robot.Robot;
+import za.co.wethinkcode.server.handler.world.map.Maze;
 import za.co.wethinkcode.server.handler.world.entity.immovable.Immovable;
 
 import java.util.List;
