@@ -7,7 +7,13 @@
 
     <groupId>za.co.wethinkcode</groupId>
     <artifactId>robotworld</artifactId>
+    <packaging>pom</packaging>
     <version>${revision}${changelist}</version>
+    <modules>
+        <module>Server</module>
+        <module>Client</module>
+        <module>Protocol</module>
+    </modules>
 
     <properties>
         <maven.compiler.source>11</maven.compiler.source>
@@ -55,7 +61,7 @@
                 <artifactId>exec-maven-plugin</artifactId>
                 <version>3.0.0</version>
                 <configuration>
-                    <mainClass>za.co.wethinkcode.robotworlds.MultiServer</mainClass>
+                    <mainClass>MultiServer</mainClass>
                 </configuration>
             </plugin>
             <plugin>
@@ -86,7 +92,7 @@
                         <configuration>
                             <archive>
                                 <manifest>
-                                    <mainClass>za.co.wethinkcode.robotworlds.MultiServer</mainClass>
+                                    <mainClass>MultiServer</mainClass>
                                 </manifest>
                             </archive>
                             <descriptorRefs>

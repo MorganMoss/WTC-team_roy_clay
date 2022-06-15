@@ -1,0 +1,1 @@
+./run_as_jar.sh: 2: java: not found
