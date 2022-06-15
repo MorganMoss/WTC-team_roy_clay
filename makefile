@@ -125,7 +125,8 @@ verify:
 .PHONY: acceptance_tests
 run_acceptance_tests:
 	##############################################
-	-$(call run_test, "LookRobotTests#invalidLookArgumentsShouldFail$(,)ConnectionTests$(,)LaunchRobotTests$(,)StateRobotTests$(,)LookRobotTests#invalidLookCommandShouldFail" , "")
+#	make command
+	-$(call run_test, "LookRobotTests#invalidLookArgumentsShouldFail$(,)ConnectionTests$(,)LaunchRobotTests$(,)StateRobotTests$(,)LookRobotTests#invalidLookCommandShouldFail" , "--size=1")
 	-$(call run_test, "LookRobotTests#validLookOtherArtifacts", "--size=2 --visibility=2 --obstacle=0$(,)1")
 	-$(call run_test, "LookRobotTests#validLookNoOtherArtifacts", "--size=2 --visibility=2")
 	@echo "[1;32mAll testing complete![m"
