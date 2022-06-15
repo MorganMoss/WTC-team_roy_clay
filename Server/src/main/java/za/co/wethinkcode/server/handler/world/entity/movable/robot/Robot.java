@@ -1,9 +1,9 @@
 package za.co.wethinkcode.server.handler.world.entity.movable.robot;
 
 import org.json.JSONObject;
-import za.co.wethinkcode.robotworlds.world.*;
-import za.co.wethinkcode.server.handler.Position;
 import za.co.wethinkcode.server.handler.command.Command;
+import za.co.wethinkcode.server.handler.world.Position;
+import za.co.wethinkcode.server.handler.world.World;
 
 import java.util.ArrayList;
 
@@ -15,16 +15,16 @@ public class Robot extends JSONObject {
     private String status;
     private String name;
     private ArrayList<String> History;
-    public IWorld world;
+    public World world;
 
     //TODO: Get rid of hard-coded variables here. Change visibility
-    int shots= 5;
+    public int shots= 5;
 
     private int shield = 3;
 
     public String getPrint = "";
 
-    public Robot(String name,IWorld world) {
+    public Robot(String name,World world) {
         this.name = name;
         this.status = "Ready";
         this.History = new ArrayList<>();
@@ -85,7 +85,7 @@ public class Robot extends JSONObject {
         return name;
     }
 
-    public IWorld getWorld() {
+    public World getWorld() {
         return this.world;
     }
 

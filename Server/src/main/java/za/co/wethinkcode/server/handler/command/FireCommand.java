@@ -1,7 +1,7 @@
 package za.co.wethinkcode.server.handler.command;
 
-import za.co.wethinkcode.robotworlds.world.IWorld;
-import za.co.wethinkcode.server.handler.Position;
+import za.co.wethinkcode.server.handler.world.Position;
+import za.co.wethinkcode.server.handler.world.World;
 import za.co.wethinkcode.server.handler.world.entity.movable.robot.Robot;
 
 //TODO: Should make an acceptance test for this,
@@ -25,13 +25,13 @@ public class FireCommand extends Command{
             target.shot();
             for (int i = 0; i < 5; i++) {
                 int nrSteps = Integer.parseInt(String.valueOf(i));
-        if (target.getWorld().updatePosition(nrSteps).equals(IWorld.UpdateResponse.SUCCESS)){
+        if (target.getWorld().updatePosition(nrSteps).equals(World.UpdateResponse.SUCCESS)){
                 target.setStatus("bullet missed target by "+nrSteps+" steps.");
                 target.getWorld().resetPosition(nrSteps);
-            }else if (target.getWorld().updatePosition(nrSteps).equals(IWorld.UpdateResponse.FAILED_OUTSIDE_WORLD)) {
+            }else if (target.getWorld().updatePosition(nrSteps).equals(World.UpdateResponse.FAILED_OUTSIDE_WORLD)) {
                 target.setStatus("bullet missed target and went outside safe zone.");
                 target.getWorld().resetPosition(nrSteps);
-            }else if (target.getWorld().updatePosition(nrSteps).equals(IWorld.UpdateResponse.FAILED_OBSTRUCTED)) {
+            }else if (target.getWorld().updatePosition(nrSteps).equals(World.UpdateResponse.FAILED_OBSTRUCTED)) {
             target.getWorld().removeObstacle(target);
             target.getWorld().resetPosition(nrSteps);
             target.setStatus("bullet shot target in " + nrSteps + " steps.");

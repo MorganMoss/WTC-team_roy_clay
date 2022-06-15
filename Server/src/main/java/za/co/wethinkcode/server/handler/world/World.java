@@ -1,6 +1,5 @@
 package za.co.wethinkcode.server.handler.world;
 
-import za.co.wethinkcode.server.handler.Position;
 import za.co.wethinkcode.server.handler.world.entity.movable.robot.Robot;
 import za.co.wethinkcode.server.handler.world.entity.immovable.Immovable;
 

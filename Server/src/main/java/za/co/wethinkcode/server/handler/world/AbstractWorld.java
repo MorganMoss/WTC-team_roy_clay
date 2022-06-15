@@ -1,16 +1,17 @@
 package za.co.wethinkcode.server.handler.world;
 
-import za.co.wethinkcode.server.handler.world.Position;
 import za.co.wethinkcode.server.handler.world.entity.movable.robot.Robot;
-import za.co.wethinkcode.server.handler.world.map.Maze;
+import za.co.wethinkcode.server.handler.world.map.Map;
 import za.co.wethinkcode.server.handler.world.entity.immovable.Immovable;
+import za.co.wethinkcode.server.handler.world.Position;
+
 
 import java.util.List;
 
 //May need to redo this class, but we can reuse some of the methods
 // with minor tweaking.
 //TODO: Consider what we can use in this class
-public abstract class AbstractWorld implements World {
+public class AbstractWorld implements World {
     protected Position TOP_LEFT = new Position(-100,200);
     protected Position BOTTOM_RIGHT = new Position(100,-200);
 
@@ -18,18 +19,18 @@ public abstract class AbstractWorld implements World {
     protected Position position;
     protected Direction currentDirection;
     protected final List<Immovable> immovables;
-    protected final Maze maze;
+    protected final Map maze;
 
     @Override
     public void SetPositions(int tlx, int tly, int blx, int bly){
         TOP_LEFT = new Position(tlx,tly);
         BOTTOM_RIGHT = new Position(blx,bly);
     }
-    public AbstractWorld(Maze maze){
+    public AbstractWorld(Map maze){
         this.maze = maze;
         this.position = World.CENTRE;
         this.currentDirection = Direction.UP;
-        this.immovables = this.maze.getObstacles();
+        this.immovables = this.maze.getImmovables();
     }
 
 

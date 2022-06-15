@@ -1,6 +1,6 @@
 package za.co.wethinkcode.server.handler.world.entity.immovable;
 
-import za.co.wethinkcode.server.handler.Position;
+import za.co.wethinkcode.server.handler.world.Position;
 import za.co.wethinkcode.server.handler.world.entity.Entity;
 
 //This is likely keepable

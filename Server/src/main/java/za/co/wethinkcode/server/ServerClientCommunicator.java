@@ -4,11 +4,11 @@ import java.io.*;
 import java.net.Socket;
 import java.util.Scanner;
 import org.json.*;
-import za.co.wethinkcode.robotworlds.maze.EmptyMaze;
-import za.co.wethinkcode.robotworlds.world.AbstractWorld;
-import za.co.wethinkcode.robotworlds.world.IWorld;
+import za.co.wethinkcode.server.handler.world.AbstractWorld;
+import za.co.wethinkcode.server.handler.world.World;
 import za.co.wethinkcode.server.handler.world.entity.movable.robot.Robot;
 import za.co.wethinkcode.server.handler.command.Command;
+import za.co.wethinkcode.server.handler.world.map.EmptyMap;
 
 //TODO: Better name?
 public class ServerClientCommunicator implements Runnable {
@@ -20,7 +20,7 @@ public class ServerClientCommunicator implements Runnable {
     Robot robot;
     // The client thread should not have ownership of the world
     //TODO: Remove this ownership
-    IWorld world;
+    World world;
     String in;
     //Never used outside of constructor
     private final String clientMachine;
@@ -51,7 +51,7 @@ public class ServerClientCommunicator implements Runnable {
         brx = Integer.parseInt(getInput("Input bottom right X"));
         bry = Integer.parseInt(getInput("Input bottom right Y"));
 
-        IWorld world = robot.getWorld();
+        World world = robot.getWorld();
         world.SetPositions(tlx, tly, brx, bry);
     }
 
@@ -87,7 +87,7 @@ public class ServerClientCommunicator implements Runnable {
                 System.out.println(out);
                 String name = String.valueOf(out.get("name"));
 
-                world = new AbstractWorld(new EmptyMaze());
+                world = new AbstractWorld(new EmptyMap());
                 robot = new Robot(name,world);
 
             } catch (IOException e) {

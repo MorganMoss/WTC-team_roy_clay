@@ -1,15 +1,10 @@
 
 package za.co.wethinkcode.server;
 
-import za.co.wethinkcode.robotworlds.Command;
-import za.co.wethinkcode.robotworlds.Robot;
-import za.co.wethinkcode.robotworlds.world.AbstractWorld;
 
 import java.net.*;
 import java.io.*;
 
-import static za.co.wethinkcode.robotworlds.Play.getInput;
-import static za.co.wethinkcode.robotworlds.Play.worldSelector;
 
 // This has the same functionality as multiserver,
 // but does not work for more than 1 client.
