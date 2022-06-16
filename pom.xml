@@ -7,19 +7,19 @@
 
     <groupId>za.co.wethinkcode</groupId>
     <artifactId>robotworld</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
     <packaging>pom</packaging>
-    <version>${revision}${changelist}</version>
+
     <modules>
         <module>Server</module>
         <module>Client</module>
-        <module>Protocol</module>
+<!--        <module>Protocol</module>-->
     </modules>
 
     <properties>
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
-        <revision>1.0.0</revision>
-        <changelist>-SNAPSHOT</changelist>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
     
     <dependencies>

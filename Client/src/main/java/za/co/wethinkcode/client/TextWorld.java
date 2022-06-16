@@ -1,4 +1,4 @@
-package za.co.wethinkcode;
+package za.co.wethinkcode.client;
 
 import za.co.wethinkcode.robotworlds.maze.Maze;
 
