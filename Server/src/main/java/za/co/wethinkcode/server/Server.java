@@ -4,6 +4,8 @@ package za.co.wethinkcode.server;
 
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
+import picocli.CommandLine.Option;
+import za.co.wethinkcode.server.world.World;
 
 import java.net.*;
 import java.io.*;
@@ -27,6 +29,61 @@ public class Server implements Callable<Integer> {
         System.exit(exitCode);
     }
 
+    @Option(
+            names = {"-s", "--size"},
+            description = {"Size of the world as one side of a square grid"}
+    )
+    private int size = 1;
+
+    @Option(
+            names = {"-p", "--port"},
+            description = {"Port to listen for client connections"}
+    )
+    private int port = 5000;
+
+    @Option(
+            names = {"-o", "--obstacle"},
+            description = {"Position of fixed obstacle as [x,y] coordinate in form 'x,y', or 'none' or 'random'"}
+    )
+    private String obstacle = "none";
+
+    @Option(
+            names = {"-pt", "--pit"},
+            description = {"Position of fixed pit as [x,y] coordinate in form 'x,y', or 'none' or 'random'"}
+    )
+    private String pits = "none";
+
+    @Option(
+            names = {"-m", "--mine"},
+            description = {"Position of fixed mine as [x,y] coordinate in form 'x,y', or 'none' or 'random'"}
+    )
+    private String mines = "none";
+
+    @Option(
+            names = {"-v", "--visibility"},
+            description = {"Visibility for robot in nr of steps"}
+    )
+    private int visibility = 10;
+
+    @Option(
+            names = {"-r", "--repair"},
+            description = {"Duration for robot shield to repair"}
+    )
+    private int repair = 5;
+
+    @Option(
+            names = {"-l" , "--reload"},
+            description = {"Instruct the robot to reload its weapons"}
+    )
+    private int reload = 7;
+
+    @Option(
+            names = {"-ht", "--hit"},
+            description = {"Maximum strength for robot shield"}
+    )
+    private int hit = 3;
+    private World world;
+
 
 
     private void startRobotWorldServer() throws IOException{
@@ -48,6 +105,18 @@ public class Server implements Callable<Integer> {
         }
     }
 
+    private void creatingWorldConfig(){
+        System.out.println("Creating World with the following configurations.. " +
+                "\n[size: " + this.size + " x " + this.size +
+                "\n, obstacles: " + this.obstacle +
+                "\n, pits: " + this.pits +
+                "\n, mines: " + this.mines +
+                "\n, visibility: " + this.visibility +
+                "\n, repair: " + this.repair +
+                "\n, reload: " + this.reload +
+                "\n, hit: " + this.hit + "]");
+    }
+
 
     /**
      * build command arguments, initialise and run server
@@ -57,6 +126,9 @@ public class Server implements Callable<Integer> {
     @Override
     public Integer call() throws Exception {
         //TODO: build command options here
+        creatingWorldConfig();
+
+        //Create the world based on config or arguments values
 
         System.out.println("**** Initialising the Robot World");
         this.startRobotWorldServer();
