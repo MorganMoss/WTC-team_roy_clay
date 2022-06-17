@@ -1,4 +1,4 @@
-package za.co.wethinkcode.Turtle;
+package za.co.wethinkcode.client.Turtle;
 
 /************************************************
  *AUTHOR: NICHOLAS SEWARD
