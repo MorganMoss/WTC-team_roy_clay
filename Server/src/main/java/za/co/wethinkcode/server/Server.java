@@ -2,18 +2,35 @@
 package za.co.wethinkcode.server;
 
 
+import picocli.CommandLine;
+import picocli.CommandLine.Command;
+
 import java.net.*;
 import java.io.*;
+import java.util.concurrent.Callable;
 
 
 // This has the same functionality as multiserver,
 // but does not work for more than 1 client.
 // TODO: Consider deletion
-public class Server /*implements Runnable*/{
+
+@Command(
+        name = "robots-world",
+        mixinStandardHelpOptions = true,
+        version = {"robots 1.0.0"},
+        description = {"Starts the Robot World server"}
+)
+public class Server implements Callable<Integer> {
+
+    public static void main(String[] args) {
+        int exitCode = (new CommandLine((new Server()))).execute(args);
+        System.exit(exitCode);
+    }
 
 
-    public static void main(String[] args) throws IOException {
-        //TODO: Should handle this exception
+
+    private void startRobotWorldServer() throws IOException{
+        //TODO: Should handle this exception and improve code below
         ServerSocket s = new ServerSocket( ServerClientCommunicator.PORT);
         System.out.println("MainServerThread running & waiting for client connections.");
 
@@ -29,6 +46,21 @@ public class Server /*implements Runnable*/{
                 ex.printStackTrace();
             }
         }
+    }
+
+
+    /**
+     * build command arguments, initialise and run server
+     * @return terminating state for the server
+     * @throws Exception handle any connection or invalid command arguments
+     */
+    @Override
+    public Integer call() throws Exception {
+        //TODO: build command options here
+
+        System.out.println("**** Initialising the Robot World");
+        this.startRobotWorldServer();
+        return 0;
     }
 //
 //    public static final int PORT = 3333;
