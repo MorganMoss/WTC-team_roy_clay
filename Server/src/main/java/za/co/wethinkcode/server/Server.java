@@ -16,7 +16,7 @@ import java.util.concurrent.Callable;
 
 // This has the same functionality as multiserver,
 // but does not work for more than 1 client.
-// TODO: Consider deletion
+// TODO: Complete world implementation and server receiving connections
 
 @Command(
         name = "robots-world",

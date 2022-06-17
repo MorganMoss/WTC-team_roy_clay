@@ -1,14 +1,17 @@
 package za.co.wethinkcode.server;
 
-import java.io.*;
-import java.net.Socket;
-import java.util.Scanner;
-import org.json.*;
+import org.json.JSONObject;
+import za.co.wethinkcode.server.handler.command.Command;
 import za.co.wethinkcode.server.handler.world.AbstractWorld;
 import za.co.wethinkcode.server.handler.world.IWorld;
 import za.co.wethinkcode.server.handler.world.entity.movable.robot.Robot;
-import za.co.wethinkcode.server.command.Command;
 import za.co.wethinkcode.server.handler.world.map.EmptyMap;
+
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.net.Socket;
+import java.util.Scanner;
 
 //TODO: Better name?
 public class ServerClientCommunicator implements Runnable {
@@ -114,10 +117,10 @@ public class ServerClientCommunicator implements Runnable {
                 //TODO: Improve the if statements
                 // Sprint is not part of the specs.
                 //TODO: Consider removing sprint
-                if (command.getName()== "sprint"){
-                    System.out.println(robot.getPrint.trim());
-                    robot.getPrint = "";
-                }
+//                if (command.getName()== "sprint"){
+//                    System.out.println(robot.getPrint.trim());
+//                    robot.getPrint = "";
+//                }
 
                 dout.writeBoolean(cont);
 
