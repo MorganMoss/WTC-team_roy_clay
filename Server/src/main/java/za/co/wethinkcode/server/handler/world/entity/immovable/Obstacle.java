@@ -1,6 +1,6 @@
-package za.co.wethinkcode.server.world.entity.immovable;
+package za.co.wethinkcode.server.handler.world.entity.immovable;
 
-import za.co.wethinkcode.server.world.Position;
+import za.co.wethinkcode.server.handler.world.Position;
 
 
 //We need to remove hard-coded values from here.

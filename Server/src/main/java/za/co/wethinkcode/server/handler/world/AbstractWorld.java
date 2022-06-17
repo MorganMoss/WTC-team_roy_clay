@@ -1,8 +1,8 @@
-package za.co.wethinkcode.server.world;
+package za.co.wethinkcode.server.handler.world;
 
-import za.co.wethinkcode.server.world.entity.movable.robot.Robot;
-import za.co.wethinkcode.server.world.map.Map;
-import za.co.wethinkcode.server.world.entity.immovable.Immovable;
+import za.co.wethinkcode.server.handler.world.map.Map;
+import za.co.wethinkcode.server.handler.world.entity.movable.robot.Robot;
+import za.co.wethinkcode.server.handler.world.entity.immovable.Immovable;
 
 
 import java.util.List;
@@ -10,7 +10,7 @@ import java.util.List;
 //May need to redo this class, but we can reuse some of the methods
 // with minor tweaking.
 //TODO: Consider what we can use in this class
-public class AbstractWorld implements World {
+public class AbstractWorld implements IWorld {
     protected Position TOP_LEFT = new Position(-100,200);
     protected Position BOTTOM_RIGHT = new Position(100,-200);
 
@@ -27,7 +27,7 @@ public class AbstractWorld implements World {
     }
     public AbstractWorld(Map maze){
         this.maze = maze;
-        this.position = World.CENTRE;
+        this.position = IWorld.CENTRE;
         this.currentDirection = Direction.UP;
         this.immovables = this.maze.getImmovables();
     }
@@ -134,7 +134,7 @@ public class AbstractWorld implements World {
     }
     @Override
     public void reset() {
-        this.position = World.CENTRE;
+        this.position = IWorld.CENTRE;
         this.currentDirection = Direction.UP;
 
     }

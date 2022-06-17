@@ -1,7 +1,7 @@
-package za.co.wethinkcode.server.world;
+package za.co.wethinkcode.server.handler.world;
 
-import za.co.wethinkcode.server.world.entity.movable.robot.Robot;
-import za.co.wethinkcode.server.world.entity.immovable.Immovable;
+import za.co.wethinkcode.server.handler.world.entity.movable.robot.Robot;
+import za.co.wethinkcode.server.handler.world.entity.immovable.Immovable;
 
 import java.util.List;
 
@@ -11,7 +11,7 @@ import java.util.List;
 /**
  * Your Text and Turtle worlds must implement this interface.
  */
-public interface World {
+public interface IWorld {
     /**
      * Enum used to track direction
      */

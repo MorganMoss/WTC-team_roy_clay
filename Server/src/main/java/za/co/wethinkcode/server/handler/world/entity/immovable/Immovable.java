@@ -1,7 +1,7 @@
-package za.co.wethinkcode.server.world.entity.immovable;
+package za.co.wethinkcode.server.handler.world.entity.immovable;
 
-import za.co.wethinkcode.server.world.Position;
-import za.co.wethinkcode.server.world.entity.Entity;
+import za.co.wethinkcode.server.handler.world.Position;
+import za.co.wethinkcode.server.handler.world.entity.Entity;
 
 //This is likely keepable
 //TODO: Consider leaving this alone

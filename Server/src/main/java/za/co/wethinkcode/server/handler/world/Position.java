@@ -1,4 +1,4 @@
-package za.co.wethinkcode.server.world;
+package za.co.wethinkcode.server.handler.world;
 
 public class Position {
     private final int x;

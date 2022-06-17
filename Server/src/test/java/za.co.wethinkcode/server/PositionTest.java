@@ -1,7 +1,7 @@
 package za.co.wethinkcode.server;
 
 import org.junit.jupiter.api.Test;
-import za.co.wethinkcode.server.world.Position;
+import za.co.wethinkcode.server.handler.world.Position;
 
 import static org.junit.jupiter.api.Assertions.*;
 

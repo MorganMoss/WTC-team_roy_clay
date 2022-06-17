@@ -1,6 +1,6 @@
-package za.co.wethinkcode.server.world.map;
+package za.co.wethinkcode.server.handler.world.map;
 
-import za.co.wethinkcode.server.world.entity.immovable.Immovable;
+import za.co.wethinkcode.server.handler.world.entity.immovable.Immovable;
 
 import java.util.ArrayList;
 import java.util.List;
