@@ -1,28 +1,42 @@
-package za.co.wethinkcode.server.handler;
+package za.co.wethinkcode.server.command;
 
-import za.co.wethinkcode.Request;
-import za.co.wethinkcode.Response;
-import za.co.wethinkcode.server.command.*;
 
-public class Handler {
-    private static Handler handler = null;
-    private Handler(){
+import za.co.wethinkcode.server.world.entity.movable.robot.Robot;
+
+public abstract class Command {
+    //TODO: remove name dependency
+    private final String name;
+    private String argument;
+
+
+    public abstract boolean execute(Robot target);
+
+    //TODO: remove name dependency
+    public Command(String name){
+        this.name = name.trim().toLowerCase();
+        this.argument = "";
     }
 
-    public static Handler getHandler(){
-        if (handler == null){
-            handler = new Handler();
-        }
 
-        return handler;
+    public Command(String name, String argument) {
+        this(name);
+        this.argument = argument.trim();
     }
 
-    public Response executeRequest(Request request){
-        return null;
+
+    public String getName() {                                                                           //<2>
+        return name;
     }
 
-    private Command create(String instruction) {
+
+    public String getArgument() {
+        return argument;
+    }
+
+    //TODO: Remove this, implement Handler in it's place
+    public static Command create(String instruction) {
         String[] args = instruction.toLowerCase().trim().split(" ", 2);
+
 
         switch (args[0]){
             case "shutdown":

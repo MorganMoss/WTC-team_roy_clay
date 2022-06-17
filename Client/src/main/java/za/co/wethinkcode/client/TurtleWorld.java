@@ -5,7 +5,7 @@ import za.co.wethinkcode.robotworlds.maze.Maze;
 
 import java.util.List;
 import za.co.wethinkcode.robotworlds.Turtle.Turtle;
-import za.co.wethinkcode.server.handler.world.entity.immovable.Immovable;
+import za.co.wethinkcode.server.world.entity.immovable.Immovable;
 
 //This can perhaps be used as a client, but for now, this is way out of spec.
 //TODO: Remove this class server-side, but keep it for clientside
