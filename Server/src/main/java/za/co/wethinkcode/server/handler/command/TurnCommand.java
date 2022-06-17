@@ -4,7 +4,7 @@ import za.co.wethinkcode.Response;
 
 import java.util.List;
 
-public abstract class TurnCommand extends Command {
+public class TurnCommand extends Command {
 
     /**
     True if left, False if right
