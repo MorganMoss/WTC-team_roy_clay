@@ -8,6 +8,7 @@ import za.co.wethinkcode.server.handler.command.RobotNotFoundException;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
+import java.util.Scanner;
 
 public class Handler {
     /**
@@ -50,9 +51,6 @@ public class Handler {
                 put("message", "An internal error has occurred");
             }});
 
-    private static final Module module = Handler.class.getModule();
-
-
     /**
      * Takes a request, uses commands to create a response
      * @param request given from server
@@ -89,7 +87,8 @@ public class Handler {
      * @return the command name matching that of the class it represents.
      */
     private static String formatCommandName(String command){
-        return command.substring(0, 1).toUpperCase()
+        return "za.co.wethinkcode.server.handler.command."
+            + command.substring(0, 1).toUpperCase()
             + command.substring(1).toLowerCase()
             + "Command";
     }
@@ -102,10 +101,10 @@ public class Handler {
      */
     private static Command createCommand(String command) {
         try {
-            Class<?> loadedCommand = Class.forName(module, formatCommandName(command));
+            Class<?> loadedCommand = Class.forName(formatCommandName(command));
             return (Command) loadedCommand.getDeclaredConstructor().newInstance();
 
-        } catch (LinkageError notFound){
+        } catch (LinkageError | ClassNotFoundException notFound){
             return null;
 
         } catch (InstantiationException
@@ -116,5 +115,21 @@ public class Handler {
             throw new RuntimeException(notInstantiated);
         }
     }
+
+//    /**
+//     * FOR TESTING PURPOSES
+//     */
+//    public static void main(String[] args) {
+//        Scanner in = new Scanner(System.in);
+//        while (true) {
+//            try {
+//                Command c = createCommand(in.nextLine());
+//                System.out.println(c.getClass().toString());
+//            } catch (RuntimeException e) {
+//                System.out.println(e);
+//            }
+//
+//        }
+//    }
 }
 

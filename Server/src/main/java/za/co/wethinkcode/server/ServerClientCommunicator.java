@@ -1,17 +1,14 @@
 package za.co.wethinkcode.server;
 
-import org.json.JSONObject;
-import za.co.wethinkcode.server.handler.command.Command;
+import java.io.*;
+import java.net.Socket;
+import java.util.Scanner;
+import org.json.*;
 import za.co.wethinkcode.server.handler.world.AbstractWorld;
 import za.co.wethinkcode.server.handler.world.IWorld;
 import za.co.wethinkcode.server.handler.world.entity.movable.robot.Robot;
+import za.co.wethinkcode.server.handler.command.Command;
 import za.co.wethinkcode.server.handler.world.map.EmptyMap;
-
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.net.Socket;
-import java.util.Scanner;
 
 //TODO: Better name?
 public class ServerClientCommunicator implements Runnable {
@@ -98,39 +95,39 @@ public class ServerClientCommunicator implements Runnable {
             }
 
 
-
-        while (true){
-            try {
-                in = din.readUTF();
-
-                JSONObject out = new JSONObject(in);
-                instruction= (out.getString("command"));
-
-                Command command = Command.create(instruction);
-                cont=robot.handleCommand(command);
-                System.out.println("done thing");
-                if (instruction.split(" ")[0].equalsIgnoreCase( "replay")
-                        ||instruction.split(" ")[0].equalsIgnoreCase( "mazerun")){
-                }else {
-                    robot.appendToHistory(instruction);
-                }
-                //TODO: Improve the if statements
-                // Sprint is not part of the specs.
-                //TODO: Consider removing sprint
+//
+//        while (true){
+//            try {
+//                in = din.readUTF();
+//
+//                JSONObject out = new JSONObject(in);
+//                instruction= (out.getString("command"));
+//
+//                Command command = Command.create(instruction);
+//                cont=robot.handleCommand(command);
+//                System.out.println("done thing");
+//                if (instruction.split(" ")[0].equalsIgnoreCase( "replay")
+//                        ||instruction.split(" ")[0].equalsIgnoreCase( "mazerun")){
+//                }else {
+//                    robot.appendToHistory(instruction);
+//                }
+//                //TODO: Improve the if statements
+//                // Sprint is not part of the specs.
+//                //TODO: Consider removing sprint
 //                if (command.getName()== "sprint"){
 //                    System.out.println(robot.getPrint.trim());
 //                    robot.getPrint = "";
 //                }
-
-                dout.writeBoolean(cont);
-
-                dout.flush();
-
-
-            } catch (IOException ex) {
-                System.out.println("Shutting down single client server");
-            }
-        }
+//
+//                dout.writeBoolean(cont);
+//
+//                dout.flush();
+//
+//
+//            } catch (IOException ex) {
+//                System.out.println("Shutting down single client server");
+//            }
+//        }
 
 
     }

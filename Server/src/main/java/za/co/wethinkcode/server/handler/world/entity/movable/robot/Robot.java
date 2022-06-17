@@ -1,7 +1,6 @@
 package za.co.wethinkcode.server.handler.world.entity.movable.robot;
 
 import org.json.JSONObject;
-import za.co.wethinkcode.Response;
 import za.co.wethinkcode.server.handler.command.Command;
 import za.co.wethinkcode.server.handler.world.IWorld;
 import za.co.wethinkcode.server.handler.world.Position;
@@ -65,10 +64,10 @@ public class Robot extends JSONObject {
     }
 
 
-    public Response handleCommand(Command command) {
-
-        return command.execute();
-    }
+//    public boolean handleCommand(Command command) {
+//
+//        return command.execute(this);
+//    }
 
 
     @Override
