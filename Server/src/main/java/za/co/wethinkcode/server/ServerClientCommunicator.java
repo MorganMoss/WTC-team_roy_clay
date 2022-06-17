@@ -4,11 +4,11 @@ import java.io.*;
 import java.net.Socket;
 import java.util.Scanner;
 import org.json.*;
-import za.co.wethinkcode.server.handler.world.AbstractWorld;
-import za.co.wethinkcode.server.handler.world.World;
-import za.co.wethinkcode.server.handler.world.entity.movable.robot.Robot;
-import za.co.wethinkcode.server.handler.command.Command;
-import za.co.wethinkcode.server.handler.world.map.EmptyMap;
+import za.co.wethinkcode.server.world.AbstractWorld;
+import za.co.wethinkcode.server.world.World;
+import za.co.wethinkcode.server.world.entity.movable.robot.Robot;
+import za.co.wethinkcode.server.command.Command;
+import za.co.wethinkcode.server.world.map.EmptyMap;
 
 //TODO: Better name?
 public class ServerClientCommunicator implements Runnable {
