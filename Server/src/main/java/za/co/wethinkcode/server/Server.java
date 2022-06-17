@@ -5,6 +5,8 @@ package za.co.wethinkcode.server;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
+import za.co.wethinkcode.server.world.AbstractWorld;
+import za.co.wethinkcode.server.world.IWorld;
 import za.co.wethinkcode.server.world.World;
 
 import java.net.*;
@@ -82,7 +84,7 @@ public class Server implements Callable<Integer> {
             description = {"Maximum strength for robot shield"}
     )
     private int hit = 3;
-    private World world;
+    private AbstractWorld world;
 
 
 
@@ -129,6 +131,8 @@ public class Server implements Callable<Integer> {
         creatingWorldConfig();
 
         //Create the world based on config or arguments values
+        this.world = new World();
+
 
         System.out.println("**** Initialising the Robot World");
         this.startRobotWorldServer();

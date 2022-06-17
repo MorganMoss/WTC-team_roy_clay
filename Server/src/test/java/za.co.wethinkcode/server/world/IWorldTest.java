@@ -7,7 +7,7 @@ import za.co.wethinkcode.robotworlds.world.IWorld;
 import za.co.wethinkcode.robotworlds.world.TextWorld;
 import za.co.wethinkcode.server.handler.Position;
 
-public class WorldTest {
+public class IWorldTest {
 
     @Test
     void updatePosition() {

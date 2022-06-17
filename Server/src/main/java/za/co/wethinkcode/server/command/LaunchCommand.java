@@ -1,7 +1,7 @@
 package za.co.wethinkcode.server.command;
 
 
-import za.co.wethinkcode.server.world.World;
+import za.co.wethinkcode.server.world.IWorld;
 import za.co.wethinkcode.server.world.entity.movable.robot.Robot;
 
 //Out of spec
@@ -13,13 +13,13 @@ public class LaunchCommand extends Command {
             int nrSteps = Integer.parseInt(getArgument());
             while (nrSteps!=0) {
 
-                if (target.getWorld().updatePosition(nrSteps).equals(World.UpdateResponse.SUCCESS)){
+                if (target.getWorld().updatePosition(nrSteps).equals(IWorld.UpdateResponse.SUCCESS)){
                     target.setStatus("Moved forward by "+nrSteps+" steps.");
                     nrSteps--;
                 }
-                else if (target.getWorld().updatePosition(nrSteps).equals(World.UpdateResponse.FAILED_OUTSIDE_WORLD)) {
+                else if (target.getWorld().updatePosition(nrSteps).equals(IWorld.UpdateResponse.FAILED_OUTSIDE_WORLD)) {
                     target.setStatus("Sorry, I cannot go outside my safe zone.");
-            }else if (target.getWorld().updatePosition(-nrSteps).equals(World.UpdateResponse.FAILED_OBSTRUCTED)) {
+            }else if (target.getWorld().updatePosition(-nrSteps).equals(IWorld.UpdateResponse.FAILED_OBSTRUCTED)) {
                     target.setStatus("Sorry, there is an obstacle in the way.");}
             if (nrSteps> 0){
                 target.getPrint += "\n"+target;

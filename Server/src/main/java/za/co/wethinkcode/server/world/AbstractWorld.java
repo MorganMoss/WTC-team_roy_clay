@@ -10,7 +10,7 @@ import java.util.List;
 //May need to redo this class, but we can reuse some of the methods
 // with minor tweaking.
 //TODO: Consider what we can use in this class
-public class AbstractWorld implements World {
+public class AbstractWorld implements IWorld {
     protected Position TOP_LEFT = new Position(-100,200);
     protected Position BOTTOM_RIGHT = new Position(100,-200);
 
@@ -27,7 +27,7 @@ public class AbstractWorld implements World {
     }
     public AbstractWorld(Map maze){
         this.maze = maze;
-        this.position = World.CENTRE;
+        this.position = IWorld.CENTRE;
         this.currentDirection = Direction.UP;
         this.immovables = this.maze.getImmovables();
     }
@@ -134,7 +134,7 @@ public class AbstractWorld implements World {
     }
     @Override
     public void reset() {
-        this.position = World.CENTRE;
+        this.position = IWorld.CENTRE;
         this.currentDirection = Direction.UP;
 
     }
