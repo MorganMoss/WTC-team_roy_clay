@@ -2,6 +2,8 @@ package za.co.wethinkcode.server.handler.world.entity.movable.robot;
 
 import za.co.wethinkcode.server.handler.world.entity.movable.Movable;
 
+import java.awt.*;
+
 public class Robot extends Movable {
     private String name;
 
@@ -13,7 +15,21 @@ public class Robot extends Movable {
 //    public String getPrint = "";
 
     public Robot(String name) {
+        //TODO: add position.
+        super(null);
         this.name = name;
+    }
+
+    /**
+     * A robot obstructs the path,
+     * It forces another robot to move back to one position before this entity
+     * @param entity The entity moving into the same space as this entity.
+     * @return "Obstructed"
+     */
+    @Override
+    public String collidedWith(Movable entity) {
+        //entity should be moved to the closest empty block to their previous position.
+        return "Obstructed";
     }
 
 
@@ -63,10 +79,6 @@ public class Robot extends Movable {
         return name;
     }
 
-    @Override
-    public String collidedWith(Movable entity) {
-        return null;
-    }
 
 //    public IWorld getWorld() {
 //        return this.IWorld;

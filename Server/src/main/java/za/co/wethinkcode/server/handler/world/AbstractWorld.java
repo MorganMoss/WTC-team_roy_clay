@@ -49,11 +49,11 @@ public class AbstractWorld implements IWorld {
         }
 
         Position newPosition = new Position(newX, newY);
-        for (Immovable immovable : immovables){
-            if (immovable.blocksPath(this.position,newPosition)){
-                return UpdateResponse.FAILED_OBSTRUCTED;
-            }
-        }
+//        for (Immovable immovable : immovables){
+//            if (immovable.blocksPath(this.position,newPosition)){
+//                return UpdateResponse.FAILED_OBSTRUCTED;
+//            }
+//        }
 
         if (newPosition.isIn(TOP_LEFT,BOTTOM_RIGHT)){
             this.position = newPosition;
@@ -182,4 +182,20 @@ public class AbstractWorld implements IWorld {
             System.out.println("- At position "+ x+", "+y+" (to "+ Math.addExact(x,4)+","+Math.addExact(y,4)+")");
         }
     }
+
+//    /**
+//     * Checks if this obstacle blocks access to the specified position.
+//     * @param position the position to check
+//     * @return return `true` if the x,y coordinate falls within the obstacle's area
+//     */
+//    boolean blocksPosition(Position position);
+//
+//    /**
+//     * Checks if this obstacle blocks the path that goes from coordinate (x1, y1) to (x2, y2).
+//     * Since our robot can only move in horizontal or vertical lines (no diagonals yet), we can assume that either x1==x2 or y1==y2.
+//     * @param a first position
+//     * @param b second position
+//     * @return `true` if this obstacle is in the way
+//     */
+//    boolean blocksPath(Position a, Position b);
 }

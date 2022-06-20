@@ -5,12 +5,16 @@ package za.co.wethinkcode.server;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
+import za.co.wethinkcode.Request;
+import za.co.wethinkcode.Response;
 import za.co.wethinkcode.server.handler.world.AbstractWorld;
 import za.co.wethinkcode.server.handler.world.World;
 import za.co.wethinkcode.server.handler.world.map.EmptyMap;
 
 import java.net.*;
 import java.io.*;
+import java.util.PriorityQueue;
+import java.util.Queue;
 import java.util.concurrent.Callable;
 
 
@@ -86,23 +90,29 @@ public class Server implements Callable<Integer> {
     private int hit = 3;
     private AbstractWorld world;
 
-
+    private static Queue<Request> requests = new PriorityQueue<Request>();
+    
+    public static void addRequest(Request request){
+        requests.add(request);
+    }
+    public static Response getResponse(String robot) {
+        return null;
+    }
+    
 
     private void startRobotWorldServer() throws IOException{
         //TODO: Should handle this exception and improve code below
-        ServerSocket s = new ServerSocket( ServerClientCommunicator.PORT);
+        ServerSocket s = new ServerSocket(port);
         System.out.println("MainServerThread running & waiting for client connections.");
 
         while(true) {
             try {
                 Socket socket = s.accept();
-                System.out.println("Connection: " + socket);
-                Runnable r = new ServerClientCommunicator(socket);
-                Thread task = new Thread(r);
+                Runnable runnable = new ServerClientCommunicator(socket);
+                Thread task = new Thread(runnable);
                 task.start();
-
-            } catch(IOException ex) {
-                ex.printStackTrace();
+            } catch(IOException clientFailedToConnect) {
+                System.out.println("Failed to connect a client.");
             }
         }
     }

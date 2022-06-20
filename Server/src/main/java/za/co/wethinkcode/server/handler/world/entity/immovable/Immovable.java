@@ -1,46 +1,39 @@
 package za.co.wethinkcode.server.handler.world.entity.immovable;
 
-import za.co.wethinkcode.server.handler.world.Position;
 import za.co.wethinkcode.server.handler.world.entity.Entity;
 
-//This is likely keepable
-//TODO: Consider leaving this alone
+import java.awt.*;
 
 /**
- * Defines an interface for obstacles you want to place in your world.
+ * An entity with an immutable position.
  */
-public interface Immovable extends Entity {
-    /**
-     * Get X coordinate of bottom left corner of obstacle.
-     * @return x coordinate
-     */
-    int getBottomLeftX();
+public abstract class Immovable implements Entity {
+    protected final Point position;
 
     /**
-     * Get Y coordinate of bottom left corner of obstacle.
-     * @return y coordinate
+     * An immovable entity is instantiated with its final position
+     * @param position of this entity
      */
-    int getBottomLeftY();
-
-    /**
-     * Gets the side of an obstacle (assuming square obstacles)
-     * @return the length of one side in nr of steps
-     */
-    int getSize();
-
-    /**
-     * Checks if this obstacle blocks access to the specified position.
-     * @param position the position to check
-     * @return return `true` if the x,y coordinate falls within the obstacle's area
-     */
-    boolean blocksPosition(Position position);
-
-    /**
-     * Checks if this obstacle blocks the path that goes from coordinate (x1, y1) to (x2, y2).
-     * Since our robot can only move in horizontal or vertical lines (no diagonals yet), we can assume that either x1==x2 or y1==y2.
-     * @param a first position
-     * @param b second position
-     * @return `true` if this obstacle is in the way
-     */
-    boolean blocksPath(Position a, Position b);
+    protected Immovable(Point position){
+        this.position = position;
+    }
 }
+
+//    /**
+//     * Get X coordinate of bottom left corner of obstacle.
+//     * @return x coordinate
+//     */
+//    int getBottomLeftX();
+//
+//    /**
+//     * Get Y coordinate of bottom left corner of obstacle.
+//     * @return y coordinate
+//     */
+//    int getBottomLeftY();
+//
+//    /**
+//     * Gets the side of an obstacle (assuming square obstacles)
+//     * @return the length of one side in nr of steps
+//     */
+//    int getSize();
+

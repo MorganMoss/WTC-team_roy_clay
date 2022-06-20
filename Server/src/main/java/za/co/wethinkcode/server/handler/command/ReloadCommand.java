@@ -22,6 +22,7 @@ public class ReloadCommand extends Command {
 //            target.setStatus("you cannot reload, you have " + target.shots + " shots.");
 //        }
 //        return true;
-        return null;
+        Response response = Response.createOK("Done");
+        return addRobotState(response);
     }
 }

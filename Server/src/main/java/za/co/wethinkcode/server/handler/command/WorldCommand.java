@@ -2,6 +2,8 @@ package za.co.wethinkcode.server.handler.command;
 
 import za.co.wethinkcode.Response;
 
+import java.util.HashMap;
+
 public class WorldCommand extends Command {
 
     /**
@@ -12,7 +14,7 @@ public class WorldCommand extends Command {
     public Response execute() {
         //TODO: Should make an acceptance test for this,
         // then implement it correctly
-        return null;
+        return Response.createOK(new HashMap<>());
     }
 
     /**

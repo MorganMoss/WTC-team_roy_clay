@@ -41,6 +41,38 @@ public class Response extends Protocol{
         return state;
     }
 
+    /**
+     * Used to make error messages
+     * @param message The message passed with the error
+     * @return Error Response
+     */
+    public static Response createError(String message){
+        return new Response("ERROR", new HashMap<>(){{put("message", message);}});
+    }
 
+    /**
+     * Used to make success messages
+     * @param data The data given by a commands execution
+     * @return OK Response
+     */
+    public static Response createOK(HashMap<String, ?> data){
+        return new Response("OK", data);
+    }
 
+    /**
+     * Used to make success messages
+     * @param message The message passed with the response
+     * @return OK Response
+     */
+    public static Response createOK(String message){
+        return new Response("OK", new HashMap<>(){{put("message", message);}});
+    }
+
+    /**
+     * Used to make success messages
+     * @return OK Response
+     */
+    public static Response createOK(){
+        return createOK(new HashMap<>());
+    }
 }
