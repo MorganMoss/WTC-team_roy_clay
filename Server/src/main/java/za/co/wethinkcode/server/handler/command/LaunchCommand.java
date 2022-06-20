@@ -2,6 +2,7 @@ package za.co.wethinkcode.server.handler.command;
 
 
 import za.co.wethinkcode.Response;
+import za.co.wethinkcode.server.handler.Handler;
 
 import java.util.HashMap;
 import java.util.List;
@@ -13,21 +14,12 @@ public class LaunchCommand extends Command {
      * Pre-formatted Response
      * for if there is no space in the world for a new robot
      */
-    private static final Response NO_SPACE = new Response(
-            "ERROR",
-            new HashMap<>(){{
-                put("message", "No more space in this world");
-            }});
-
+    private static final Response NO_SPACE = Response.createError("No more space in this world");
     /**
      * Pre-formatted Response
      * for if the name given has already been used for another robot.
      */
-    private static final Response NAME_TAKEN = new Response(
-            "ERROR",
-            new HashMap<>(){{
-                put("message", "Too many of you in this world");
-            }});
+    private static final Response NAME_TAKEN = Response.createError("Too many of you in this world");
 
     private String type;
     private int maximumShieldStrength, maximumShots;
@@ -40,23 +32,8 @@ public class LaunchCommand extends Command {
     @Override
     public Response execute() {
         //TODO
-//        int nrSteps = Integer.parseInt(getArgument());
-//        while (nrSteps!=0) {
-//
-//            if (target.getWorld().updatePosition(nrSteps).equals(World.UpdateResponse.SUCCESS)){
-//                target.setStatus("Moved forward by "+nrSteps+" steps.");
-//                nrSteps--;
-//            }
-//            else if (target.getWorld().updatePosition(nrSteps).equals(World.UpdateResponse.FAILED_OUTSIDE_WORLD)) {
-//                target.setStatus("Sorry, I cannot go outside my safe zone.");
-//            }else if (target.getWorld().updatePosition(-nrSteps).equals(World.UpdateResponse.FAILED_OBSTRUCTED)) {
-//                target.setStatus("Sorry, there is an obstacle in the way.");}
-//            if (nrSteps> 0){
-//                target.getPrint += "\n"+target;
-//            }
-//        }
-//        return true;
-        return null;
+        Response response = Response.createOK();
+        return addRobotState(response);
     }
 
     /**

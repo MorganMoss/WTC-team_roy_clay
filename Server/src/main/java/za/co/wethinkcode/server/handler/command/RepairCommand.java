@@ -13,6 +13,7 @@ public class RepairCommand extends Command {
     public Response execute() {
         //TODO: Should make an acceptance test for this,
         // then implement it correctly
-        return null;
+        Response response = Response.createOK("Done");
+        return addRobotState(response);
     }
 }

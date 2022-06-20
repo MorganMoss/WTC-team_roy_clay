@@ -11,6 +11,7 @@ public class StateCommand extends Command {
     @Override
     public Response execute() {
         //TODO
-        return null;
+        Response response = Response.createOK();
+        return addRobotState(response);
     }
 }
