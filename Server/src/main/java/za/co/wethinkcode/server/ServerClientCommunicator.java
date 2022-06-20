@@ -16,6 +16,10 @@ public class ServerClientCommunicator implements Runnable {
 
     private final String clientMachine;
 
+    /**
+     * Constructor for a Server Client Communicator
+     * @param socket The result of a connection to the server from the client.
+     */
     public ServerClientCommunicator(Socket socket) throws IOException {
         clientMachine = socket.getInetAddress().getHostName();
         System.out.println("Connection from " + clientMachine);

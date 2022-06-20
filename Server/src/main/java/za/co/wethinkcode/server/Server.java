@@ -108,13 +108,11 @@ public class Server implements Callable<Integer> {
         while(true) {
             try {
                 Socket socket = s.accept();
-                System.out.println("Connection: " + socket);
-                Runnable r = new ServerClientCommunicator(socket);
-                Thread task = new Thread(r);
+                Runnable runnable = new ServerClientCommunicator(socket);
+                Thread task = new Thread(runnable);
                 task.start();
-
-            } catch(IOException ex) {
-                ex.printStackTrace();
+            } catch(IOException clientFailedToConnect) {
+                System.out.println("Failed to connect a client.");
             }
         }
     }
