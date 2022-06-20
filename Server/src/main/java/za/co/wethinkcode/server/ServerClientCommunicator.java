@@ -2,135 +2,80 @@ package za.co.wethinkcode.server;
 
 import java.io.*;
 import java.net.Socket;
-import java.util.Scanner;
-import org.json.*;
-import za.co.wethinkcode.server.handler.world.AbstractWorld;
-import za.co.wethinkcode.server.handler.world.IWorld;
-import za.co.wethinkcode.server.handler.world.entity.movable.robot.Robot;
-import za.co.wethinkcode.server.handler.command.Command;
-import za.co.wethinkcode.server.handler.world.map.EmptyMap;
+import za.co.wethinkcode.Request;
+import za.co.wethinkcode.Response;
 
-//TODO: Better name?
+/**
+ * This takes an established connection between the server and a client 
+ * and handles communication between the two.
+ */
 public class ServerClientCommunicator implements Runnable {
 
-    public static final int PORT = 5000;
-    // din and dout could probably have better names.
-    DataInputStream din;
-    DataOutputStream dout;
-    Robot robot;
-    // The client thread should not have ownership of the world
-    //TODO: Remove this ownership
-    IWorld IWorld;
-    String in;
-    //Never used outside of constructor
+    private final DataInputStream requestIn;
+    private final DataOutputStream responseOut;
+
     private final String clientMachine;
-
-    // This looks like a very bad place for this.
-    // It is serverside client connection.
-    // Seems to only be used in setposition, so could be easily removed
-    // TODO: Consider removing this functionality
-    static String getInput(String prompt) {
-        Scanner scanner = new Scanner(System.in);
-        System.out.println(prompt);
-        String input = scanner.nextLine();
-        while (input.isBlank()) {
-            System.out.println(prompt);
-            input = scanner.nextLine();
-        }
-        return input;
-    }
-
-    //TODO: Consider deletion
-    void setposition (Robot robot ) throws IOException {
-        int bry;
-        int brx;
-        int tly;
-        int tlx;
-        tlx = Integer.parseInt(getInput("Input top left X"));
-        tly = Integer.parseInt(getInput("Input top left Y"));
-        brx = Integer.parseInt(getInput("Input bottom right X"));
-        bry = Integer.parseInt(getInput("Input bottom right Y"));
-
-        IWorld IWorld = robot.getWorld();
-        IWorld.SetPositions(tlx, tly, brx, bry);
-    }
-
-
 
     public ServerClientCommunicator(Socket socket) throws IOException {
         clientMachine = socket.getInetAddress().getHostName();
         System.out.println("Connection from " + clientMachine);
-        //Is this a necessary line?
-        System.out.println("Waiting for client...");
-        din=new DataInputStream(socket.getInputStream());
-        dout=new DataOutputStream(socket.getOutputStream());
 
+        requestIn = new DataInputStream(socket.getInputStream());
+        responseOut = new DataOutputStream(socket.getOutputStream());
     }
 
+    /**
+     * Gets the request from the client and adds it to the server
+     * @return true if still connected
+     */
+    private boolean passingRequest(){
+        try {
+            Request request = (Request) Request.deSerialize(requestIn.readUTF());
+            
+            //TODO: Can choose to add the robot name to a list here if it launches that robot.
+            // To be able to remove those robots after a disconnection.
+            // Could also use that fact to force the client to only reference new robot names with launch
+            
+            Server.addRequest(request);
+        } catch (IOException clientDisconnected) {
+            return false;
+        }
+        return true;
+    }
 
-    // Too many things are going on in here,
-    // should be split into multiple methods
-    //TODO: Consider splitting this up into more functions.
-    public void run() {
-        boolean cont;
-
-
-        String instruction;
-
-
-            try {
-                //            System.out.println("qwertyuiop");
-                //            System.out.println(din.readUTF());
-                in = din.readUTF();
-
-                JSONObject out = new JSONObject(in);
-                System.out.println(out);
-                String name = String.valueOf(out.get("name"));
-
-                IWorld = new AbstractWorld(new EmptyMap());
-                robot = new Robot(name, IWorld);
-
-            } catch (IOException e) {
-                throw new RuntimeException(e);
+    /**
+     * Gets a response from the server and sends it to the client
+     * @return true if still connected
+     */
+    private boolean passingResponse() {
+        try {
+            Response response = Server.getResponse("");
+            
+            if (response == null){
+                return true;
             }
-
-
-//
-//        while (true){
-//            try {
-//                in = din.readUTF();
-//
-//                JSONObject out = new JSONObject(in);
-//                instruction= (out.getString("command"));
-//
-//                Command command = Command.create(instruction);
-//                cont=robot.handleCommand(command);
-//                System.out.println("done thing");
-//                if (instruction.split(" ")[0].equalsIgnoreCase( "replay")
-//                        ||instruction.split(" ")[0].equalsIgnoreCase( "mazerun")){
-//                }else {
-//                    robot.appendToHistory(instruction);
-//                }
-//                //TODO: Improve the if statements
-//                // Sprint is not part of the specs.
-//                //TODO: Consider removing sprint
-//                if (command.getName()== "sprint"){
-//                    System.out.println(robot.getPrint.trim());
-//                    robot.getPrint = "";
-//                }
-//
-//                dout.writeBoolean(cont);
-//
-//                dout.flush();
-//
-//
-//            } catch (IOException ex) {
-//                System.out.println("Shutting down single client server");
-//            }
-//        }
-
-
+            
+            responseOut.writeUTF(response.serialize());
+            responseOut.flush();
+        } catch (IOException clientDisconnected) {
+            return false;
+        }
+        return true;
     }
 
-
+    /**
+     * To be run in a separate thread,
+     * will handle I/O between Server and a Client
+     */
+    public void run(){
+        while (true){
+           if (!passingRequest() | !passingResponse()){
+               break;
+           }
+        }
+        
+        //TODO: Take that list of robots and send a quit request for each.
+        
+        System.out.println(clientMachine + " has disconnected");
+    }
 }
