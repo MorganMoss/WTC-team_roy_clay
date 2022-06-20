@@ -7,7 +7,6 @@ import za.co.wethinkcode.server.handler.command.CouldNotParseArgumentsException;
 import za.co.wethinkcode.server.handler.command.RobotNotFoundException;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.HashMap;
 
 /**
  * The handler class takes requests, executes them as commands and returns responses.
