@@ -3,94 +3,40 @@ package za.co.wethinkcode.server;
 
 
 import picocli.CommandLine;
-import picocli.CommandLine.Command;
-import picocli.CommandLine.Option;
 import za.co.wethinkcode.Request;
 import za.co.wethinkcode.Response;
 import za.co.wethinkcode.server.handler.world.AbstractWorld;
 import za.co.wethinkcode.server.handler.world.World;
-import za.co.wethinkcode.server.handler.world.map.EmptyMap;
 
-import java.net.*;
-import java.io.*;
+import java.io.IOException;
+import java.net.ServerSocket;
+import java.net.Socket;
 import java.util.PriorityQueue;
 import java.util.Queue;
-import java.util.concurrent.Callable;
 
 
 // This has the same functionality as multiserver,
 // but does not work for more than 1 client.
 // TODO: Complete world implementation and server receiving connections
 
-@Command(
-        name = "robots-world",
-        mixinStandardHelpOptions = true,
-        version = {"robots 1.0.0"},
-        description = {"Starts the Robot World server"}
-)
-public class Server implements Callable<Integer> {
+
+public class Server {
+
+    private AbstractWorld world;
+    private static Queue<Request> requests = new PriorityQueue<Request>();
 
     public static void main(String[] args) {
-        int exitCode = (new CommandLine((new Server()))).execute(args);
+        int exitCode = (new CommandLine((World.getInstance()))).execute(args);
+
+        System.out.println("**** Initialising the Robot World");
+        try {
+            startRobotWorldServer();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
         System.exit(exitCode);
     }
 
-    @Option(
-            names = {"-s", "--size"},
-            description = {"Size of the world as one side of a square grid"}
-    )
-    private int size = 1;
-
-    @Option(
-            names = {"-p", "--port"},
-            description = {"Port to listen for client connections"}
-    )
-    private int port = 5000;
-
-    @Option(
-            names = {"-o", "--obstacle"},
-            description = {"Position of fixed obstacle as [x,y] coordinate in form 'x,y', or 'none' or 'random'"}
-    )
-    private String obstacle = "none";
-
-    @Option(
-            names = {"-pt", "--pit"},
-            description = {"Position of fixed pit as [x,y] coordinate in form 'x,y', or 'none' or 'random'"}
-    )
-    private String pits = "none";
-
-    @Option(
-            names = {"-m", "--mine"},
-            description = {"Position of fixed mine as [x,y] coordinate in form 'x,y', or 'none' or 'random'"}
-    )
-    private String mines = "none";
-
-    @Option(
-            names = {"-v", "--visibility"},
-            description = {"Visibility for robot in nr of steps"}
-    )
-    private int visibility = 10;
-
-    @Option(
-            names = {"-r", "--repair"},
-            description = {"Duration for robot shield to repair"}
-    )
-    private int repair = 5;
-
-    @Option(
-            names = {"-l" , "--reload"},
-            description = {"Instruct the robot to reload its weapons"}
-    )
-    private int reload = 7;
-
-    @Option(
-            names = {"-ht", "--hit"},
-            description = {"Maximum strength for robot shield"}
-    )
-    private int hit = 3;
-    private AbstractWorld world;
-
-    private static Queue<Request> requests = new PriorityQueue<Request>();
     
     public static void addRequest(Request request){
         requests.add(request);
@@ -98,11 +44,10 @@ public class Server implements Callable<Integer> {
     public static Response getResponse(String robot) {
         return null;
     }
-    
 
-    private void startRobotWorldServer() throws IOException{
+    private static void startRobotWorldServer() throws IOException{
         //TODO: Should handle this exception and improve code below
-        ServerSocket s = new ServerSocket(port);
+        ServerSocket s = new ServerSocket(World.getPort());
         System.out.println("MainServerThread running & waiting for client connections.");
 
         while(true) {
@@ -115,38 +60,6 @@ public class Server implements Callable<Integer> {
                 System.out.println("Failed to connect a client.");
             }
         }
-    }
-
-    private void creatingWorldConfig(){
-        System.out.println("Creating World with the following configurations.. " +
-                "\n[size: " + this.size + " x " + this.size +
-                "\n, obstacles: " + this.obstacle +
-                "\n, pits: " + this.pits +
-                "\n, mines: " + this.mines +
-                "\n, visibility: " + this.visibility +
-                "\n, repair: " + this.repair +
-                "\n, reload: " + this.reload +
-                "\n, hit: " + this.hit + "]");
-    }
-
-
-    /**
-     * build command arguments, initialise and run server
-     * @return terminating state for the server
-     * @throws Exception handle any connection or invalid command arguments
-     */
-    @Override
-    public Integer call() throws Exception {
-        //TODO: build command options here
-        creatingWorldConfig();
-
-        //Create the world based on config or arguments values
-        this.world = new World(new EmptyMap());
-
-
-        System.out.println("**** Initialising the Robot World");
-        this.startRobotWorldServer();
-        return 0;
     }
 //
 //    public static final int PORT = 3333;
