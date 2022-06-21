@@ -66,7 +66,7 @@
                 <artifactId>exec-maven-plugin</artifactId>
                 <version>3.0.0</version>
                 <configuration>
-                    <mainClass>MultiServer</mainClass>
+                    <mainClass>za.co.wethinkcode.server.Server</mainClass>
                 </configuration>
             </plugin>
             <plugin>

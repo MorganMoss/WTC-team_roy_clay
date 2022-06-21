@@ -1,10 +1,29 @@
 package za.co.wethinkcode.server.handler.world;
 
-import za.co.wethinkcode.server.handler.world.map.Map;
+import static za.co.wethinkcode.server.Configuration.*;
+import java.util.concurrent.Callable;
 
-public class World extends AbstractWorld{
+/**
+ * The world is a container that manages Entities,
+ * Has a fixed 2 dimensional size that contains all the Entities.
+ *
+ */
+public class World {
 
-    public World(Map maze) {
-        super(maze);
+    private static volatile World instance = null;
+
+    private World(){
+        //Use configuration values here to dictate properties of the world.
+    }
+
+    public static World getInstance(){
+        if(instance == null){
+            synchronized (World.class){
+                if(instance == null){
+                    instance = new World();
+                }
+            }
+        }
+        return instance;
     }
 }

@@ -7,57 +7,40 @@ import za.co.wethinkcode.server.handler.command.CouldNotParseArgumentsException;
 import za.co.wethinkcode.server.handler.command.RobotNotFoundException;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.HashMap;
-import java.util.Scanner;
 
-public class Handler {
+/**
+ * The handler class is a static class that
+ * takes requests, executes them as commands
+ * and returns responses.
+ */
+public final class Handler {
     /**
      * Pre-formatted Response
      * for a robot that does not exist
      */
-    private static final Response ROBOT_DOES_NOT_EXIST = new Response(
-            "ERROR",
-            new HashMap<>(){{
-                put("message", "Robot does not exist");
-            }});
-
+    private static final Response ROBOT_DOES_NOT_EXIST = Response.createError("Robot does not exist");
     /**
      * Pre-formatted Response
      * for an unsupported command
      */
-    private static final Response UNSUPPORTED_COMMAND = new Response(
-            "ERROR",
-            new HashMap<>(){{
-        put("message", "Unsupported command");
-    }});
-
+    private static final Response UNSUPPORTED_COMMAND = Response.createError("Unsupported command");
     /**
      * Pre-formatted Response
      * for arguments a command could not parse
      */
-    private static final Response COULD_NOT_PARSE_ARGUMENTS = new Response(
-            "ERROR",
-            new HashMap<>(){{
-                put("message", "Could not parse arguments");
-            }});
-
+    private static final Response COULD_NOT_PARSE_ARGUMENTS = Response.createError("Could not parse arguments");
     /**
      * Pre-formatted Response
      * for an internal error
      */
-    private static final Response INTERNAL_ERROR = new Response(
-            "ERROR",
-            new HashMap<>(){{
-                put("message", "An internal error has occurred");
-            }});
+    private static final Response INTERNAL_ERROR = Response.createError("Internal error occurred");
 
     /**
      * Takes a request, uses commands to create a response
      * @param request given from server
-     * @return a response from the command executed, or a error response
+     * @return a response from the command executed, or an error response
      */
     public static Response executeRequest(Request request){
-        Response response;
         Command command = createCommand(request.getCommand());
 
         if (command == null){
@@ -66,19 +49,21 @@ public class Handler {
 
         try {
             command.setRobot(request.getRobot());
-        } catch (RobotNotFoundException e){
+        } catch (RobotNotFoundException robotDoesNotExist){
             return ROBOT_DOES_NOT_EXIST;
         }
 
         try {
             command.setArguments(request.getArguments());
-        } catch (CouldNotParseArgumentsException e){
+        } catch (CouldNotParseArgumentsException badArguments){
             return COULD_NOT_PARSE_ARGUMENTS;
         }
 
-        response = command.execute();
-
-        return response;
+        try {
+            return command.execute();
+        } catch (Exception internalError){
+            return INTERNAL_ERROR;
+        }
     }
 
     /**
@@ -116,6 +101,13 @@ public class Handler {
         }
     }
 
+    /**
+     * The constructor must never be used outside this class, as it is treated as static
+     */
+    private Handler(){}
+}
+
+//TODO: Remove this
 //    /**
 //     * FOR TESTING PURPOSES
 //     */
@@ -128,8 +120,6 @@ public class Handler {
 //            } catch (RuntimeException e) {
 //                System.out.println(e);
 //            }
-//
 //        }
 //    }
-}
 

@@ -11,6 +11,7 @@ public class MineCommand extends Command {
     @Override
     public Response execute() {
         //TODO
-        return null;
+        Response response = Response.createOK("Done");
+        return addRobotState(response);
     }
 }

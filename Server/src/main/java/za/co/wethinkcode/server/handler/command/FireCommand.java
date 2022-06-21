@@ -2,6 +2,8 @@ package za.co.wethinkcode.server.handler.command;
 
 import za.co.wethinkcode.Response;
 
+import java.util.HashMap;
+
 
 public class FireCommand extends Command {
 
@@ -40,6 +42,7 @@ public class FireCommand extends Command {
 //
 //        return true;
 //    }
-        return null;
+        Response response = Response.createOK(new HashMap<>());
+        return addRobotState(response);
     }
 }

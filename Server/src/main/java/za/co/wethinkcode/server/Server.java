@@ -1,96 +1,29 @@
-
 package za.co.wethinkcode.server;
 
+import static za.co.wethinkcode.server.Configuration.*;
 
-import picocli.CommandLine;
-import picocli.CommandLine.Command;
-import picocli.CommandLine.Option;
 import za.co.wethinkcode.Request;
 import za.co.wethinkcode.Response;
-import za.co.wethinkcode.server.handler.world.AbstractWorld;
-import za.co.wethinkcode.server.handler.world.World;
-import za.co.wethinkcode.server.handler.world.map.EmptyMap;
 
-import java.net.*;
-import java.io.*;
+
+import java.io.IOException;
+import java.net.ServerSocket;
+import java.net.Socket;
 import java.util.PriorityQueue;
 import java.util.Queue;
-import java.util.concurrent.Callable;
+import java.util.Scanner;
 
+public class Server {
+    private static final Queue<Request> requests = new PriorityQueue<Request>();
 
-// This has the same functionality as multiserver,
-// but does not work for more than 1 client.
-// TODO: Consider deletion
-
-@Command(
-        name = "robots-world",
-        mixinStandardHelpOptions = true,
-        version = {"robots 1.0.0"},
-        description = {"Starts the Robot World server"}
-)
-public class Server implements Callable<Integer> {
+    protected static volatile boolean running = true;
 
     public static void main(String[] args) {
-        int exitCode = (new CommandLine((new Server()))).execute(args);
-        System.exit(exitCode);
+        Configuration.setConfiguration(args);
+        System.out.println("**** Initialising the Robot World");
+        startRobotWorldServer();
     }
 
-    @Option(
-            names = {"-s", "--size"},
-            description = {"Size of the world as one side of a square grid"}
-    )
-    private int size = 1;
-
-    @Option(
-            names = {"-p", "--port"},
-            description = {"Port to listen for client connections"}
-    )
-    private int port = 5000;
-
-    @Option(
-            names = {"-o", "--obstacle"},
-            description = {"Position of fixed obstacle as [x,y] coordinate in form 'x,y', or 'none' or 'random'"}
-    )
-    private String obstacle = "none";
-
-    @Option(
-            names = {"-pt", "--pit"},
-            description = {"Position of fixed pit as [x,y] coordinate in form 'x,y', or 'none' or 'random'"}
-    )
-    private String pits = "none";
-
-    @Option(
-            names = {"-m", "--mine"},
-            description = {"Position of fixed mine as [x,y] coordinate in form 'x,y', or 'none' or 'random'"}
-    )
-    private String mines = "none";
-
-    @Option(
-            names = {"-v", "--visibility"},
-            description = {"Visibility for robot in nr of steps"}
-    )
-    private int visibility = 10;
-
-    @Option(
-            names = {"-r", "--repair"},
-            description = {"Duration for robot shield to repair"}
-    )
-    private int repair = 5;
-
-    @Option(
-            names = {"-l" , "--reload"},
-            description = {"Instruct the robot to reload its weapons"}
-    )
-    private int reload = 7;
-
-    @Option(
-            names = {"-ht", "--hit"},
-            description = {"Maximum strength for robot shield"}
-    )
-    private int hit = 3;
-    private AbstractWorld world;
-
-    private static Queue<Request> requests = new PriorityQueue<Request>();
     
     public static void addRequest(Request request){
         requests.add(request);
@@ -98,123 +31,82 @@ public class Server implements Callable<Integer> {
     public static Response getResponse(String robot) {
         return null;
     }
-    
 
-    private void startRobotWorldServer() throws IOException{
-        //TODO: Should handle this exception and improve code below
-        ServerSocket s = new ServerSocket(port);
-        System.out.println("MainServerThread running & waiting for client connections.");
+    private static void startRobotWorldServer(){
+        Thread serverCommandHandler = new ServerCommandHandler();
+        serverCommandHandler.start();
 
-        while(true) {
-            try {
-                Socket socket = s.accept();
-                System.out.println("Connection: " + socket);
-                Runnable r = new ServerClientCommunicator(socket);
-                Thread task = new Thread(r);
-                task.start();
+        try (
+            ServerSocket s = new ServerSocket(port())
+        ) {
 
-            } catch(IOException ex) {
-                ex.printStackTrace();
+            System.out.println("Server is running & waiting for client connections.");
+
+            while(running) {
+                try {
+                    Socket socket = s.accept();
+                    Thread serverClientCommunicator = new ServerClientCommunicator(socket);
+                    serverClientCommunicator.start();
+
+                } catch(IOException clientFailedToConnect) {
+                    System.out.println("Failed to connect a client.");
+                }
             }
+
+        } catch(IOException serverFailedToOpen){
+            System.out.println("Failed to start the server.");
+            System.exit(1);
         }
     }
 
-    private void creatingWorldConfig(){
-        System.out.println("Creating World with the following configurations.. " +
-                "\n[size: " + this.size + " x " + this.size +
-                "\n, obstacles: " + this.obstacle +
-                "\n, pits: " + this.pits +
-                "\n, mines: " + this.mines +
-                "\n, visibility: " + this.visibility +
-                "\n, repair: " + this.repair +
-                "\n, reload: " + this.reload +
-                "\n, hit: " + this.hit + "]");
-    }
-
-
     /**
-     * build command arguments, initialise and run server
-     * @return terminating state for the server
-     * @throws Exception handle any connection or invalid command arguments
+     * Handles the commands for the serverside,
+     * the commands are terminal based.
      */
-    @Override
-    public Integer call() throws Exception {
-        //TODO: build command options here
-        creatingWorldConfig();
+    private static class ServerCommandHandler extends Thread{
+        private static final Scanner in = new Scanner(System.in);
 
-        //Create the world based on config or arguments values
-        this.world = new World(new EmptyMap());
+        //TODO:
+        // Add methods for the implementation of the
+        // other commands as methods within this class
 
-
-        System.out.println("**** Initialising the Robot World");
-        this.startRobotWorldServer();
-        return 0;
+        /**
+         * Handles the input coming in to the server from commandline
+         */
+        @Override
+        public void run() {
+            String command = "";
+            while (running) {
+                command = in.nextLine();
+                switch (command.split(" ")[0].toLowerCase()) {
+                    case "exit":
+                    case "quit":
+                        Server.running = false;
+                        break;
+                    case "dump":
+                        //TODO:
+                        // Iterate through the worlds map
+                        break;
+                    case "robots":
+                        //TODO:
+                        // Iterate through the worlds robot list
+                        break;
+                    case "purge":
+                        String robot = command.split("")[1];
+                        //TODO:
+                        // kill that robot
+                        // Could be done by injecting
+                        // an exit request for that robot
+                        break;
+                    default:
+                        System.out.println("Invalid command");
+                }
+            }
+            System.out.println("Server closing...");
+            //TODO:
+            // NotifyClients()
+            System.exit(0);
+        }
     }
-//
-//    public static final int PORT = 3333;
-//    private static Robot robot;
-//    private final BufferedReader in;
-//    private final PrintStream out;
-//    private final String clientMachine;
-//
-//
-//    public static void main(String args[])throws Exception{
-//        Command command;
-//
-//        ServerSocket ss=new ServerSocket(3333);
-//        Socket s=ss.accept();
-//        DataInputStream din=new DataInputStream(s.getInputStream());
-//        DataOutputStream dout=new DataOutputStream(s.getOutputStream());
-//        BufferedReader br=new BufferedReader(new InputStreamReader(System.in));
-//
-//
-//
-//        String str="",str2="";
-//        Scanner scanner = new Scanner(System.in);
-//
-//
-//
-//
-//        while(!str2.equals("false")){
-//            String instruction=din.readUTF();
-//            command = Command.create(instruction);
-//            Boolean shouldContinue = robot.handleCommand(command);
-//            str2=br.readLine();
-//            dout.writeUTF(String.valueOf(shouldContinue));
-//            dout.flush();
-//        }
-//        din.close();
-//        s.close();
-//        ss.close();
-//    }
-//
-//    public Server(Socket socket) throws IOException {
-//        clientMachine = socket.getInetAddress().getHostName();
-//        System.out.println("Connection from " + clientMachine);
-//
-//        out = new PrintStream(socket.getOutputStream());
-//        in = new BufferedReader(new InputStreamReader(
-//                socket.getInputStream()));
-//        System.out.println("Waiting for client...");
-//    }
-//
-//    @Override
-//    public void run() {
-//        try {
-//            String messageFromClient;
-//            while((messageFromClient = in.readLine()) != null) {
-//                System.out.println("Message \"" + messageFromClient + "\" from " + clientMachine);
-//                out.println("Thanks for this message: "+messageFromClient);
-//            }
-//        } catch(IOException ex) {
-//            System.out.println("Shutting down single client server");
-//        } finally {
-//            closeQuietly();
-//        }
-//    }
-//
-//    private void closeQuietly() {
-//        try { in.close(); out.close();
-//        } catch(IOException ex) {}
-//    }
 }
+

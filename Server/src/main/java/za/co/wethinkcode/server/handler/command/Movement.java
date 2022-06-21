@@ -23,7 +23,8 @@ public abstract class Movement extends Command {
 //        }else if (target.getWorld().updatePosition(-nrSteps).equals(World.UpdateResponse.FAILED_OBSTRUCTED)) {
 //            target.setStatus("Sorry, there is an obstacle in the way.");}
 //        return true;
-        return null;
+        Response response = Response.createOK("Done");
+        return addRobotState(response);
     }
 
     /**
