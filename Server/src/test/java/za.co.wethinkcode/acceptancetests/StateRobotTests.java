@@ -32,6 +32,7 @@ public class StateRobotTests {
     @Test
     void validStateCommandShouldSucceed(){
         // Given that I am connected to a running Robot Worlds server
+        assertTrue(serverClient.isConnected());
 
         //And I have successfully launched a robot to the server
         assertTrue(serverClient.launchRobot());

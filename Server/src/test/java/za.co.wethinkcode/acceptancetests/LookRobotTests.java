@@ -28,10 +28,7 @@ public class LookRobotTests {
     private final RobotWorldClient serverClient = new RobotWorldJsonClient();
 
     @BeforeEach
-    void connectToServer(){
-
-        serverClient.connect(DEFAULT_IP, DEFAULT_PORT);
-    }
+    void connectToServer(){serverClient.connect(DEFAULT_IP, DEFAULT_PORT);}
 
     @AfterEach
     void disconnectFromServer(){
@@ -62,23 +59,23 @@ public class LookRobotTests {
     @Test
     void invalidLookArgumentsShouldFail(){
 
-//        //Given that I am connected to a running Robot Worlds server.
-//        // And the world is of size 1x1 (The world is configured or hardcoded to this size)
-//        assertTrue(serverClient.isConnected());
-//
-//        //And I have successfully launched a robot to the server
-//        assertTrue(serverClient.launchRobot("NOT HAL"));
-//
-//        //When I send an invalid world arguments (i.e. a non-empty list, because the world command does not take any arguments)
-//        serverClient.sendRequest("NOT HAL", "look", "[height, width]");
-//
-//        //Then I should get an error result
-//        JsonNode response = serverClient.getResponse();
-//        assertNotNull(response.get("result"));
-//        assertEquals("ERROR", response.get("result").asText());
-//
-//        //And a message informing me that server could not parse the request due to incorrect arguments
-//        assertEquals("Invalid Request", response.get("data").get("message").asText());
+        //Given that I am connected to a running Robot Worlds server.
+        // And the world is of size 1x1 (The world is configured or hardcoded to this size)
+        assertTrue(serverClient.isConnected());
+
+        //And I have successfully launched a robot to the server
+        assertTrue(serverClient.launchRobot("NOT HAL"));
+
+        //When I send an invalid world arguments (i.e. a non-empty list, because the world command does not take any arguments)
+        serverClient.sendRequest("NOT HAL", "look", "[height, width]");
+
+        //Then I should get an error result
+        JsonNode response = serverClient.getResponse();
+        assertNotNull(response.get("result"));
+        assertEquals("ERROR", response.get("result").asText());
+
+        //And a message informing me that server could not parse the request due to incorrect arguments
+        assertEquals("Invalid Request", response.get("data").get("message").asText());
 
     }
 
