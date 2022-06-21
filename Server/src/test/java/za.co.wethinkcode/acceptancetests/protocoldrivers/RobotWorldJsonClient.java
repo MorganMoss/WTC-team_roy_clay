@@ -122,7 +122,7 @@ public class RobotWorldJsonClient implements RobotWorldClient {
 
     public void assertResult(JsonNode response, String status){
         assertNotNull(response.get("result"));
-        assertEquals(status, response.get("result").asText());
+        assertEquals(response.get("result").asText(), status);
     }
 
 
