@@ -9,7 +9,7 @@ import za.co.wethinkcode.Response;
  * This takes an established connection between the server and a client 
  * and handles communication between the two.
  */
-public class ServerClientCommunicator implements Runnable {
+public class ServerClientCommunicator extends Thread {
 
     private final DataInputStream requestIn;
     private final DataOutputStream responseOut;
