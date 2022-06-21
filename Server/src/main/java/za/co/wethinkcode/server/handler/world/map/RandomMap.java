@@ -27,12 +27,13 @@ public class RandomMap implements Map {
 
 
     public List<Immovable> createRandomImmovables(){
-        int randomNumber= random.nextInt(10);
-        for (int i = 0; i < randomNumber; i++) {
-            int immovableX =random.nextInt(201)-100;
-            int immovableY=random.nextInt(401)-200;
-        this.immovable.add(new Obstacle(immovableX,immovableY));
-    }return this.immovable;
+//        int randomNumber= random.nextInt(10);
+//        for (int i = 0; i < randomNumber; i++) {
+//            int immovableX =random.nextInt(201)-100;
+//            int immovableY=random.nextInt(401)-200;
+//        this.immovable.add(new Obstacle(immovableX,immovableY));
+//    }return this.immovable;
+        return new ArrayList<>();
     }
 
 }

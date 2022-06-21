@@ -10,9 +10,10 @@ public class SimpleMap implements Map {
 
     @Override
     public List<Immovable> getImmovables() {
-        List immovable =new ArrayList();
-        immovable.add(new Obstacle(1,1));
-        return immovable;
+//        List immovable =new ArrayList();
+//        immovable.add(new Obstacle(1,1));
+//        return immovable;
+        return  new ArrayList<>();
     }
 
 }
