@@ -25,8 +25,6 @@ public class Server {
     }
 
     public static void main(String[] args) {
-    System.out.println(new Request("HAL", "Launch", new ArrayList<>()).serialize());
-
         Configuration.setConfiguration(args);
         System.out.println("**** Initialising the Robot World");
         Handler.setup();

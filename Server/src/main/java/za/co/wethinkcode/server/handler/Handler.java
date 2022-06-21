@@ -60,7 +60,12 @@ public final class Handler extends Thread{
      * @return a response from the command executed, or an error response
      */
     public static Response executeRequest(Request request){
-        if (request == null){
+        if (request == null)
+            return INTERNAL_ERROR;
+
+        if (request.getRobot() == null
+            | request.getCommand() == null
+            | request.getArguments() == null){
             return INTERNAL_ERROR;
         }
 

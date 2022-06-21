@@ -1,6 +1,7 @@
 package za.co.wethinkcode;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 
 import java.util.List;
 
@@ -43,6 +44,10 @@ public class Request extends Protocol{
      * @return a Request object
      */
     public static Request deSerialize(String json){
-        return new Gson().fromJson(json, Request.class);
+        try {
+            return new Gson().fromJson(json, Request.class);
+        } catch (JsonSyntaxException badJSON){
+            return null;
+        }
     }
 }

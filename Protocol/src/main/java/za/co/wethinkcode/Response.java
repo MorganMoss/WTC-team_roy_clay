@@ -1,6 +1,7 @@
 package za.co.wethinkcode;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 
 import java.util.HashMap;
 
@@ -51,7 +52,12 @@ public class Response extends Protocol{
      * @return a Response object
      */
     public static Response deSerialize(String json){
-        return new Gson().fromJson(json, Response.class);
+        try {
+            return new Gson().fromJson(json, Response.class);
+        } catch (
+        JsonSyntaxException badJSON){
+            return null;
+        }
     }
 
     /**

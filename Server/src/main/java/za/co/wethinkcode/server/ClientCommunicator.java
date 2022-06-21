@@ -17,8 +17,9 @@ public final class ClientCommunicator {
 
     private final List<String> robots = new ArrayList<>();
 
-    private final DataInputStream requestIn;
-    private final DataOutputStream responseOut;
+    private final BufferedReader requestIn;
+    private final PrintStream responseOut;
+
 
     private final String clientMachine;
 
@@ -32,8 +33,8 @@ public final class ClientCommunicator {
         clientMachine = socket.getInetAddress().getHostName();
         System.out.println("Connection from " + clientMachine);
 
-        requestIn = new DataInputStream(socket.getInputStream());
-        responseOut = new DataOutputStream(socket.getOutputStream());
+        requestIn = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+        responseOut = new PrintStream(socket.getOutputStream());
 
         Thread responder = new Thread(
                 () -> {
@@ -85,10 +86,14 @@ public final class ClientCommunicator {
      */
     private boolean passingRequest(){
         try {
-            String requestJSON = requestIn.readUTF();
-            System.out.println(requestJSON);
-
+            String requestJSON = requestIn.readLine();
             Request request = Request.deSerialize(requestJSON);
+
+            if (request == null){
+                responseOut.println(Response.createError("Bad JSON format").serialize());
+                responseOut.flush();
+                return true;
+            }
 
             if(isLaunch(request)){
                 addRobot(request.getRobot());
@@ -129,22 +134,17 @@ public final class ClientCommunicator {
      * @return true if still connected
      */
     private boolean passingResponse() {
-
         for (String robot : robots) {
+            Response response = Handler.getResponse(this.toString(), robot);
 
-            try {
-                Response response = Handler.getResponse(this.toString(), robot);
-
-                if(!isSuccessfulLaunch(response) | isRobotDead(response)){
-                    removeRobot(robot);
-                }
-
-                responseOut.writeUTF(response.serialize());
-                responseOut.flush();
-            } catch (IOException clientDisconnected) {
-                return false;
+            if (!isSuccessfulLaunch(response) | isRobotDead(response)) {
+                removeRobot(robot);
             }
+
+            responseOut.println(response.serialize());
+            responseOut.flush();
+
         }
-        return true;
+        return responseOut.checkError();
     }
 }
