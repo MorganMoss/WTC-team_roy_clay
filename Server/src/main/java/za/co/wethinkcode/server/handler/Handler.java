@@ -9,9 +9,11 @@ import za.co.wethinkcode.server.handler.command.RobotNotFoundException;
 import java.lang.reflect.InvocationTargetException;
 
 /**
- * The handler class takes requests, executes them as commands and returns responses.
+ * The handler class is a static class that
+ * takes requests, executes them as commands
+ * and returns responses.
  */
-public class Handler {
+public final class Handler {
     /**
      * Pre-formatted Response
      * for a robot that does not exist
@@ -98,6 +100,11 @@ public class Handler {
             throw new RuntimeException(notInstantiated);
         }
     }
+
+    /**
+     * The constructor must never be used outside this class, as it is treated as static
+     */
+    private Handler(){}
 }
 
 //TODO: Remove this
