@@ -82,7 +82,7 @@ public class LaunchRobotTests {
         // Given that I am connected to a running Robot Worlds server
         assertTrue(serverClient.isConnected());
 
-        // When I send a valid launch request to the server
+        // When I send a valid launch request with the robot name "HAL" to the server
         serverClient.sendRequest("HAL", "launch", "[\"shooter\",\"7\",\"4\"]");
 
         // Then I should get a valid response from the server
@@ -134,5 +134,4 @@ public class LaunchRobotTests {
         serverClient.assertMessage(response_2, "No more space in this world");
     }
 
-
-}
+    }
