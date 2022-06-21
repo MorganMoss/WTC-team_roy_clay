@@ -14,12 +14,12 @@ public class LaunchCommand extends Command {
      * Pre-formatted Response
      * for if there is no space in the world for a new robot
      */
-    private static final Response NO_SPACE = Response.createError("No more space in this world");
+    private static final Response NO_SPACE = Response.createOK("No more space in this world");
     /**
      * Pre-formatted Response
      * for if the name given has already been used for another robot.
      */
-    private static final Response NAME_TAKEN = Response.createError("Too many of you in this world");
+    private static final Response NAME_TAKEN = Response.createOK("Too many of you in this world");
 
     private String type;
     private int maximumShieldStrength, maximumShots;

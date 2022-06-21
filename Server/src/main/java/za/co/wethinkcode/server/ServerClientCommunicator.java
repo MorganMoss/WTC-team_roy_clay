@@ -23,6 +23,7 @@ public class ServerClientCommunicator extends Thread {
     public ServerClientCommunicator(Socket socket) throws IOException {
         clientMachine = socket.getInetAddress().getHostName();
         System.out.println("Connection from " + clientMachine);
+
         requestIn = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         responseOut = new PrintStream(socket.getOutputStream());
     }

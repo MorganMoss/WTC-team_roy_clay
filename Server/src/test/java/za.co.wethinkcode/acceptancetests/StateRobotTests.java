@@ -11,6 +11,12 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class StateRobotTests {
 
+    /**
+     * As a player
+     * I want to get the state of my robot
+     * So that I can plan my next move
+     */
+
     private final static int DEFAULT_PORT = 5000;
     private final static String DEFAULT_IP = "localhost";
     private final RobotWorldClient serverClient = new RobotWorldJsonClient();
@@ -31,35 +37,33 @@ public class StateRobotTests {
 
     @Test
     void validStateCommandShouldSucceed(){
+
         // Given that I am connected to a running Robot Worlds server
+        assertTrue(serverClient.isConnected());
 
         //And I have successfully launched a robot to the server
-        assertTrue(serverClient.launchRobot());
+        assertTrue(serverClient.launchRobot("HAL"));
 
         // When I send a valid state request to the server
-        String state_request = "{" +
-                "  \"robot\": \"HAL\"," +
-                "  \"command\": \"state\"," +
-                "  \"arguments\": [\"shooter\",\"5\",\"5\"]" +
-                "}";
-        serverClient.sendRequest(state_request);
+        serverClient.sendRequest("HAL", "state", "[\"shooter\",\"5\",\"5\"]");
 
         // Then I should get a valid response from server
-        JsonNode state_response = serverClient.getResponse();
-        assertEquals("OK", state_response.get("result").asText());
+        JsonNode response = serverClient.getResponse();
+        serverClient.assertResult(response, "OK");
 
-        // And get the state of robot
-        assertNotNull(state_response.get("state").get("position"));
-        assertEquals(0, state_response.get("state").get("position").get(0).asInt());
-        assertEquals(0, state_response.get("state").get("position").get(1).asInt());
-        assertNotNull(state_response.get("state").get("direction"));
-        assertEquals("NORTH", state_response.get("state").get("direction").asText());
-        assertNotNull(state_response.get("state").get("shields"));
-        assertEquals(0, state_response.get("state").get("shields").asInt());
-        assertNotNull(state_response.get("state").get("shots"));
-        assertEquals(0, state_response.get("state").get("shots").asInt());
-        assertNotNull(state_response.get("state").get("status"));
-        assertEquals("TODO", state_response.get("state").get("status").asText());
+        //And get the state of robot
+
+        assertNotNull(response.get("state").get("position"));
+        assertEquals(0, response.get("state").get("position").get(0).asInt());
+        assertEquals(0, response.get("state").get("position").get(1).asInt());
+        assertNotNull(response.get("state").get("direction"));
+        assertEquals("NORTH", response.get("state").get("direction").asText());
+        assertNotNull(response.get("state").get("shields"));
+        assertEquals(0, response.get("state").get("shields").asInt());
+        assertNotNull(response.get("state").get("shots"));
+        assertEquals(0, response.get("state").get("shots").asInt());
+        assertNotNull(response.get("state").get("status"));
+        assertEquals("TODO", response.get("state").get("status").asText());
     }
 
 
@@ -105,6 +109,7 @@ public class StateRobotTests {
                 "}";
         serverClient.sendRequest(state_request);
 
+
         //Then I should get an "ERROR" response.
         JsonNode state_response = serverClient.getResponse();
         assertNotNull(state_response.get("result"));
@@ -131,4 +136,5 @@ public class StateRobotTests {
         assertNotNull(response.get("result"));
         assertEquals("ERROR", response.get("result").asText());
     }
+
 }

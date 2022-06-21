@@ -9,21 +9,21 @@ import za.co.wethinkcode.server.handler.Handler;
 public class HandlerTest {
     @Test
     void testExecuteRequestUnlaunchedRobot(){
-        assertNotNull(Handler.getHandler().executeRequest(null));
+        assertNotNull(Handler.executeRequest(null));
     }
 
     @Test
     void testExecuteRequestInvalidCommand(){
-        assertNotNull(Handler.getHandler().executeRequest(null));
+        assertNotNull(Handler.executeRequest(null));
     }
 
     @Test
     void testExecuteRequestLaunchedRobot(){
-        assertNotNull(Handler.getHandler().executeRequest(null));
+        assertNotNull(Handler.executeRequest(null));
     }
 
     @Test
     void testExecuteRequestValidCommand(){
-        assertNotNull(Handler.getHandler().executeRequest(null));
+        assertNotNull(Handler.executeRequest(null));
     }
 }

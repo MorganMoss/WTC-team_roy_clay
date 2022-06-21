@@ -47,4 +47,12 @@ public interface RobotWorldClient {
 
     boolean launchRobot();
     boolean launchRobot(String name);
+
+    void assertResult(JsonNode response, String status);
+
+    void assertMessage(JsonNode response, String message);
+
+    void assertPosition(JsonNode response, int x, int y);
+
+
 }

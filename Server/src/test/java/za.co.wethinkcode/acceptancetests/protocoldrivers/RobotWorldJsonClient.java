@@ -7,6 +7,8 @@ import za.co.wethinkcode.acceptancetests.protocoldrivers.RobotWorldClient;
 import java.io.*;
 import java.net.Socket;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 public class RobotWorldJsonClient implements RobotWorldClient {
 
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
@@ -21,6 +23,7 @@ public class RobotWorldJsonClient implements RobotWorldClient {
     public RobotWorldJsonClient(){
     }
 
+
     private void setupComms(){
         try {
             responses = new BufferedReader(new InputStreamReader(socket.getInputStream()));
@@ -28,6 +31,7 @@ public class RobotWorldJsonClient implements RobotWorldClient {
         } catch (IOException ignored) {
         }
     }
+
 
     @Override
     public void connect(String IPAddress, int port) {
@@ -42,6 +46,7 @@ public class RobotWorldJsonClient implements RobotWorldClient {
         setupComms();
     }
 
+
     @Override
     public void disconnect() {
         try {
@@ -55,10 +60,12 @@ public class RobotWorldJsonClient implements RobotWorldClient {
         connected = false;
     }
 
+
     @Override
     public boolean isConnected() {
         return connected;
     }
+
 
     @Override
     public JsonNode sendRequest(String requestString) {
@@ -74,6 +81,7 @@ public class RobotWorldJsonClient implements RobotWorldClient {
         return lastResponse;
     }
 
+
     public JsonNode sendRequest(String robot, String command, String args){
         String request = "{" +
                 "\"robot\": \""+robot+"\"," +
@@ -84,16 +92,17 @@ public class RobotWorldJsonClient implements RobotWorldClient {
     }
 
 
-
     @Override
     public JsonNode getResponse() {
         return lastResponse;
     }
 
+
     @Override
     public void ping() {
         sendRequest("ping");
     }
+
 
     @Override
     public boolean launchRobot() {
@@ -109,4 +118,26 @@ public class RobotWorldJsonClient implements RobotWorldClient {
             && launch_response.get("result").asText().equalsIgnoreCase("OK")
         );
     }
+
+
+    public void assertResult(JsonNode response, String status){
+        assertNotNull(response.get("result"));
+        assertEquals(response.get("result").asText(), status);
+    }
+
+
+    public void assertMessage(JsonNode response, String message){
+        assertNotNull(response.get("data"));
+        assertNotNull(response.get("data").get("message"));
+//        assertTrue(response.get("data").get("message").asText().contains(message));
+    }
+
+
+    public void assertPosition(JsonNode response, int x, int y){
+        assertNotNull(response.get("data"));
+        assertNotNull(response.get("data").get("position"));
+        assertEquals(x, response.get("data").get("position").get(0).asInt());
+        assertEquals(y, response.get("data").get("position").get(1).asInt());
+    }
+
 }
