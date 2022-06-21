@@ -11,8 +11,8 @@ import za.co.wethinkcode.Response;
  */
 public class ServerClientCommunicator extends Thread {
 
-    private final DataInputStream requestIn;
-    private final DataOutputStream responseOut;
+    private final BufferedReader requestIn;
+    private final PrintStream responseOut;
 
     private final String clientMachine;
 
@@ -23,9 +23,8 @@ public class ServerClientCommunicator extends Thread {
     public ServerClientCommunicator(Socket socket) throws IOException {
         clientMachine = socket.getInetAddress().getHostName();
         System.out.println("Connection from " + clientMachine);
-
-        requestIn = new DataInputStream(socket.getInputStream());
-        responseOut = new DataOutputStream(socket.getOutputStream());
+        requestIn = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+        responseOut = new PrintStream(socket.getOutputStream());
     }
 
     /**
@@ -34,7 +33,7 @@ public class ServerClientCommunicator extends Thread {
      */
     private boolean passingRequest(){
         try {
-            Request request = (Request) Request.deSerialize(requestIn.readUTF());
+            Request request = (Request) Request.deSerialize(requestIn.readLine());
             
             //TODO: Can choose to add the robot name to a list here if it launches that robot.
             // To be able to remove those robots after a disconnection.
@@ -52,19 +51,16 @@ public class ServerClientCommunicator extends Thread {
      * @return true if still connected
      */
     private boolean passingResponse() {
-        try {
-            Response response = Server.getResponse("");
-            
-            if (response == null){
-                return true;
-            }
-            
-            responseOut.writeUTF(response.serialize());
-            responseOut.flush();
-        } catch (IOException clientDisconnected) {
-            return false;
+        Response response = Server.getResponse("");
+
+        if (response == null){
+            return true;
         }
-        return true;
+
+        responseOut.println(response.serialize());
+        responseOut.flush();
+
+        return responseOut.checkError();
     }
 
     /**
