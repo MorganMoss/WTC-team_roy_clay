@@ -1,40 +1,27 @@
-
 package za.co.wethinkcode.server;
 
+import static za.co.wethinkcode.server.Configuration.*;
 
-import picocli.CommandLine;
 import za.co.wethinkcode.Request;
 import za.co.wethinkcode.Response;
-import za.co.wethinkcode.server.handler.world.AbstractWorld;
-import za.co.wethinkcode.server.handler.world.World;
+
 
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.PriorityQueue;
 import java.util.Queue;
-
-
-// This has the same functionality as multiserver,
-// but does not work for more than 1 client.
-// TODO: Complete world implementation and server receiving connections
-
+import java.util.Scanner;
 
 public class Server {
+    private static final Queue<Request> requests = new PriorityQueue<Request>();
 
-    private AbstractWorld world;
-    private static Queue<Request> requests = new PriorityQueue<Request>();
+    protected static volatile boolean running = true;
 
     public static void main(String[] args) {
-        int exitCode = (new CommandLine((World.getInstance()))).execute(args);
-
+        Configuration.setConfiguration(args);
         System.out.println("**** Initialising the Robot World");
-        try {
-            startRobotWorldServer();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        System.exit(exitCode);
+        startRobotWorldServer();
     }
 
     
@@ -45,87 +32,81 @@ public class Server {
         return null;
     }
 
-    private static void startRobotWorldServer() throws IOException{
-        //TODO: Should handle this exception and improve code below
-        ServerSocket s = new ServerSocket(World.getPort());
-        System.out.println("MainServerThread running & waiting for client connections.");
+    private static void startRobotWorldServer(){
+        Thread serverCommandHandler = new ServerCommandHandler();
+        serverCommandHandler.start();
 
-        while(true) {
-            try {
-                Socket socket = s.accept();
-                Runnable runnable = new ServerClientCommunicator(socket);
-                Thread task = new Thread(runnable);
-                task.start();
-            } catch(IOException clientFailedToConnect) {
-                System.out.println("Failed to connect a client.");
+        try (
+            ServerSocket s = new ServerSocket(port())
+        ) {
+
+            System.out.println("Server is running & waiting for client connections.");
+
+            while(running) {
+                try {
+                    Socket socket = s.accept();
+                    Thread serverClientCommunicator = new ServerClientCommunicator(socket);
+                    serverClientCommunicator.start();
+
+                } catch(IOException clientFailedToConnect) {
+                    System.out.println("Failed to connect a client.");
+                }
             }
+
+        } catch(IOException serverFailedToOpen){
+            System.out.println("Failed to start the server.");
+            System.exit(1);
         }
     }
-//
-//    public static final int PORT = 3333;
-//    private static Robot robot;
-//    private final BufferedReader in;
-//    private final PrintStream out;
-//    private final String clientMachine;
-//
-//
-//    public static void main(String args[])throws Exception{
-//        Command command;
-//
-//        ServerSocket ss=new ServerSocket(3333);
-//        Socket s=ss.accept();
-//        DataInputStream din=new DataInputStream(s.getInputStream());
-//        DataOutputStream dout=new DataOutputStream(s.getOutputStream());
-//        BufferedReader br=new BufferedReader(new InputStreamReader(System.in));
-//
-//
-//
-//        String str="",str2="";
-//        Scanner scanner = new Scanner(System.in);
-//
-//
-//
-//
-//        while(!str2.equals("false")){
-//            String instruction=din.readUTF();
-//            command = Command.create(instruction);
-//            Boolean shouldContinue = robot.handleCommand(command);
-//            str2=br.readLine();
-//            dout.writeUTF(String.valueOf(shouldContinue));
-//            dout.flush();
-//        }
-//        din.close();
-//        s.close();
-//        ss.close();
-//    }
-//
-//    public Server(Socket socket) throws IOException {
-//        clientMachine = socket.getInetAddress().getHostName();
-//        System.out.println("Connection from " + clientMachine);
-//
-//        out = new PrintStream(socket.getOutputStream());
-//        in = new BufferedReader(new InputStreamReader(
-//                socket.getInputStream()));
-//        System.out.println("Waiting for client...");
-//    }
-//
-//    @Override
-//    public void run() {
-//        try {
-//            String messageFromClient;
-//            while((messageFromClient = in.readLine()) != null) {
-//                System.out.println("Message \"" + messageFromClient + "\" from " + clientMachine);
-//                out.println("Thanks for this message: "+messageFromClient);
-//            }
-//        } catch(IOException ex) {
-//            System.out.println("Shutting down single client server");
-//        } finally {
-//            closeQuietly();
-//        }
-//    }
-//
-//    private void closeQuietly() {
-//        try { in.close(); out.close();
-//        } catch(IOException ex) {}
-//    }
+
+    /**
+     * Handles the commands for the serverside,
+     * the commands are terminal based.
+     */
+    private static class ServerCommandHandler extends Thread{
+        private static final Scanner in = new Scanner(System.in);
+
+        //TODO:
+        // Add methods for the implementation of the
+        // other commands as methods within this class
+
+        /**
+         * Handles the input coming in to the server from commandline
+         */
+        @Override
+        public void run() {
+            String command = "";
+            while (running) {
+                command = in.nextLine();
+                switch (command.split(" ")[0].toLowerCase()) {
+                    case "exit":
+                    case "quit":
+                        Server.running = false;
+                        break;
+                    case "dump":
+                        //TODO:
+                        // Iterate through the worlds map
+                        break;
+                    case "robots":
+                        //TODO:
+                        // Iterate through the worlds robot list
+                        break;
+                    case "purge":
+                        String robot = command.split("")[1];
+                        //TODO:
+                        // kill that robot
+                        // Could be done by injecting
+                        // an exit request for that robot
+                        break;
+                    default:
+                        System.out.println("Invalid command");
+                }
+            }
+            System.out.println("Server closing...");
+            //TODO:
+            // NotifyClients()
+            System.exit(0);
+        }
+    }
 }
+
