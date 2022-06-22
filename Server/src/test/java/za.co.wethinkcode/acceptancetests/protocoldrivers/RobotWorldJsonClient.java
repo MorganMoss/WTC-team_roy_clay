@@ -2,12 +2,15 @@ package za.co.wethinkcode.acceptancetests.protocoldrivers;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import za.co.wethinkcode.acceptancetests.protocoldrivers.RobotWorldClient;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintStream;
 import java.net.Socket;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class RobotWorldJsonClient implements RobotWorldClient {
 
@@ -139,5 +142,19 @@ public class RobotWorldJsonClient implements RobotWorldClient {
         assertEquals(x, response.get("data").get("position").get(0).asInt());
         assertEquals(y, response.get("data").get("position").get(1).asInt());
     }
+
+    public int getX(JsonNode response){
+        assertNotNull(response.get("data"));
+        assertNotNull(response.get("data").get("position"));
+        return response.get("data").get("position").get(0).asInt();
+    }
+
+    public int getY(JsonNode response){
+        assertNotNull(response.get("data"));
+        assertNotNull(response.get("data").get("position"));
+        return response.get("data").get("position").get(1).asInt();
+    }
+
+
 
 }

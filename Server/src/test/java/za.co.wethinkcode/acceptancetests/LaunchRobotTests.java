@@ -8,6 +8,9 @@ import org.junit.jupiter.api.Test;
 import za.co.wethinkcode.acceptancetests.protocoldrivers.RobotWorldClient;
 import za.co.wethinkcode.acceptancetests.protocoldrivers.RobotWorldJsonClient;
 
+import java.util.Arrays;
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 
@@ -25,19 +28,19 @@ public class LaunchRobotTests {
     private final RobotWorldClient serverClient = new RobotWorldJsonClient();
 
     @BeforeEach
-    void connectToServer(){
+    void connectToServer() {
         serverClient.connect(DEFAULT_IP, DEFAULT_PORT);
     }
 
 
     @AfterEach
-    void disconnectFromServer(){
+    void disconnectFromServer() {
         serverClient.disconnect();
     }
 
 
     @Test
-    void validLaunchShouldSucceed(){
+    void validLaunchShouldSucceed() {
 
         // Given that I am connected to a running Robot Worlds server
         // And the world is of size 1x1 (The world is configured or hardcoded to this size)
@@ -59,7 +62,7 @@ public class LaunchRobotTests {
 
 
     @Test
-    void invalidLaunchShouldFail(){
+    void invalidLaunchShouldFail() {
 
         // Given that I am connected to a running Robot Worlds server
         assertTrue(serverClient.isConnected());
@@ -77,7 +80,7 @@ public class LaunchRobotTests {
 
 
     @Test
-    void checkForDuplicateRobotName(){
+    void checkForDuplicateRobotName() {
 
         // Given that I am connected to a running Robot Worlds server
         assertTrue(serverClient.isConnected());
@@ -105,7 +108,7 @@ public class LaunchRobotTests {
 
 
     @Test
-    void worldFullNoSpaceToLaunchRobot(){
+    void worldFullNoSpaceToLaunchRobot() {
 
         // Given that I am connected to a running Robot Worlds server
         assertTrue(serverClient.isConnected());
@@ -134,4 +137,80 @@ public class LaunchRobotTests {
         serverClient.assertMessage(response_2, "No more space in this world");
     }
 
+
+    @Test
+    void canLaunchAnotherRobot() {
+        // Given a world of size 2x2
+        // and robot "HAL" has already been launched into the world
+        assertTrue(serverClient.isConnected());
+        assertTrue(serverClient.launchRobot("HAL"));
+
+        // When I launch robot "R2D2" into the world
+        serverClient.sendRequest("R2D2", "launch", "[\"shooter\",\"7\",\"4\"]");
+
+
+        // Then the launch should be successful
+        JsonNode response = serverClient.getResponse();
+        serverClient.assertResult(response, "OK");
+        assertNotNull(response.get("state"));
+
+        // and a randomly allocated position of R2D2 should be returned.
+        assertNotNull(response.get("data"));
+        assertNotNull(response.get("data").get("position"));
+
+        assertTrue(response.get("data").get("position").get(1).isInt());
+        assertTrue(response.get("data").get("position").get(0).isInt());
+
+
+        assertTrue(serverClient.getX(response) >= -1 && serverClient.getX(response) <= 1);
+        assertTrue(serverClient.getY(response) >= -1 && serverClient.getY(response) <= 1);
     }
+
+    @Test
+    void worldWithoutObsIsFull() {
+
+        List<String> robotNames = Arrays.asList("R1", "R2", "R3", "R4", "R5", "R6", "R7", "R8", "R9");
+
+        // Given a world of size 2x2
+        // and I have successfully launched 9 robots into the world
+        assertTrue(serverClient.isConnected());
+        for (String item : robotNames) {
+            serverClient.sendRequest(item, "launch", "[\"shooter\",\"7\",\"4\"]");
+        }
+
+        // when I launch one more robot
+        serverClient.sendRequest("R10", "launch", "[\"shooter\",\"7\",\"4\"]");
+
+        // Then I should get an ""ERROR" response
+        JsonNode response = serverClient.getResponse();
+        serverClient.assertResult(response, "ERROR");
+
+        // with the message "No more space in this world".
+        serverClient.assertMessage(response, "No more space in this world");
+    }
+
+    @Test
+    void launchRobotWithObs() {
+
+        List<String> robotNames = Arrays.asList("R1", "R2", "R3", "R4", "R5", "R6", "R7", "R8");
+
+        // Given a world of size 2x2
+        // and the world has an obstacle at coordinate [1,1]
+        assertTrue(serverClient.isConnected());
+
+        // When I launch 8 robots into the world
+        // Then each robot cannot be in position [1,1]
+        boolean noRobotAtPosition11 = true;
+        while (noRobotAtPosition11) {
+            for (String item : robotNames) {
+                serverClient.sendRequest(item, "launch", "[\"shooter\",\"7\",\"4\"]");
+                JsonNode response = serverClient.getResponse();
+                if (response.get("result").asText().equalsIgnoreCase("ERROR")){
+                    noRobotAtPosition11 = false;
+                }
+            }
+        }
+    }
+}
+
+
