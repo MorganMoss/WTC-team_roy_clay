@@ -54,7 +54,4 @@ public class ForwardTests {
         serverClient.assertPosition(response,0,0);
 
     }
-
-
-
 }
