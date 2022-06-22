@@ -1,17 +1,13 @@
 package za.co.wethinkcode.acceptancetests;
 
 import com.fasterxml.jackson.databind.JsonNode;
-
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import za.co.wethinkcode.acceptancetests.protocoldrivers.RobotWorldClient;
 import za.co.wethinkcode.acceptancetests.protocoldrivers.RobotWorldJsonClient;
-
 import java.util.List;
-
 import java.util.Arrays;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 
@@ -44,7 +40,7 @@ public class LaunchRobotTests {
     void validLaunchShouldSucceed() {
 
         // Given that I am connected to a running Robot Worlds server
-        // And the world is of size 1x1 (The world is configured or hardcoded to this size)
+        // And the world is of size 1x1
         assertTrue(serverClient.isConnected());
 
         // When I send a valid launch request to the server
@@ -112,6 +108,7 @@ public class LaunchRobotTests {
     void worldFullNoSpaceToLaunchRobot() {
 
         // Given that I am connected to a running Robot Worlds server
+        //And the world is of size 1x1
         assertTrue(serverClient.isConnected());
 
         // When I send a valid launch request to the server
@@ -167,6 +164,7 @@ public class LaunchRobotTests {
         assertTrue(serverClient.getY(response) >= -1 && serverClient.getY(response) <= 1);
     }
 
+
     @Test
     void worldWithoutObsIsFull() {
 
@@ -190,6 +188,7 @@ public class LaunchRobotTests {
         serverClient.assertMessage(response, "No more space in this world");
     }
 
+
     @Test
     void launchRobotWithObs() {
 
@@ -211,5 +210,35 @@ public class LaunchRobotTests {
                 }
             }
         }
+    }
+
+
+    @Test
+    void WorldWithAnObstacleIsFull() {
+
+        List<String> robotNames = Arrays.asList("R1", "R2", "R3", "R4", "R5", "R6", "R7", "R8");
+
+        // Given a world of size 2x2
+        // and the world has an obstacle at coordinate [1,1]
+        assertTrue(serverClient.isConnected());
+
+        // and I have successfully launched 8 robots into the world
+
+        for (String item : robotNames) {
+            serverClient.sendRequest(item, "launch", "[\"shooter\",\"7\",\"4\"]");
+            JsonNode response = serverClient.getResponse();
+            serverClient.assertResult(response, "OK");
+        }
+
+        //When I launch one more robot
+        serverClient.sendRequest("R9", "launch", "[\"shooter\",\"7\",\"4\"]");
+
+        //Then I should get an error response back with the message "No more space in this world"
+        JsonNode response = serverClient.getResponse();
+        serverClient.assertResult(response, "ERROR");
+
+        //with the message "No more space in this world"
+        serverClient.assertMessage(response, "No more space in this world");
+
     }
 }
