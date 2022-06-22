@@ -107,6 +107,7 @@ public final class Handler extends Thread{
         while (response == null){
             //TODO: change pair to hashmap
             response = responses.getOrDefault(new Pair<>(client, robot), null);
+            System.out.println(response);
         }
     System.out.println("reurning the response" + response);
         return response;
