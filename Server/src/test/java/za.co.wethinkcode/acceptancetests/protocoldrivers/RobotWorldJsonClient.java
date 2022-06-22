@@ -101,10 +101,14 @@ public class RobotWorldJsonClient implements RobotWorldClient {
 
     @Override
     public boolean launchRobot() {
-        return la    @Override
-    public JsonNode getResponse() {
-        return lastResponse;unchRobot("HAL");
+        return launchRobot("HAL");
     }
+
+    @Override
+    public JsonNode getResponse() {
+        return lastResponse;
+    }
+
     public boolean launchRobot(String name) {
         //Successfully launching a robot to the server
         JsonNode launch_response =  sendRequest(
@@ -135,6 +139,16 @@ public class RobotWorldJsonClient implements RobotWorldClient {
         assertNotNull(response.get("data").get("position"));
         assertEquals(x, response.get("data").get("position").get(0).asInt());
         assertEquals(y, response.get("data").get("position").get(1).asInt());
+    }
+
+    @Override
+    public int getX(JsonNode response) {
+        return response.get("data").get("position").get(0).asInt();
+    }
+
+    @Override
+    public int getY(JsonNode response) {
+        return response.get("data").get("position").get(1).asInt();
     }
 
 }

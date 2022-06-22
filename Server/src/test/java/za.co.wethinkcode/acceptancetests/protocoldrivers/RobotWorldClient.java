@@ -54,5 +54,9 @@ public interface RobotWorldClient {
 
     void assertPosition(JsonNode response, int x, int y);
 
+    int getX(JsonNode response);
+
+    int getY(JsonNode response);
+
 
 }
