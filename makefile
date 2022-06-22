@@ -5,9 +5,10 @@ version=1.0.1
 change-list=release
 reference=libs/reference-server-0.2.3.jar
 ours="libs/robotworld-0.1.0-SNAPSHOT-jar-with-dependencies.jar"
-our_server_class="MultiServer"
+our_server_class="Server"
 output="Test_Output"
 build_args=""
+module="Server.za.co.wethinkcode"
 ,:=,
 ##############################################
 # Callables
@@ -41,7 +42,7 @@ endef
 define run_with_maven
 	@[ -d $(output) ] || mkdir -p $(output)
 	@touch in.txt
-	@./run_with_maven.sh ${firstword ${1}} "${wordlist 2,${words ${1}},${1}}" $(output)
+	@./run_with_maven.sh ${firstword ${1}} "${wordlist 2,${words ${1}},${1}}" $(output) $(module)
 	@echo "[1;33mRunning with Maven:[m[1;34m${1}[m"
 endef
 # run test processes as a callable definitions

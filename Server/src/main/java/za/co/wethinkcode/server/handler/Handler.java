@@ -8,6 +8,7 @@ import za.co.wethinkcode.server.handler.command.RobotNotFoundException;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
+import java.util.concurrent.LinkedBlockingQueue;
 
 import org.javatuples.Pair;
 
@@ -18,13 +19,11 @@ import org.javatuples.Pair;
  * and returns responses.
  */
 public final class Handler extends Thread{
-
     /**
      * Pre-formatted Response
      * for a robot that does not exist
      */
     private static final Response ROBOT_DOES_NOT_EXIST = Response.createError("Robot does not exist");
-
     /**
      * Pre-formatted Response
      * for an unsupported command
@@ -41,7 +40,7 @@ public final class Handler extends Thread{
      */
     private static final Response INTERNAL_ERROR = Response.createError("Internal error occurred");
 
-    private static final Queue<Pair<String, Request>> requests = new PriorityQueue<>();
+    private static final LinkedBlockingQueue<Pair<String, Request>> requests = new LinkedBlockingQueue<>();
     private static final Hashtable<Pair<String, String>, Response> responses = new Hashtable<>();
 
     /**
@@ -105,11 +104,9 @@ public final class Handler extends Thread{
     public static Response getResponse(String client, String robot){
         Response response = null;
         while (response == null){
-            //TODO: change pair to hashmap
-            response = responses.getOrDefault(new Pair<>(client, robot), null);
-            System.out.println(response);
+            response = responses.remove(new Pair<>(client, robot));
         }
-    System.out.println("reurning the response" + response);
+        System.out.println("Returning the response for " + client + "'s " + robot);
         return response;
     }
 
