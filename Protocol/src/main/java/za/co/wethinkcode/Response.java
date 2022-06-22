@@ -1,5 +1,8 @@
 package za.co.wethinkcode;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
+
 import java.util.HashMap;
 
 /**
@@ -39,6 +42,22 @@ public class Response extends Protocol{
 
     public HashMap<String, ?> getState() {
         return state;
+    }
+
+    /**
+     * this function uses Google Gson
+     * (a java data serialization package)
+     * Takes in a string Json and makes a Response object
+     * @param json to be converted
+     * @return a Response object
+     */
+    public static Response deSerialize(String json){
+        try {
+            return new Gson().fromJson(json, Response.class);
+        } catch (
+        JsonSyntaxException badJSON){
+            return null;
+        }
     }
 
     /**

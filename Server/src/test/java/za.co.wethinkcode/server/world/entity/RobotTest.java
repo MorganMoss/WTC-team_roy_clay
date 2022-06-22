@@ -1,11 +1,16 @@
 //package za.co.wethinkcode.server.world.entity;
-//
 //import org.junit.jupiter.api.Test;
-//import za.co.wethinkcode.server.handler.world.entity.movable.robot.Robot;
-//
-//import static org.junit.jupiter.api.Assertions.assertEquals;
-//
 ////import static org.junit.Assert.*;
+//
+//
+//import za.co.wethinkcode.robotworlds.maze.EmptyMaze;
+//import za.co.wethinkcode.robotworlds.world.IWorld;
+//import za.co.wethinkcode.robotworlds.world.TextWorld;
+//import za.co.wethinkcode.server.handler.Position;
+//import za.co.wethinkcode.server.handler.world.entity.movable.robot.Robot;
+//import za.co.wethinkcode.server.command.*;
+//
+//import static org.junit.jupiter.api.Assertions.*;
 //
 //class RobotTest {
 //    IWorld maze = new TextWorld(new EmptyMaze());

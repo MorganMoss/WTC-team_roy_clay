@@ -30,12 +30,10 @@ public class LookRobotTests {
     @BeforeEach
     void connectToServer(){serverClient.connect(DEFAULT_IP, DEFAULT_PORT);}
 
-
     @AfterEach
     void disconnectFromServer(){
         serverClient.disconnect();
     }
-
 
     @Test
     void invalidLookCommandShouldFail(){

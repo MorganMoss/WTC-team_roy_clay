@@ -4,11 +4,13 @@ import static za.co.wethinkcode.server.Configuration.*;
 
 import za.co.wethinkcode.Request;
 import za.co.wethinkcode.Response;
+import za.co.wethinkcode.server.handler.Handler;
 
 
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.PriorityQueue;
 import java.util.Queue;
 import java.util.Scanner;
@@ -18,9 +20,14 @@ public class Server {
 
     protected static volatile boolean running = true;
 
+    public static boolean isRunning(){
+        return running;
+    }
+
     public static void main(String[] args) {
         Configuration.setConfiguration(args);
         System.out.println("**** Initialising the Robot World");
+        Handler.setup();
         startRobotWorldServer();
     }
 
@@ -45,8 +52,7 @@ public class Server {
             while(running) {
                 try {
                     Socket socket = s.accept();
-                    Thread serverClientCommunicator = new ServerClientCommunicator(socket);
-                    serverClientCommunicator.start();
+                    ClientCommunicator serverClientCommunicator = new ClientCommunicator(socket);
 
                 } catch(IOException clientFailedToConnect) {
                     System.out.println("Failed to connect a client.");
@@ -108,5 +114,7 @@ public class Server {
             System.exit(0);
         }
     }
+
+//    private static class RequestResponseHandler
 }
 

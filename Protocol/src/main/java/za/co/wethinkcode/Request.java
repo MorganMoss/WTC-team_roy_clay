@@ -1,5 +1,8 @@
 package za.co.wethinkcode;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
+
 import java.util.List;
 
 /**
@@ -31,5 +34,20 @@ public class Request extends Protocol{
 
     public List<?> getArguments() {
         return arguments;
+    }
+
+    /**
+     * this function uses Google Gson
+     * (a java data serialization package)
+     * Takes in a string Json and makes a Request object
+     * @param json to be converted
+     * @return a Request object
+     */
+    public static Request deSerialize(String json){
+        try {
+            return new Gson().fromJson(json, Request.class);
+        } catch (JsonSyntaxException badJSON){
+            return null;
+        }
     }
 }
