@@ -92,10 +92,8 @@ public class RobotWorldJsonClient implements RobotWorldClient {
     }
 
 
-    @Override
-    public JsonNode getResponse() {
-        return lastResponse;
-    }
+
+}
 
 
     @Override
@@ -106,7 +104,9 @@ public class RobotWorldJsonClient implements RobotWorldClient {
 
     @Override
     public boolean launchRobot() {
-        return launchRobot("HAL");
+        return la    @Override
+    public JsonNode getResponse() {
+        return lastResponse;unchRobot("HAL");
     }
     public boolean launchRobot(String name) {
         //Successfully launching a robot to the server
