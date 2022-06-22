@@ -105,8 +105,10 @@ public final class Handler extends Thread{
     public static Response getResponse(String client, String robot){
         Response response = null;
         while (response == null){
+            //TODO: change pair to hashmap
             response = responses.getOrDefault(new Pair<>(client, robot), null);
         }
+    System.out.println("reurning the response" + response);
         return response;
     }
 

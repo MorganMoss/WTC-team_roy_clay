@@ -36,16 +36,16 @@ public final class ClientCommunicator {
         requestIn = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         responseOut = new PrintStream(socket.getOutputStream());
 
-        Thread responder = new Thread(
-                () -> {
-                    while (true) {
-                        if (!passingResponse()) {
-                            break;
-                        }
-                    }
-                    System.out.println(clientMachine + " has disconnected");
-                }
-        );
+    Thread responder =
+        new Thread(
+            () -> {
+              while (true) {
+                  if (!passingResponse()) {
+                      break;
+                  }
+              }
+              System.out.println(clientMachine + " has disconnected");
+            });
         responder.start();
 
         //TODO: Take that list of robots and send a quit request for each.
@@ -145,6 +145,6 @@ public final class ClientCommunicator {
             responseOut.flush();
 
         }
-        return responseOut.checkError();
+        return !responseOut.checkError();
     }
 }
