@@ -106,6 +106,7 @@ public final class Handler extends Thread{
         Response response = null;
         while (response == null){
             response = responses.getOrDefault(new Pair<>(client, robot), null);
+            System.out.println(response);
         }
         return response;
     }
