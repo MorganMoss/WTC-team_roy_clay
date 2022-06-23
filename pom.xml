@@ -97,7 +97,7 @@
                         <configuration>
                             <archive>
                                 <manifest>
-                                    <mainClass>MultiServer</mainClass>
+                                    <mainClass>za.co.wethinkcode.server.Server</mainClass>
                                 </manifest>
                             </archive>
                             <descriptorRefs>
