@@ -6,7 +6,7 @@
 
     <groupId>za.co.wethinkcode</groupId>
     <artifactId>robotworld</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>{buildNumber}</version>
 
     <packaging>pom</packaging>
 
