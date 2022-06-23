@@ -68,10 +68,8 @@ public class LookRobotTests {
         //When I ask the first robot to look
         serverClient.sendRequest("HAL", "look", "[]");
 
-
         //Then I should get a response back with an object of type OBSTACLE at a distance of 1 step.
         JsonNode response = serverClient.getResponse();
-
 
         boolean foundObstacle = false;
         int distanceToObstacle = 0;
@@ -83,7 +81,6 @@ public class LookRobotTests {
                 distanceToObstacle = object.get("distance").asInt();
                 artefactFound = "OBSTACLE";
             }
-
         }
         assertTrue(foundObstacle);
         assertEquals("OBSTACLE", artefactFound);
@@ -96,9 +93,7 @@ public class LookRobotTests {
 
         //Given a world of size 2x2.
         //and the world has an obstacle at coordinate [0,1].
-        //and I have successfully launched 8 robots into the world.
         assertTrue(serverClient.isConnected());
-
 
         //and I have successfully launched 8 robots into the world.
         for (String item : robotNames) {
@@ -109,7 +104,6 @@ public class LookRobotTests {
 
         //When I ask the first robot to look
         serverClient.sendRequest("R1", "look", "[]");
-
 
         //Then I should get a response back with one object being an OBSTACLE that is one step away.
         //and three objects should be ROBOTs that is one step away
@@ -177,4 +171,3 @@ public class LookRobotTests {
         serverClient.assertMessage(response, "Invalid Request");
     }
 }
-
