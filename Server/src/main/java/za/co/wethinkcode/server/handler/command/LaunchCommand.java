@@ -2,13 +2,8 @@ package za.co.wethinkcode.server.handler.command;
 
 
 import za.co.wethinkcode.Response;
-import za.co.wethinkcode.server.handler.Handler;
-
-import java.util.HashMap;
 import java.util.List;
 
-//Out of spec
-//TODO: Consider removal.
 public class LaunchCommand extends Command {
     /**
      * Pre-formatted Response
@@ -31,7 +26,7 @@ public class LaunchCommand extends Command {
      */
     @Override
     public Response execute() {
-        //TODO
+        //TODOResponse response = Response.createOK()
         Response response = Response.createOK();
         return addRobotState(response);
     }
@@ -51,6 +46,7 @@ public class LaunchCommand extends Command {
 
         try {
             type = (String) arguments.get(0);
+            //TODO: Possible issue with int cast from string
             maximumShieldStrength = (int) arguments.get(1);
             maximumShots = (int) arguments.get(2);
         } catch (ClassCastException badArgument){
