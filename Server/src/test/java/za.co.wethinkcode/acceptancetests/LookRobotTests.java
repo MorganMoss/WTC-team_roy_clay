@@ -133,7 +133,6 @@ public class LookRobotTests {
         }
         assertEquals(1, numObstaclesSeen);
         assertEquals(1, distanceToObstacle);
-
         assertEquals(3, numRobotsSeen);
         assertEquals(1, distanceToRobot);
     }
@@ -177,43 +176,5 @@ public class LookRobotTests {
         //And a message informing me that server could not parse the request due to incorrect arguments
         serverClient.assertMessage(response, "Invalid Request");
     }
-
-
-//    @Test
-//    void validLookOtherArtifactsBesidesLaunchedRobot(){
-//
-//        //Given that I am connected to a running Robot Worlds server.
-//        //And I have a world with size > 1x1 (in this case 10x10) and an obstacle at (0, 1)
-//        assertTrue(serverClient.isConnected());
-//
-//        //And I have successfully launched a robot to the server
-//        assertTrue(serverClient.launchRobot("HAL"));
-//
-//        //And I send a valid look request, "look", to the server.
-//        serverClient.sendRequest("HAL", "look", "[]");
-//
-//        //Then I should get a valid/successful response, " "result" = "OK" " from the server.
-//        JsonNode response = serverClient.getResponse();
-//        serverClient.assertResult(response, "OK");
-//
-//
-//        boolean found_obstacle = false;
-////        //And the object field, which would contain present artefacts, should be empty.
-//        for (JsonNode item : response.get("data").get("objects")){
-//            assertTrue("EDGE".equalsIgnoreCase(item.get("type").asText())
-//                    || "OBSTACLE".equalsIgnoreCase(item.get("type").asText()));
-//            System.out.println(item.get("type").asText());
-//            if (item.get("type").asText().equalsIgnoreCase("OBSTACLE")){
-//                if (found_obstacle){
-//                    fail();
-//                }
-//                found_obstacle = true;
-//            }
-//        }
-//        assertTrue(found_obstacle);
-//
-//    }
-
-
 }
 
