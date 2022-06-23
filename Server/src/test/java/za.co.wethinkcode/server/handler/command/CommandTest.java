@@ -1,5 +1,6 @@
 package za.co.wethinkcode.server.handler.command;
 
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import za.co.wethinkcode.Response;
@@ -11,18 +12,31 @@ import java.util.HashMap;
 
 import static java.lang.Math.min;
 import static org.junit.jupiter.api.Assertions.*;
-import static za.co.wethinkcode.server.Configuration.max_shield;
-import static za.co.wethinkcode.server.Configuration.max_shots;
+import static za.co.wethinkcode.server.Configuration.*;
 
 class CommandTest {
     private Command command;
     private Response response;
 
+    /**
+     * Writes up a config to use during this test
+     */
+    @BeforeAll
+    static void makeConfig(){
+        setConfiguration(new String[0]);
+    }
+
+    /**
+     * Resets the world before each test
+     */
     @BeforeEach
     void resetWorld(){
         World.reset();
     }
 
+    /**
+     * Quick way to launch a robot
+     */
     void launchRobot(String name, Integer shield, Integer shots){
         ArrayList<String> kinds = new ArrayList<>(){{
             add("sniper");
@@ -44,14 +58,11 @@ class CommandTest {
      * Checks the response to see if its a valid error
      */
     void assertBadArguments(){
-        command.setArguments(new ArrayList<>(){{add(new BadDataType());}});
-        //running command
-        response = command.execute();
-
-        assertNotNull(response);
-        assertEquals(response.getResult(), "ERROR");
-        assertEquals(response.getData().get("message"),"Could not parse arguments");
-        assertNull(response.getState());
+        //fail to set arguments
+        try {
+            command.setArguments(new ArrayList<>(){{add(new BadDataType());}});
+            fail("Did not validate arguments.");
+        } catch (CouldNotParseArgumentsException ignored) {}
     }
 
     @Test
@@ -59,15 +70,14 @@ class CommandTest {
         //instantiating command
         command = new WorldCommand();
         //initializing values
-        command.setArguments(new ArrayList<>());
+        command.setArguments(null);
         command.setRobot("ignored");
         //running command
         response = command.execute();
 
         assertNotNull(response);
-        assertEquals(response.getResult(), "OK");
+        assertEquals("OK", response.getResult());
         assertEquals(
-            response.getData(),
             new HashMap<String,String>(){{
             put("dimensions", "["+Configuration.size()+","+ Configuration.size()+"]");
             put("visibility", Configuration.visibility().toString());
@@ -76,7 +86,8 @@ class CommandTest {
             put("mine", Configuration.mine().toString());
             put("max-shields", max_shield().toString());
             put("max-shots", max_shots().toString());
-            }}
+            }},
+            response.getData()
         );
         assertNull(response.getState());
     }
@@ -97,25 +108,30 @@ class CommandTest {
         launchRobot("HAL", shield, shots);
 
         assertNotNull(response);
-        assertEquals(response.getResult(), "OK");
-        assertEquals(response.getData(), new HashMap<String,String>());
+        assertEquals("OK", response.getResult());
+        assertEquals(new HashMap<String,String>(), response.getData());
 
         //TODO:
         // This should not necessarily be 0,0.
         // It should be pulled from the World.
         int x = 0, y = 0;
 
-        assertEquals(response.getState(), new HashMap<String, String>(){{
-           put("position", "["+x+","+y+"]");
-           put("direction", "NORTH");
-           put("shields", ((Integer)  min(shield, max_shield())).toString());
-           put("shots", ((Integer) min(shots, max_shots())).toString());
-           put("status", "NORMAL");
-        }});
+        assertEquals(
+            new HashMap<String, String>(){{
+               put("position", "["+x+","+y+"]");
+               put("direction", "NORTH");
+               put("shields", ((Integer)  min(shield, max_shield())).toString());
+               put("shots", ((Integer) min(shots, max_shots())).toString());
+               put("status", "NORMAL");
+            }},
+            response.getState()
+        );
     }
+
     //TODO:
     // - No Free Location
     // - Name Already Taken
+
     @Test
     void launchCommandBadArgs(){
         //instantiating command
@@ -133,19 +149,22 @@ class CommandTest {
         launchRobot("HAL", shield, shots);
 
         command = new StateCommand();
-        command.setArguments(new ArrayList<>());
+        command.setArguments(null);
         command.setRobot("HAL");
         response = command.execute();
 
         int x = 0, y = 0;
 
-        assertEquals(response.getState(), new HashMap<String, String>(){{
-            put("position", "["+x+","+y+"]");
-            put("direction", "NORTH");
-            put("shields", ((Integer)  min(shield, max_shield())).toString());
-            put("shots", ((Integer) min(shots, max_shots())).toString());
-            put("status", "NORMAL");
-        }});
+        assertEquals(
+            new HashMap<String, String>(){{
+                put("position", "["+x+","+y+"]");
+                put("direction", "NORTH");
+                put("shields", ((Integer)  min(shield, max_shield())).toString());
+                put("shots", ((Integer) min(shots, max_shots())).toString());
+                put("status", "NORMAL");
+            }},
+            response.getState()
+        );
     }
 
     //TODO:
@@ -169,7 +188,6 @@ class CommandTest {
     // - Fire
     //      - Hit
     //      - Miss
-
 
     static class BadDataType {
 

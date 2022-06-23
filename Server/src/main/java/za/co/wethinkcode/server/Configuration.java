@@ -67,7 +67,7 @@ public final class Configuration implements Callable<Integer> {
     private static Integer RELOAD;
 
     @CommandLine.Option(
-            names = {"-m", "--mine"},
+            names = {"-mt", "--mine_time"},
             description = {"Time it takes to place a mine"},
             defaultValue = "3"
     )
@@ -96,10 +96,8 @@ public final class Configuration implements Callable<Integer> {
     public static Integer visibility() {return VISIBILITY;}
     public static Integer repair() {return  REPAIR;}
     public static Integer reload() {return  RELOAD;}
-
     public static Integer max_shield() {return MAX_SHIELD;}
     public static Integer max_shots() {return MAX_SHOTS;}
-
     public static Integer mine() { return MINE;}
 
     @Override
