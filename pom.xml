@@ -3,11 +3,10 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-
     <groupId>za.co.wethinkcode</groupId>
     <artifactId>robotworld</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
-
+    <version>${revision}</version>
+    <name>Team Roy Clay: Robot Worlds</name>
     <packaging>pom</packaging>
 
     <scm>
@@ -21,14 +20,17 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
+        <revision>${major-revision}${buildNumber}-${changelist}</revision>
+        <changelist>SNAPSHOT</changelist>
+        <major-revision>1.0</major-revision>
     </properties>
 
     <modules>
+        <module>AcceptanceTests</module>
         <module>Server</module>
 <!--        <module>Client</module>-->
-<!--        <module>Protocol</module>-->
+        <module>Protocol</module>
     </modules>
-
 
     <dependencies>
         <!-- JUnit Testing-->
@@ -64,8 +66,26 @@
 
     <build>
         <defaultGoal>clean verify apache-rat:check checkstyle:check spotbugs:check javadoc:javadoc</defaultGoal>
+
         <finalName>${artifactId}</finalName>
+
+        <!-- Suppresses the default jar packaging -->
         <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>3.0.2</version>
+                <executions>
+                    <execution>
+                        <id>
+                            default-jar
+                        </id>
+                        <phase>
+                            none
+                        </phase>
+                    </execution>
+                </executions>
+            </plugin>
             <!-- Allows us to execute .java file using 'mvn exec:java' -->
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
@@ -100,21 +120,18 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <format>{0,number}.{1,number}.{2,number}</format>
+                    <format>{0, number}</format>
                     <items>
-                        <item>buildNumber0</item>
-                        <item>buildNumber1</item>
-                        <item>buildNumber2</item>
+                        <item>buildNumberProject</item>
                     </items>
-                    <doCheck>true</doCheck>
-                    <doUpdate>true</doUpdate>
+                    <doCheck>false</doCheck>
+                    <doUpdate>false</doUpdate>
+                    <revisionOnScmFailure>unknown-build</revisionOnScmFailure>
                     <providerImplementations>
                         <svn>javasvn</svn>
                     </providerImplementations>
                 </configuration>
             </plugin>
-
-
         </plugins>
     </build>
 

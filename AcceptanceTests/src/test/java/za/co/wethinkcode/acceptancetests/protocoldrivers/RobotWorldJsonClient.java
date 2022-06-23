@@ -2,7 +2,6 @@ package za.co.wethinkcode.acceptancetests.protocoldrivers;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import za.co.wethinkcode.acceptancetests.protocoldrivers.RobotWorldClient;
 
 import java.io.*;
 import java.net.Socket;
