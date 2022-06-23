@@ -10,10 +10,7 @@ import za.co.wethinkcode.server.handler.Handler;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.ArrayList;
-import java.util.PriorityQueue;
-import java.util.Queue;
-import java.util.Scanner;
+import java.util.*;
 
 public class Server {
     private static final Queue<Request> requests = new PriorityQueue<Request>();
@@ -83,7 +80,12 @@ public class Server {
         public void run() {
             String command = "";
             while (running) {
-                command = in.nextLine();
+                try {
+                    command = in.nextLine();
+                } catch (NoSuchElementException ignored){
+                    continue;
+                }
+
                 switch (command.split(" ")[0].toLowerCase()) {
                     case "exit":
                     case "quit":

@@ -7,7 +7,6 @@ ours=Server/target/Server-$(version).jar
 our_server_class="Server"
 output="Test_Output"
 build_args=""
-server_module="Server"
 ,:=,
 ##############################################
 # Callables
@@ -34,7 +33,7 @@ endef
 #(add "#methodName" to have it run a single test)
 define test
 	@echo "[1;33mRunning Test:[m[1;34m${1}[m"
-	-mvn test -Dtest="${1}" -pl AcceptanceTests> "$(output)/Test Results - ${test_running_in} -${1}.txt" || true
+	@-mvn test -Dtest="${1}" > "$(output)/Test Results - ${test_running_in} -${1}.txt" || true
 	@cat "$(output)/Test Results - ${test_running_in} -${1}.txt" | grep "Tests run" | grep -v "Time elapsed"
 endef
 # Runs a .java file that has a main using maven with in.txt as System In
