@@ -43,5 +43,12 @@ public class World {
         }
         return instance;
     }
+
+    /**
+     * Resets world to initial values
+     */
+    public static void reset() {
+        //TODO
+    }
 }
 

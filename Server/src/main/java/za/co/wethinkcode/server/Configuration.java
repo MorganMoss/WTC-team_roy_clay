@@ -67,11 +67,25 @@ public final class Configuration implements Callable<Integer> {
     private static Integer RELOAD;
 
     @CommandLine.Option(
-            names = {"-ht", "--hit"},
+            names = {"-m", "--mine"},
+            description = {"Time it takes to place a mine"},
+            defaultValue = "3"
+    )
+    private static Integer MINE;
+
+    @CommandLine.Option(
+            names = {"-shield", "--max_shield"},
             description = {"Maximum strength for robot shield"},
             defaultValue = "3"
     )
-    private static Integer HIT;
+    private static Integer MAX_SHIELD;
+
+    @CommandLine.Option(
+            names = {"-shots", "--max_shots"},
+            description = {"Maximum strength for robot shield"},
+            defaultValue = "3"
+    )
+    private static Integer MAX_SHOTS;
 
 
     public static Integer port() {return PORT;}
@@ -82,7 +96,11 @@ public final class Configuration implements Callable<Integer> {
     public static Integer visibility() {return VISIBILITY;}
     public static Integer repair() {return  REPAIR;}
     public static Integer reload() {return  RELOAD;}
-    public static Integer hit() {return HIT;}
+
+    public static Integer max_shield() {return MAX_SHIELD;}
+    public static Integer max_shots() {return MAX_SHOTS;}
+
+    public static Integer mine() { return MINE;}
 
     @Override
     public Integer call() throws Exception {

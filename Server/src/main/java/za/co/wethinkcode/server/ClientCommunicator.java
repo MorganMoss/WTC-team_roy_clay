@@ -156,7 +156,7 @@ public final class ClientCommunicator {
      */
     private boolean isSuccessfulLaunch(Response response){
         String message = (String) response.getData().getOrDefault("message", null);
-        String result = (String) response.getResult();
+        String result = response.getResult();
 
         if (duplicateLaunch){
             duplicateLaunch = false;
