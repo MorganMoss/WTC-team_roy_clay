@@ -59,6 +59,7 @@ public final class Handler extends Thread{
      * @return a response from the command executed, or an error response
      */
     public static Response executeRequest(Request request){
+
         if (request == null)
             return INTERNAL_ERROR;
 
@@ -159,6 +160,8 @@ public final class Handler extends Thread{
             }
             //execute that request
             Response response = executeRequest(requestFromClient.getValue1());
+
+
             //associate the response from that execution with the client
             Pair<String, String> clientAssociatedWithRobot = new Pair<>(
                     requestFromClient.getValue0(),

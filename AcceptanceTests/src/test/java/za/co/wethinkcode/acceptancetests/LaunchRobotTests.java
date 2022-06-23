@@ -174,7 +174,7 @@ public class LaunchRobotTests {
         // and I have successfully launched 9 robots into the world
         assertTrue(serverClient.isConnected());
         for (String item : robotNames) {
-            serverClient.sendRequest(item, "launch", "[\"shooter\",\"7\",\"4\"]");
+            serverClient.launchRobot(item);
         }
 
         // when I launch one more robot

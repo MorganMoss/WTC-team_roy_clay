@@ -81,9 +81,7 @@ public final class ClientCommunicator {
      * @param robot from a new request
      */
     private void addLaunchedRobot(String robot){
-        synchronized (launchedRobots) {
-            launchedRobots.add(robot);
-        }
+        launchedRobots.add(robot);
     }
 
     /**
@@ -158,18 +156,20 @@ public final class ClientCommunicator {
      */
     private boolean isSuccessfulLaunch(Response response){
         String message = (String) response.getData().getOrDefault("message", null);
+        String result = (String) response.getResult();
 
         if (duplicateLaunch){
             duplicateLaunch = false;
             return true;
         }
 
-        if (message == null){
+        if (message == null | result == null){
             return true;
         }
 
         return !(message.equalsIgnoreCase("No more space in this world") |
-        message.equalsIgnoreCase("Too many of you in this world"));
+        message.equalsIgnoreCase("Too many of you in this world")|
+        result.equalsIgnoreCase("ERROR"));
     }
 
     /**
@@ -218,12 +218,11 @@ public final class ClientCommunicator {
                 addAll(launchedRobots);
                 addAll(unLaunchedRobots.keySet());
             }}) {
+                System.out.println(launchedRobots);
                 Response response = Handler.getResponse(this.toString(), robot);
 
                 if (!isSuccessfulLaunch(response) | isRobotDead(response)) {
-                    synchronized (launchedRobots) {
-                        launchedRobots.remove(robot);
-                    }
+                    launchedRobots.remove(robot);
                 }
 
                 tryRemoveUnLaunchedRobot(robot);
