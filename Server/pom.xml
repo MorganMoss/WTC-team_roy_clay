@@ -5,7 +5,7 @@
     <parent>
         <artifactId>robotworld</artifactId>
         <groupId>za.co.wethinkcode</groupId>
-        <version>1.0.0-SNAPSHOT</version>
+        <version>{buildNumber}</version>
 <!--        <relativePath>../pom.xml</relativePath>-->
     </parent>
 
@@ -35,12 +35,24 @@
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <revision>${buildNumber}</revision>
+        <revision>{buildNumber}</revision>
         <changelist>-SNAPSHOT</changelist>
     </properties>
 
     <build>
         <plugins>
+            <!-- Turn off the default maven jar plugin -->
+            <plugin>
+                <artifactId>maven-jar-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>default-jar</id>
+                        <phase>none</phase>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- Package our application into a jar -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-assembly-plugin</artifactId>
