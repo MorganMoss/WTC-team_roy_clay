@@ -10,6 +10,7 @@ import java.util.List;
  */
 public class Request extends Protocol{
     private final String robot, command;
+    //TODO: Perhaps make this string only
     private final List<?> arguments;
 
     /**

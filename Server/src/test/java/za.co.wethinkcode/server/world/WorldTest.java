@@ -1,7 +1,15 @@
-//package za.co.wethinkcode.server.world;
-//
-//import org.junit.jupiter.api.Test;
-//import static org.junit.jupiter.api.Assertions.*;
+package za.co.wethinkcode.server.world;
+
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
+
+public class WorldTest {
+    @Test
+    void test(){
+        assertTrue(true);
+    }
+}
+
 //import za.co.wethinkcode.robotworlds.maze.EmptyMaze;
 //import za.co.wethinkcode.robotworlds.world.IWorld;
 //import za.co.wethinkcode.robotworlds.world.TextWorld;
@@ -9,7 +17,6 @@
 //import za.co.wethinkcode.server.handler.world.IWorld;
 //import za.co.wethinkcode.server.handler.world.Position;
 //
-//public class IWorldTest {
 //
 //    @Test
 //    void updatePosition() {

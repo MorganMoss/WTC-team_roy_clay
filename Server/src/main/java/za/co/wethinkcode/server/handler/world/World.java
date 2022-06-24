@@ -5,6 +5,8 @@ import za.co.wethinkcode.server.handler.world.entity.Entity;
 import za.co.wethinkcode.server.handler.world.entity.movable.robot.Robot;
 
 import static za.co.wethinkcode.server.Configuration.*;
+
+import java.awt.*;
 import java.util.Hashtable;
 import java.util.List;
 
@@ -18,7 +20,7 @@ public class World {
     private static volatile World instance = null;
 
     private final Hashtable<String, Robot> robots = new Hashtable<>();
-    private final Hashtable<Integer, Hashtable<Integer,  Entity>> entityTable = new Hashtable<>();
+    private final Hashtable<Point, Entity> entityTable = new Hashtable<>();
 
     private World(){
         //Use configuration values here to dictate properties of the world.

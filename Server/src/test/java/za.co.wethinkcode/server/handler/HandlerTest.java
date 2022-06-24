@@ -5,8 +5,20 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import za.co.wethinkcode.server.handler.Handler;
 
-//TODO: Write Tests for the Handler's public method
 public class HandlerTest {
+
+    //TODO:
+    // Test ExecuteRequest():
+    // - Check all scenarios:
+    // -> INTERNAL_ERROR
+    // -> ROBOT_NOT_FOUND
+    // -> INVALID_ARGUMENTS
+    // -> INVALID_COMMAND
+    // -> OK
+    // Test Run():
+    // -> add a request
+    // -> try get a response back
+
     @Test
     void testExecuteRequestUnlaunchedRobot(){
         assertNotNull(Handler.executeRequest(null));

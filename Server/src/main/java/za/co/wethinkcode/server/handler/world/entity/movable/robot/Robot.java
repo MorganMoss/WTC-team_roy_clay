@@ -5,19 +5,22 @@ import za.co.wethinkcode.server.handler.world.entity.movable.Movable;
 import java.awt.*;
 
 public class Robot extends Movable {
-    private String name;
+    private final int max_shield, max_shots;
+    private final String name;
+    private final RobotType type;
 
-    //TODO: Get rid of hard-coded variables here. Change visibility
-    public int shots= 5;
+    private String status;
+    private int current_shield, current_shots;
 
-    private int shield = 3;
-
-//    public String getPrint = "";
-
-    public Robot(String name) {
-        //TODO: add position.
-        super(null);
+    public Robot(Point initial_position, String name, RobotType type, int max_shield, int max_shots) {
+        super(initial_position);
         this.name = name;
+        this.type = type;
+        this.max_shield = max_shield;
+        this.max_shots = max_shots;
+        this.current_shield = max_shield;
+        this.current_shots = max_shots;
+        this.status = "NORMAL";
     }
 
     /**
@@ -29,47 +32,37 @@ public class Robot extends Movable {
     @Override
     public String collidedWith(Movable entity) {
         //entity should be moved to the closest empty block to their previous position.
-        return "Obstructed";
+        if (entity.getClass() == Robot.class){
+            return "Obstructed";
+        }
+        //if entity is a bullet, lose shield
+        current_shield--;
+
+        if (current_shield <= 0){
+            status = "DEAD";
+        }
+
+        return "Hit";
     }
 
-
-    public int shot(){
-        return this.shots-=1;
+    public void fire(){
+        current_shots--;
     }
 
+    public void reload(){
+        status = "RELOAD";
+        current_shots = max_shots;
+    }
 
-    public  void reload(){
-        this.shots=5;
+    public void repair(){
+        status = "REPAIR";
+        current_shield = max_shield;
     }
 
 
 //    public String getStatus() {
 //        return this.status;
 //    }
-
-
-//    public ArrayList<String> getHistory() {
-//        return this.History;
-//    }
-
-
-//    public void appendToHistory(String command) {
-//        this.History.add(command);
-//    }
-
-
-//    public boolean handleCommand(Command command) {
-//
-//        return command.execute(this);
-//    }
-
-
-//    @Override
-//    public String toString() {
-//       return "[" + this.getWorld().getPosition().getX() + "," + this.getWorld().getPosition().getY() + "] "
-//               + this.name + "> " + this.status;
-//    }
-
 
 //    public void setStatus(String status) {
 //        this.status = status;

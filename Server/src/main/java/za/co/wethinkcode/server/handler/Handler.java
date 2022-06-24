@@ -181,6 +181,7 @@ public final class Handler extends Thread{
      */
     private Handler(){}
 }
+
 //TODO: Remove this
 //    /**
 //     * FOR TESTING PURPOSES
