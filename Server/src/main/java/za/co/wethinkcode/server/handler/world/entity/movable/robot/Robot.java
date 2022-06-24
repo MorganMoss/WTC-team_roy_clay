@@ -3,6 +3,7 @@ package za.co.wethinkcode.server.handler.world.entity.movable.robot;
 import za.co.wethinkcode.server.handler.world.entity.movable.Movable;
 
 import java.awt.*;
+import java.util.HashMap;
 
 public class Robot extends Movable {
     private final int max_shield, max_shots;
@@ -59,25 +60,17 @@ public class Robot extends Movable {
         current_shield = max_shield;
     }
 
-
-//    public String getStatus() {
-//        return this.status;
-//    }
-
-//    public void setStatus(String status) {
-//        this.status = status;
-//    }
-//
-    public String getName() {
-        return name;
+    public void setMine(){
+        status = "SETMINE";
     }
 
-
-//    public IWorld getWorld() {
-//        return this.IWorld;
-//    }
-//
-//    public Position getPosition() {
-//       return this.getWorld().getPosition();
-//    }
+    public HashMap<String, String> getState(){
+        return  new HashMap<>(){{
+            put("position", "["+position.x+","+position.y+"]");
+            put("direction", direction.toString());
+            put("shields", Integer.toString(current_shield));
+            put("shots", Integer.toString(current_shield));
+            put("status", status);
+        }};
+    }
 }
