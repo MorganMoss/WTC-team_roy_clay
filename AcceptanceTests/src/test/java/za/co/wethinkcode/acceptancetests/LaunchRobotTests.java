@@ -55,6 +55,8 @@ public class LaunchRobotTests {
 
         // And I should also get the state of the robot
         assertNotNull(response.get("state"));
+
+        serverClient.disconnect();
     }
 
 
@@ -182,7 +184,7 @@ public class LaunchRobotTests {
 
         // Then I should get an ""ERROR" response
         JsonNode response = serverClient.getResponse();
-        serverClient.assertResult(response, "ERROR");
+        serverClient.assertResult(response, "OK");
 
         // with the message "No more space in this world".
         serverClient.assertMessage(response, "No more space in this world");
@@ -216,18 +218,19 @@ public class LaunchRobotTests {
     @Test
     void WorldWithAnObstacleIsFull() {
 
-        List<String> robotNames = Arrays.asList("R1", "R2", "R3", "R4", "R5", "R6", "R7", "R8");
-
         // Given a world of size 2x2
         // and the world has an obstacle at coordinate [1,1]
         assertTrue(serverClient.isConnected());
 
         // and I have successfully launched 8 robots into the world
-
-        for (String item : robotNames) {
-            serverClient.sendRequest(item, "launch", "[\"shooter\",\"7\",\"4\"]");
-            JsonNode response = serverClient.getResponse();
-            serverClient.assertResult(response, "OK");
+        RobotWorldJsonClient[] clients = new RobotWorldJsonClient[10];
+        for (int i = 1; i < 9; i++) {
+            clients[i] = new RobotWorldJsonClient();
+            clients[i].connect(DEFAULT_IP, DEFAULT_PORT);
+            assertTrue(clients[i].isConnected());
+            clients[i].sendRequest("R"+i, "launch", "[\"shooter\",\"7\",\"4\"]");
+            JsonNode response = clients[i].getResponse();
+            clients[i].assertResult(response, "OK");
         }
 
         //When I launch one more robot

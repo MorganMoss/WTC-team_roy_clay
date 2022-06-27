@@ -12,7 +12,7 @@ public class Pit extends Immovable {
      * An immovable entity is instantiated with its final position
      * @param position of this entity
      */
-    protected Pit(Point position) {
+    public Pit(Point position) {
         super(position);
     }
 

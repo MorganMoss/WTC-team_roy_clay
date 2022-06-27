@@ -11,7 +11,7 @@ import java.util.List;
 public class Request extends Protocol{
     private final String robot, command;
     //TODO: Perhaps make this string only
-    private final List<?> arguments;
+    private final List<String> arguments;
 
     /**
      * Constructor for the Request Protocol
@@ -19,7 +19,7 @@ public class Request extends Protocol{
      * @param command name of the command the client wants to execute
      * @param arguments the list of data that command requires
      */
-    public Request (String robot, String command, List<?> arguments){
+    public Request (String robot, String command, List<String> arguments){
         this.robot = robot;
         this.command = command;
         this.arguments = arguments;
@@ -33,7 +33,7 @@ public class Request extends Protocol{
         return command;
     }
 
-    public List<?> getArguments() {
+    public List<String> getArguments() {
         return arguments;
     }
 

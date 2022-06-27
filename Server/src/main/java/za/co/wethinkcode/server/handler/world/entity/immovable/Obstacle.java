@@ -12,7 +12,7 @@ public class Obstacle extends Immovable {
      * An immovable entity is instantiated with its final position
      * @param position of this entity
      */
-    protected Obstacle(Point position) {
+    public Obstacle(Point position) {
         super(position);
     }
 
