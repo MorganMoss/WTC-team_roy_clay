@@ -3,7 +3,11 @@ package za.co.wethinkcode.server.handler;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
+import za.co.wethinkcode.Request;
 import za.co.wethinkcode.server.handler.Handler;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class HandlerTest {
 
@@ -21,6 +25,7 @@ public class HandlerTest {
 
     @Test
     void testExecuteRequestUnlaunchedRobot(){
+        System.out.println(new Request("HAL", "LAUNCH", new ArrayList<>()).serialize());
         assertNotNull(Handler.executeRequest(null));
     }
 

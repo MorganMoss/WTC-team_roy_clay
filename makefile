@@ -35,6 +35,7 @@ define test
 	@echo "[1;33mRunning Test:[m[1;34m${1}[m"
 	@-mvn test -Dtest="${1}" > "$(output)/Test Results - ${test_running_in} -${1}.txt" || true
 	@cat "$(output)/Test Results - ${test_running_in} -${1}.txt" | grep "Tests run" | grep -v "Time elapsed"
+	@cat "$(output)/Test Results - ${test_running_in} -${1}.txt" | grep "expected" | grep -v "org.opentest"
 endef
 # Runs a .java file that has a main using maven with in.txt as System In
 define run_with_maven
@@ -97,10 +98,10 @@ build: ## Builds our project
 .PHONY: run_acceptance_tests
 run_acceptance_tests:
 	##############################################
-#	make command
-	-$(call run_test, "LookRobotTests#invalidLookArgumentsShouldFail$(,)ConnectionTests$(,)LaunchRobotTests$(,)StateRobotTests$(,)LookRobotTests#invalidLookCommandShouldFail" , "--size=1")
-	-$(call run_test, "LookRobotTests#validLookOtherArtifacts", "--size=2 --visibility=2 --obstacle=0$(,)1")
-	-$(call run_test, "LookRobotTests#validLookNoOtherArtifacts", "--size=2 --visibility=2")
+#	$(,)LookRobotTests#invalidLookCommandShouldFail$(,)LookRobotTests#invalidLookArgumentsShouldFail
+	-$(call run_test, "ConnectionTests$(,)LaunchRobotTests#validLaunchShouldSucceed+invalidLaunchShouldFail+checkForDuplicateRobotName+worldFullNoSpaceToLaunchRobot$(,)StateRobotTests" , "--size=1")
+#	-$(call run_test, "LookRobotTests#validLookOtherArtifacts", "--size=2 --visibility=2 --obstacle=0$(,)1")
+#	-$(call run_test, "LookRobotTests#validLookNoOtherArtifacts", "--size=2 --visibility=2")
 	@echo "[1;32mAll testing complete![m"
 	##############################################
 

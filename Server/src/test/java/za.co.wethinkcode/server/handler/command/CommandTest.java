@@ -80,18 +80,25 @@ class CommandTest {
 
         assertNotNull(response);
         assertEquals("OK", response.getResult());
-        assertEquals(
-            new HashMap<String,String>(){{
-            put("dimensions", "["+Configuration.size()+","+ Configuration.size()+"]");
-            put("visibility", Configuration.visibility().toString());
-            put("reload", Configuration.reload().toString());
-            put("repair", Configuration.repair().toString());
-            put("mine", Configuration.mine().toString());
-            put("max-shields", max_shield().toString());
-            put("max-shots", max_shots().toString());
-            }},
-            response.getData()
-        );
+
+
+
+        HashMap<String, ?> correct = new HashMap<>(){{
+            put("visibility", Configuration.visibility());
+            put("max-shields", Configuration.max_shield());
+            put("max-shots", Configuration.max_shots());
+            put("reload", Configuration.reload());
+            put("repair", Configuration.repair());
+            put("mine", Configuration.mine());
+        }};
+
+        assertEquals(Configuration.size(), ((int[]) response.getData().get("dimensions"))[0]);
+        assertEquals(Configuration.size(), ((int[]) response.getData().get("dimensions"))[1]);
+
+        for (String key: correct.keySet()){
+            assertEquals(correct.get(key), response.getData().get(key), key);
+        }
+
         assertNull(response.getState());
     }
     @Test
@@ -119,16 +126,19 @@ class CommandTest {
         // It should be pulled from the World.
         int x = 0, y = 0;
 
-        assertEquals(
-            new HashMap<String, String>(){{
-               put("position", "["+World.getRobot("HAL").getPosition().x+","+World.getRobot("HAL").getPosition().y+"]");
-               put("direction", "NORTH");
-               put("shields", ((Integer)  min(shield, max_shield())).toString());
-               put("shots", ((Integer) min(shots, max_shots())).toString());
-               put("status", "NORMAL");
-            }},
-            response.getState()
-        );
+        assertEquals(World.getRobot("HAL").getPosition().x, ((int[]) response.getState().get("position"))[0]);
+        assertEquals(World.getRobot("HAL").getPosition().y, ((int[]) response.getState().get("position"))[1]);
+
+        HashMap<String, ?> correct = new HashMap<>(){{
+            put("direction", "NORTH");
+            put("shields", min(shield, max_shield()));
+            put("shots", min(shots, max_shots()));
+            put("status", "NORMAL");
+        }};
+
+        for (String key: correct.keySet()){
+           assertEquals(correct.get(key), response.getState().get(key));
+        }
     }
 
     //TODO:
@@ -158,16 +168,19 @@ class CommandTest {
 
         int x = 0, y = 0;
 
-        assertEquals(
-            new HashMap<String, String>(){{
-                put("position", "["+World.getRobot("HAL").getPosition().x+","+World.getRobot("HAL").getPosition().y+"]");
-                put("direction", "NORTH");
-                put("shields", ((Integer)  min(shield, max_shield())).toString());
-                put("shots", ((Integer) min(shots, max_shots())).toString());
-                put("status", "NORMAL");
-            }},
-            response.getState()
-        );
+        assertEquals(World.getRobot("HAL").getPosition().x, ((int[]) response.getState().get("position"))[0]);
+        assertEquals(World.getRobot("HAL").getPosition().y, ((int[]) response.getState().get("position"))[1]);
+
+        HashMap<String, ?> correct = new HashMap<>(){{
+            put("direction", "NORTH");
+            put("shields", min(shield, max_shield()));
+            put("shots", min(shots, max_shots()));
+            put("status", "NORMAL");
+        }};
+
+        for (String key: correct.keySet()){
+            assertEquals(correct.get(key), response.getState().get(key));
+        }
     }
 
     //TODO:

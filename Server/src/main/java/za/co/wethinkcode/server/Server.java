@@ -2,11 +2,8 @@ package za.co.wethinkcode.server;
 
 import static za.co.wethinkcode.server.Configuration.*;
 
-import za.co.wethinkcode.Request;
-import za.co.wethinkcode.Response;
 import za.co.wethinkcode.server.handler.Handler;
 import za.co.wethinkcode.server.handler.world.World;
-
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -14,27 +11,13 @@ import java.net.Socket;
 import java.util.*;
 
 public class Server {
-    private static final Queue<Request> requests = new PriorityQueue<Request>();
-
     protected static volatile boolean running = true;
-
-    public static boolean isRunning(){
-        return running;
-    }
 
     public static void main(String[] args) {
         Configuration.setConfiguration(args);
         System.out.println("**** Initialising the Robot World");
         Handler.setup();
         startRobotWorldServer();
-    }
-
-    
-    public static void addRequest(Request request){
-        requests.add(request);
-    }
-    public static Response getResponse(String robot) {
-        return null;
     }
 
     private static void startRobotWorldServer(){
@@ -102,15 +85,11 @@ public class Server {
                         // Iterate through the worlds map
                         break;
                     case "robots":
-                        //TODO:
-                        // Iterate through the worlds robot list
+                        System.out.println(World.getRobots());
                         break;
                     case "purge":
-                        String robot = command.split("")[1];
-                        //TODO:
-                        // kill that robot
-                        // Could be done by injecting
-                        // an exit request for that robot
+                        String robot = command.split(" ")[1];
+                        purge(robot);
                         break;
                     default:
                         System.out.println("Invalid command");

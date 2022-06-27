@@ -24,7 +24,7 @@ public final class ClientCommunicator {
     private final PrintStream responseOut;
     private final String clientMachine;
 
-    private final Set<String> launchedRobots = Collections.synchronizedSet(new HashSet<>());
+    private final Hashtable<String, Boolean> launchedRobots = new Hashtable<>();
 //    private final List<String> unLaunchedRobots = Collections.synchronizedList(new ArrayList<>());
     private final Hashtable<String, Integer> unLaunchedRobots = new Hashtable<>();
 
@@ -56,7 +56,7 @@ public final class ClientCommunicator {
                     }
                     System.out.println(clientMachine + " has disconnected");
 
-                    for (String robot : launchedRobots) {
+                    for (String robot : launchedRobots.keySet()) {
                         Server.purge(robot);
                     }
 
@@ -92,7 +92,7 @@ public final class ClientCommunicator {
      * @param robot from a new request
      */
     private void addLaunchedRobot(String robot){
-        launchedRobots.add(robot);
+        launchedRobots.put(robot, false);
     }
 
     /**
@@ -133,6 +133,8 @@ public final class ClientCommunicator {
             if (requestJSON == null){
                 return false;
             }
+
+            System.out.println(requestJSON);
 
             Request request = Request.deSerialize(requestJSON);
 
@@ -184,9 +186,11 @@ public final class ClientCommunicator {
             return true;
         }
 
+
         return !(message.equalsIgnoreCase("No more space in this world") |
-        message.equalsIgnoreCase("Too many of you in this world")|
-        result.equalsIgnoreCase("ERROR"));
+            message.equalsIgnoreCase("Internal error occurred")|
+            message.equalsIgnoreCase("Too many of you in this world")|
+            message.equalsIgnoreCase("Could not parse arguments"));
     }
 
     /**
@@ -223,6 +227,7 @@ public final class ClientCommunicator {
             }
 
             unLaunchedRobots.remove(robot);
+            Server.purge(robot);
         }
     }
 
@@ -231,12 +236,12 @@ public final class ClientCommunicator {
      * @return true if still connected
      */
     private boolean passingResponse() {
-        HashSet<String> robots = new HashSet<>();
+        HashSet<String> robots;
 
         synchronized (launchedRobots) {
             synchronized (unLaunchedRobots) {
                 robots = new HashSet<>() {{
-                    addAll(launchedRobots);
+                    addAll(launchedRobots.keySet());
                     addAll(unLaunchedRobots.keySet());
                 }};
             }
@@ -251,10 +256,16 @@ public final class ClientCommunicator {
                 continue;
             }
 
+            try {
+                if ((!isSuccessfulLaunch(response) && launchedRobots.get(robot))| isRobotDead(response)) {
+                    launchedRobots.remove(robot);
+                    Server.purge(robot);
+                }
 
-            if (!isSuccessfulLaunch(response) | isRobotDead(response)) {
-                launchedRobots.remove(robot);
-            }
+                if (!launchedRobots.get(robot)){
+                    launchedRobots.put(robot, true);
+                }
+            } catch (NullPointerException ignored){}
 
             tryRemoveUnLaunchedRobot(robot);
 
@@ -264,10 +275,7 @@ public final class ClientCommunicator {
 
             System.out.println("Returning the response for " + this.toString() + "'s " + robot);
             System.out.println(response.serialize());
-
-
         }
-
 
         return !responseOut.checkError();
     }

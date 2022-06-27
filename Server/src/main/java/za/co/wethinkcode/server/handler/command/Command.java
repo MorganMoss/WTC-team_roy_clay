@@ -14,7 +14,6 @@ public abstract class Command {
      * @return response updated to contain the state
      */
     protected Response addRobotState(Response response){
-        //TODO: ADD STATE
         response.addState(World.getRobot(robot).getState());
         return response;
     }
@@ -26,7 +25,7 @@ public abstract class Command {
      * @throws CouldNotParseArgumentsException If any arguments are present
      */
     public void setArguments(List<String> arguments) {
-        if (arguments != null){
+        if (arguments.size() != 0){
             throw new CouldNotParseArgumentsException();
         }
     }
@@ -37,8 +36,10 @@ public abstract class Command {
      * @throws RobotNotFoundException if the robot does not exist
      */
     public void setRobot(String robot){
+        if (World.getRobot(robot) == null){
+            throw new RobotNotFoundException();
+        }
         this.robot = robot;
-        //TODO: VALIDATE
     }
 
     /**
