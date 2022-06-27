@@ -1,5 +1,6 @@
 package za.co.wethinkcode.server.handler.command;
 
+import java.util.HashMap;
 import java.util.List;
 
 import za.co.wethinkcode.Response;
@@ -14,6 +15,8 @@ public abstract class Command {
      */
     protected Response addRobotState(Response response){
         //TODO: ADD STATE
+        HashMap<String, ?> state = new HashMap<>();
+        response.addState(state);
         return response;
     }
 
