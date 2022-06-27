@@ -1,9 +1,9 @@
 package za.co.wethinkcode.server.handler.command;
 
-import java.util.HashMap;
 import java.util.List;
 
 import za.co.wethinkcode.Response;
+import za.co.wethinkcode.server.handler.world.World;
 
 public abstract class Command {
     protected String robot;
@@ -15,8 +15,7 @@ public abstract class Command {
      */
     protected Response addRobotState(Response response){
         //TODO: ADD STATE
-        HashMap<String, ?> state = new HashMap<>();
-        response.addState(state);
+        response.addState(World.getRobot(robot).getState());
         return response;
     }
 
@@ -26,7 +25,7 @@ public abstract class Command {
      * @param arguments of the command in question
      * @throws CouldNotParseArgumentsException If any arguments are present
      */
-    public void setArguments(List<?> arguments) {
+    public void setArguments(List<String> arguments) {
         if (arguments != null){
             throw new CouldNotParseArgumentsException();
         }

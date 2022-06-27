@@ -21,6 +21,7 @@ public class Robot extends Movable {
         this.max_shots = max_shots;
         this.current_shield = max_shield;
         this.current_shots = max_shots;
+        this.direction = Direction.NORTH;
         this.status = "NORMAL";
     }
 
@@ -64,12 +65,13 @@ public class Robot extends Movable {
         status = "SETMINE";
     }
 
-    public HashMap<String, String> getState(){
+    public HashMap<String, ?> getState(){
+        int[] pos =  {position.x, position.y};
         return  new HashMap<>(){{
-            put("position", "["+position.x+","+position.y+"]");
+            put("position", pos);
             put("direction", direction.toString());
-            put("shields", Integer.toString(current_shield));
-            put("shots", Integer.toString(current_shield));
+            put("shields", current_shield);
+            put("shots", current_shield);
             put("status", status);
         }};
     }

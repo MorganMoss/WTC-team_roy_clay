@@ -23,7 +23,10 @@ class CommandTest {
      */
     @BeforeAll
     static void makeConfig(){
-        setConfiguration(new String[0]);
+        String[] args = new String[2];
+        args[0] = "-o=0,0,1,2";
+        args[1] = "-s=3";
+        setConfiguration(args);
     }
 
     /**
@@ -46,8 +49,8 @@ class CommandTest {
         //initializing values
         command.setArguments(new ArrayList<>(){{
             add(kinds.get(0));
-            add(shield);
-            add(shots);
+            add(String.valueOf(shield));
+            add(String.valueOf(shots));
         }});
         command.setRobot(name);
         //running command
@@ -60,7 +63,7 @@ class CommandTest {
     void assertBadArguments(){
         //fail to set arguments
         try {
-            command.setArguments(new ArrayList<>(){{add(new BadDataType());}});
+            command.setArguments(new ArrayList<>(){{add("bad");add("data");add("here");}});
             fail("Did not validate arguments.");
         } catch (CouldNotParseArgumentsException ignored) {}
     }
@@ -118,7 +121,7 @@ class CommandTest {
 
         assertEquals(
             new HashMap<String, String>(){{
-               put("position", "["+x+","+y+"]");
+               put("position", "["+World.getRobot("HAL").getPosition().x+","+World.getRobot("HAL").getPosition().y+"]");
                put("direction", "NORTH");
                put("shields", ((Integer)  min(shield, max_shield())).toString());
                put("shots", ((Integer) min(shots, max_shots())).toString());
@@ -157,7 +160,7 @@ class CommandTest {
 
         assertEquals(
             new HashMap<String, String>(){{
-                put("position", "["+x+","+y+"]");
+                put("position", "["+World.getRobot("HAL").getPosition().x+","+World.getRobot("HAL").getPosition().y+"]");
                 put("direction", "NORTH");
                 put("shields", ((Integer)  min(shield, max_shield())).toString());
                 put("shots", ((Integer) min(shots, max_shots())).toString());

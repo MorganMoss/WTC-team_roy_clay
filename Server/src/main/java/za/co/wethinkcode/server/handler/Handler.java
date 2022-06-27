@@ -90,6 +90,7 @@ public final class Handler extends Thread{
         try {
             return command.execute();
         } catch (Exception internalError){
+            System.out.println(internalError.getMessage());
             return INTERNAL_ERROR;
         }
     }
@@ -104,10 +105,7 @@ public final class Handler extends Thread{
      */
     public static Response getResponse(String client, String robot){
         Response response = null;
-        while (response == null){
-            response = responses.remove(new Pair<>(client, robot));
-        }
-        System.out.println("Returning the response for " + client + "'s " + robot);
+        response = responses.remove(new Pair<>(client, robot));
         return response;
     }
 

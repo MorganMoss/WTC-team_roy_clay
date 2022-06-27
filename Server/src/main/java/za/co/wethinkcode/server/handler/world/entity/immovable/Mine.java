@@ -12,7 +12,7 @@ public class Mine extends Immovable {
      * An immovable entity is instantiated with its final position
      * @param position of this entity
      */
-    protected Mine(Point position) {
+    public Mine(Point position) {
         super(position);
     }
 

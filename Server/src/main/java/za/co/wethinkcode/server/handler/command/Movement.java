@@ -33,14 +33,14 @@ public abstract class Movement extends Command {
      * @throws CouldNotParseArgumentsException if the arguments are invalid for this command
      */
     @Override
-    public void setArguments(List<?> arguments) {
+    public void setArguments(List<String> arguments) {
         if (arguments.size() != 1){
             throw new CouldNotParseArgumentsException();
         }
 
         try {
-            steps = (int) arguments.get(0);
-        } catch (ClassCastException badArgument){
+            steps = Integer.parseInt(arguments.get(0));
+        } catch (NumberFormatException badArgument){
             throw new CouldNotParseArgumentsException();
         }
     }

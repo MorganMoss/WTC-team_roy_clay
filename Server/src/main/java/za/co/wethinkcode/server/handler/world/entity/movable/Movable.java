@@ -1,7 +1,6 @@
 package za.co.wethinkcode.server.handler.world.entity.movable;
 
 import org.jetbrains.annotations.Nullable;
-import za.co.wethinkcode.server.handler.world.IWorld;
 import za.co.wethinkcode.server.handler.world.entity.Entity;
 
 import java.awt.*;
@@ -10,6 +9,9 @@ import java.awt.*;
  * An entity with a mutable position
  */
 public abstract class Movable implements Entity {
+    protected Point position;
+    protected Direction direction;
+
     protected enum Direction {
         NORTH (0),
         EAST (90),
@@ -60,8 +62,10 @@ public abstract class Movable implements Entity {
         }
     }
 
-    protected Point position;
-    protected Direction direction;
+    public Point getPosition() {
+        return position;
+    }
+
 
     /**
      * A movable entity is instantiated with its starting position

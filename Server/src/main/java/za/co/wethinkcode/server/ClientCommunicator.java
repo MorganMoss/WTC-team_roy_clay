@@ -7,7 +7,6 @@ import java.util.*;
 import za.co.wethinkcode.Request;
 import za.co.wethinkcode.Response;
 import za.co.wethinkcode.server.handler.Handler;
-import za.co.wethinkcode.server.handler.command.LaunchCommand;
 
 /**
  * This takes an established connection between the server and a client 
@@ -21,14 +20,20 @@ public final class ClientCommunicator {
      * and it is used in multiple threads.
      * Having it synchronized makes it threadsafe.
      */
-    private final Set<String> launchedRobots = Collections.synchronizedSet(new HashSet<>());
     private final BufferedReader requestIn;
     private final PrintStream responseOut;
     private final String clientMachine;
 
+    private final Set<String> launchedRobots = Collections.synchronizedSet(new HashSet<>());
+//    private final List<String> unLaunchedRobots = Collections.synchronizedList(new ArrayList<>());
     private final Hashtable<String, Integer> unLaunchedRobots = new Hashtable<>();
 
     private boolean duplicateLaunch = false;
+    private boolean connected = true;
+
+    private final Thread responder;
+    private final Thread requester;
+
 
     /**
      * Constructor for a Server Client Communicator
@@ -41,30 +46,36 @@ public final class ClientCommunicator {
         requestIn = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         responseOut = new PrintStream(socket.getOutputStream());
 
-        Thread responder =
-            new Thread(
+        requester = new Thread(
                 () -> {
-                  while (true) {
-                      if (!passingResponse()) {
-                          break;
-                      }
-                  }
-                  System.out.println(clientMachine + " has disconnected");
-                });
-            responder.start();
-
-        //TODO: Take that list of robots and send a quit request for each.
-        Thread requester = new Thread(
-                () -> {
-                    while (true) {
+                    while (connected) {
                         if (!passingRequest()) {
                             break;
                         }
+
                     }
-                    //TODO: Take that list of robots and send a quit request for each.
+                    System.out.println(clientMachine + " has disconnected");
+
+                    for (String robot : launchedRobots) {
+                        Server.purge(robot);
+                    }
+
+                    connected = false;
                 }
         );
+
+       responder = new Thread(
+                () -> {
+                    while (connected) {
+                        if (!passingResponse()) {
+                            break;
+                        }
+                    }
+                }
+        );
+
         requester.start();
+        responder.start();
     }
 
     /**
@@ -117,6 +128,12 @@ public final class ClientCommunicator {
     private boolean passingRequest(){
         try {
             String requestJSON = requestIn.readLine();
+
+            //null when socket is closed on the client side
+            if (requestJSON == null){
+                return false;
+            }
+
             Request request = Request.deSerialize(requestJSON);
 
             if (request == null){
@@ -214,24 +231,43 @@ public final class ClientCommunicator {
      * @return true if still connected
      */
     private boolean passingResponse() {
-            for (String robot : new HashSet<String>() {{
-                addAll(launchedRobots);
-                addAll(unLaunchedRobots.keySet());
-            }}) {
-                System.out.println(launchedRobots);
-                Response response = Handler.getResponse(this.toString(), robot);
+        HashSet<String> robots = new HashSet<>();
 
-                if (!isSuccessfulLaunch(response) | isRobotDead(response)) {
-                    launchedRobots.remove(robot);
-                }
-
-                tryRemoveUnLaunchedRobot(robot);
-
-                responseOut.println(response.serialize());
-                responseOut.flush();
-
-                System.out.println(response.serialize());
+        synchronized (launchedRobots) {
+            synchronized (unLaunchedRobots) {
+                robots = new HashSet<>() {{
+                    addAll(launchedRobots);
+                    addAll(unLaunchedRobots.keySet());
+                }};
             }
+        }
+
+
+        for (String robot : robots){
+            //tries to get responses for all robots simultaneously.
+            Response response = Handler.getResponse(this.toString(), robot);
+
+            if (response == null){
+                continue;
+            }
+
+
+            if (!isSuccessfulLaunch(response) | isRobotDead(response)) {
+                launchedRobots.remove(robot);
+            }
+
+            tryRemoveUnLaunchedRobot(robot);
+
+
+            responseOut.println(response.serialize());
+            responseOut.flush();
+
+            System.out.println("Returning the response for " + this.toString() + "'s " + robot);
+            System.out.println(response.serialize());
+
+
+        }
+
 
         return !responseOut.checkError();
     }

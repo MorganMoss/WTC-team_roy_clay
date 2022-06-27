@@ -30,23 +30,19 @@ public class TurnCommand extends Command {
      * @throws CouldNotParseArgumentsException if the arguments are invalid for this command
      */
     @Override
-    public void setArguments(List<?> arguments) {
+    public void setArguments(List<String> arguments) {
         if (arguments.size() != 1){
             throw new CouldNotParseArgumentsException();
         }
-        try {
-            switch (((String) arguments.get(0)).toLowerCase()){
-                case "left":
-                    direction = true;
-                    break;
-                case "right":
-                    direction = false;
-                    break;
-                default:
-                    throw new CouldNotParseArgumentsException();
-            }
-        } catch (ClassCastException badArgument){
-            throw new CouldNotParseArgumentsException();
+        switch (arguments.get(0).toLowerCase()){
+            case "left":
+                direction = true;
+                break;
+            case "right":
+                direction = false;
+                break;
+            default:
+                throw new CouldNotParseArgumentsException();
         }
     }
 

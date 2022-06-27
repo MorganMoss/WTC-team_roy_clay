@@ -2,22 +2,30 @@ package za.co.wethinkcode.server.handler.command;
 
 
 import za.co.wethinkcode.Response;
+import za.co.wethinkcode.server.handler.world.World;
+import za.co.wethinkcode.server.handler.world.entity.movable.robot.Robot;
+
+import java.awt.*;
 import java.util.List;
+
+import static java.lang.Math.min;
+import static za.co.wethinkcode.server.Configuration.max_shield;
+import static za.co.wethinkcode.server.Configuration.max_shots;
 
 public class LaunchCommand extends Command {
     /**
      * Pre-formatted Response
      * for if there is no space in the world for a new robot
      */
-    private static final Response NO_SPACE = Response.createOK("No more space in this world");
+    private static final Response NO_SPACE = Response.createError("No more space in this world");
     /**
      * Pre-formatted Response
      * for if the name given has already been used for another robot.
      */
-    private static final Response NAME_TAKEN = Response.createOK("Too many of you in this world");
+    private static final Response NAME_TAKEN = Response.createError("Too many of you in this world");
 
     private String type;
-    private int maximumShieldStrength, maximumShots;
+    private int max_shield, max_shots;
 
 
     /**
@@ -26,7 +34,30 @@ public class LaunchCommand extends Command {
      */
     @Override
     public Response execute() {
-        //TODOResponse response = Response.createOK()
+        //TODO
+        // check if this robot exists in world already
+        // if it does, return NAME_TAKEN
+        if (World.getRobot(robot) != null){
+            return NAME_TAKEN;
+        }
+
+        //TODO
+        // check if theres space in the world
+        // if there isn't, return NO_SPACE
+        Point initialPosition = World.getOpenSpace();
+        if (initialPosition == null){
+            return NO_SPACE;
+        }
+
+        //TODO
+        // add a robot to the world of the given name + any other arguments
+        World.addRobot(robot, new Robot(
+                initialPosition,
+                robot,
+                null,
+                min(max_shield, max_shield()),
+                min(max_shots, max_shots())));
+
         Response response = Response.createOK();
         return addRobotState(response);
     }
@@ -39,7 +70,7 @@ public class LaunchCommand extends Command {
      * @throws CouldNotParseArgumentsException if the arguments are invalid for this command
      */
     @Override
-    public void setArguments(List<?> arguments) {
+    public void setArguments(List<String> arguments) {
         if (arguments.size() != 3){
             throw new CouldNotParseArgumentsException();
         }
@@ -47,9 +78,9 @@ public class LaunchCommand extends Command {
         try {
             type = (String) arguments.get(0);
             //TODO: Possible issue with int cast from string
-            maximumShieldStrength = (int) arguments.get(1);
-            maximumShots = (int) arguments.get(2);
-        } catch (ClassCastException badArgument){
+            max_shield = Integer.parseInt(arguments.get(1));
+            max_shots = Integer.parseInt(arguments.get(2));
+        } catch (NumberFormatException badArgument){
             throw new CouldNotParseArgumentsException();
         }
     }

@@ -5,6 +5,7 @@ import static za.co.wethinkcode.server.Configuration.*;
 import za.co.wethinkcode.Request;
 import za.co.wethinkcode.Response;
 import za.co.wethinkcode.server.handler.Handler;
+import za.co.wethinkcode.server.handler.world.World;
 
 
 import java.io.IOException;
@@ -60,6 +61,11 @@ public class Server {
             System.out.println("Failed to start the server.");
             System.exit(1);
         }
+    }
+
+    public static void purge(String robot) {
+        World.removeRobot(robot);
+        System.out.println("Purged " + robot);
     }
 
     /**

@@ -49,8 +49,6 @@ public class RobotWorldJsonClient implements RobotWorldClient {
     @Override
     public void disconnect() {
         try {
-//            responses.close();
-//            requests.close();
             socket.close();
         } catch (IOException e) {
             //error connecting should just throw Runtime error and fail test
@@ -113,6 +111,8 @@ public class RobotWorldJsonClient implements RobotWorldClient {
         JsonNode launch_response =  sendRequest(
                 name, "launch", "[\"shooter\",\"5\",\"5\"]");
 
+        System.out.println(launch_response);
+
         return (
             launch_response.get("result") != null
             && launch_response.get("result").asText().equalsIgnoreCase("OK")
@@ -122,7 +122,7 @@ public class RobotWorldJsonClient implements RobotWorldClient {
 
     public void assertResult(JsonNode response, String status){
         assertNotNull(response.get("result"));
-        assertEquals(response.get("result").asText(), status);
+        assertEquals( status, response.get("result").asText() );
     }
 
 
@@ -134,10 +134,10 @@ public class RobotWorldJsonClient implements RobotWorldClient {
 
 
     public void assertPosition(JsonNode response, int x, int y){
-        assertNotNull(response.get("data"));
-        assertNotNull(response.get("data").get("position"));
-        assertEquals(x, response.get("data").get("position").get(0).asInt());
-        assertEquals(y, response.get("data").get("position").get(1).asInt());
+        assertNotNull(response.get("state"));
+        assertNotNull(response.get("state").get("position"));
+        assertEquals(x, response.get("state").get("position").get(0).asInt());
+        assertEquals(y, response.get("state").get("position").get(1).asInt());
     }
 
     @Override
