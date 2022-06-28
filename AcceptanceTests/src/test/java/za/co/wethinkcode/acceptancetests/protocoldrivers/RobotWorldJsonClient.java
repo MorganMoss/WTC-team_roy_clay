@@ -46,7 +46,9 @@ public class RobotWorldJsonClient implements RobotWorldClient {
     }
 
 
-    @Override
+    @Overrideoid disconnectFromServer() {
+        serverClient.disconnect();
+    }
     public void disconnect() {
         try {
             socket.close();

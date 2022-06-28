@@ -25,15 +25,15 @@ public class Server {
         serverCommandHandler.start();
 
         try (
-            ServerSocket s = new ServerSocket(port())
+            ServerSocket serverSocket = new ServerSocket(port())
         ) {
 
             System.out.println("Server is running & waiting for client connections.");
 
             while(running) {
                 try {
-                    Socket socket = s.accept();
-                    ClientCommunicator serverClientCommunicator = new ClientCommunicator(socket);
+                    Socket socket = serverSocket.accept();
+                    ClientCommunicator clientCommunicator = new ClientCommunicator(socket);
 
                 } catch(IOException clientFailedToConnect) {
                     System.out.println("Failed to connect a client.");
