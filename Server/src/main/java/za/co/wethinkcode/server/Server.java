@@ -58,10 +58,6 @@ public class Server {
     private static class ServerCommandHandler extends Thread{
         private static final Scanner in = new Scanner(System.in);
 
-        //TODO:
-        // Add methods for the implementation of the
-        // other commands as methods within this class
-
         /**
          * Handles the input coming in to the server from commandline
          */
@@ -101,7 +97,5 @@ public class Server {
             System.exit(0);
         }
     }
-
-//    private static class RequestResponseHandler
 }
 
