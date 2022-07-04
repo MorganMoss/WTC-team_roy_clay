@@ -23,12 +23,8 @@ public final class ClientCommunicator {
     private final PrintStream responseOut;
     /**
      * Launched robots are a collection of robot names that were part of a launch request.
-     * Using a synchronizedSet,
-     * as there should only be one of each robot name in this collection,
-     * and it is used in multiple threads.
-     * Having it synchronized makes it threadsafe.
      */
-    private final Set<String> launchedRobots = Collections.synchronizedSet(new HashSet<>());
+    private final Hashtable<String, Boolean> launchedRobots = new Hashtable<>();
     /**
      * Unlaunched robots are a collection of robot names that were part of a command,
      * but not a launch command. They are removed once they get a response
@@ -83,7 +79,7 @@ public final class ClientCommunicator {
 
         System.out.println(this + " has disconnected");
 
-        for (String robot : launchedRobots) {
+        for (String robot : launchedRobots.keySet()) {
             Server.purge(robot);
         }
 
@@ -103,7 +99,7 @@ public final class ClientCommunicator {
      * @param robot from a new request
      */
     private void addLaunchedRobot(String robot){
-        launchedRobots.add(robot);
+        launchedRobots.put(robot, false);
     }
 
     /**
@@ -206,8 +202,9 @@ public final class ClientCommunicator {
         }
 
         return !(message.equalsIgnoreCase("No more space in this world") |
-        message.equalsIgnoreCase("Too many of you in this world")|
-        result.equalsIgnoreCase("ERROR"));
+            message.equalsIgnoreCase("Internal error occurred")|
+            message.equalsIgnoreCase("Too many of you in this world")|
+            message.equalsIgnoreCase("Could not parse arguments"));
     }
 
     /**
@@ -244,6 +241,7 @@ public final class ClientCommunicator {
             }
 
             unLaunchedRobots.remove(robot);
+            Server.purge(robot);
         }
     }
 
@@ -255,7 +253,7 @@ public final class ClientCommunicator {
         synchronized (launchedRobots) {
             synchronized (unLaunchedRobots) {
                 return new HashSet<>() {{
-                    addAll(launchedRobots);
+                    addAll(launchedRobots.keySet());
                     addAll(unLaunchedRobots.keySet());
                 }};
             }
@@ -274,9 +272,16 @@ public final class ClientCommunicator {
                 continue;
             }
 
-            if (!isSuccessfulLaunch(response) | isRobotDead(response)) {
-                launchedRobots.remove(robot);
-            }
+            try {
+                if ((!isSuccessfulLaunch(response) && launchedRobots.get(robot))| isRobotDead(response)) {
+                    launchedRobots.remove(robot);
+                    Server.purge(robot);
+                }
+
+                if (!launchedRobots.get(robot)){
+                    launchedRobots.put(robot, true);
+                }
+            } catch (NullPointerException ignored){}
 
             tryRemoveUnLaunchedRobot(robot);
 

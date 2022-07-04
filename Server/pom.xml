@@ -13,7 +13,7 @@
 
     <artifactId>server</artifactId>
     <name>Robot Worlds Server</name>
-    <version>${major-revision}.${buildNumber}-${changelist}</version>
+    <version>${major-revision}.1-${changelist}</version>
 
     <properties>
         <maven.compiler.source>11</maven.compiler.source>

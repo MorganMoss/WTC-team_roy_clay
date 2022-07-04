@@ -66,9 +66,8 @@ public class Robot extends Movable {
     }
 
     public HashMap<String, ?> getState(){
-        int[] pos =  {position.x, position.y};
         return  new HashMap<>(){{
-            put("position", pos);
+            put("position", new int[] {position.x, position.y});
             put("direction", direction.toString());
             put("shields", current_shield);
             put("shots", current_shield);

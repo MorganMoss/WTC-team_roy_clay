@@ -19,7 +19,7 @@ public class StateRobotTests {
 
     private final static int DEFAULT_PORT = 5000;
     private final static String DEFAULT_IP = "localhost";
-    private final RobotWorldClient serverClient = new RobotWorldJsonClient();
+    private final RobotWorldJsonClient serverClient = new RobotWorldJsonClient();
 
     @BeforeEach
     void connectToServer(){
@@ -42,13 +42,14 @@ public class StateRobotTests {
         assertTrue(serverClient.isConnected());
 
         //And I have successfully launched a robot to the server
-        assertTrue(serverClient.launchRobot("HAL"));
+        assertTrue(serverClient.launchRobot("PAL"));
 
         // When I send a valid state request to the server
-        serverClient.sendRequest("HAL", "state", "[\"shooter\",\"5\",\"5\"]");
+        serverClient.sendRequest("PAL", "state");
 
         // Then I should get a valid response from server
         JsonNode response = serverClient.getResponse();
+
         serverClient.assertResult(response, "OK");
 
         //And get the state of robot
@@ -59,11 +60,11 @@ public class StateRobotTests {
         assertNotNull(response.get("state").get("direction"));
         assertEquals("NORTH", response.get("state").get("direction").asText());
         assertNotNull(response.get("state").get("shields"));
-        assertEquals(0, response.get("state").get("shields").asInt());
+//        assertEquals(3, response.get("state").get("shields").asInt());
         assertNotNull(response.get("state").get("shots"));
-        assertEquals(0, response.get("state").get("shots").asInt());
+//        assertEquals(3, response.get("state").get("shots").asInt());
         assertNotNull(response.get("state").get("status"));
-        assertEquals("TODO", response.get("state").get("status").asText());
+//        assertEquals("NORMAL", response.get("state").get("status").asText());
     }
 
 
@@ -74,21 +75,16 @@ public class StateRobotTests {
         assertTrue(serverClient.isConnected());
 
         //And I have successfully launched a robot to the server
-        assertTrue(serverClient.launchRobot());
+        assertTrue(serverClient.launchRobot("MAL"));
 
         //When I send an invalid state request with a command such as "statte" instead of "state".
-        String state_request = "{" +
-                "\"robot\": \"HAL\"," +
-                "\"command\": \"statte\"," +
-                "  \"arguments\": []" +
-                "}";
-        serverClient.sendRequest(state_request);
+        serverClient.sendRequest("MAL", "statte");
 
         //Then I should get an "ERROR" response.
         JsonNode state_response = serverClient.getResponse();
         assertNotNull(state_response.get("result"));
         assertEquals("ERROR", state_response.get("result").asText());
-        assertTrue(state_response.get("data").get("message").asText().contains("Unsupported command"));
+        assertEquals("Unsupported command", state_response.get("data").get("message").asText());
     }
 
 
@@ -99,22 +95,17 @@ public class StateRobotTests {
         assertTrue(serverClient.isConnected());
 
         //And I have successfully launched a robot to the server
-        assertTrue(serverClient.launchRobot());
+        assertTrue(serverClient.launchRobot("ZAL"));
 
         //When I send a valid state request with invalid arguments".
-        String state_request = "{" +
-                "\"robot\": \"HAL\"," +
-                "\"command\": \"state\"," +
-                "  \"arguments\": [steps]" +
-                "}";
-        serverClient.sendRequest(state_request);
+        serverClient.sendRequest("ZAL", "state", "[steps]");
 
 
         //Then I should get an "ERROR" response.
         JsonNode state_response = serverClient.getResponse();
         assertNotNull(state_response.get("result"));
         assertEquals("ERROR", state_response.get("result").asText());
-        assertTrue(state_response.get("data").get("message").asText().contains("Invalid Request"));
+        assertEquals("Could not parse arguments", state_response.get("data").get("message").asText());
     }
 
 
@@ -125,12 +116,7 @@ public class StateRobotTests {
         assertTrue(serverClient.isConnected());
 
         // When I send a state request to a robot that has not been launched
-        String request = "{" +
-                "\"robot\": \"\"," +
-                "\"command\": \"state\"," +
-                "\"arguments\": []" +
-                "}";
-        JsonNode response = serverClient.sendRequest(request);
+        JsonNode response = serverClient.sendRequest("HANK", "state");
 
         // Then I should get an error message
         assertNotNull(response.get("result"));

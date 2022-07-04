@@ -64,8 +64,7 @@ public final class Handler extends Thread{
             return INTERNAL_ERROR;
 
         if (request.getRobot() == null
-            | request.getCommand() == null
-            | request.getArguments() == null){
+            | request.getCommand() == null){
             return INTERNAL_ERROR;
         }
 

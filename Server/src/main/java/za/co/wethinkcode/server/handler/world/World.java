@@ -73,6 +73,10 @@ public class World {
         } catch (NullPointerException ignored) {}
     }
 
+    public static Set<String> getRobots() {
+        return instance.robots.keySet();
+    }
+
     /**
      * Tries to add any predefined entities to positions given
      */

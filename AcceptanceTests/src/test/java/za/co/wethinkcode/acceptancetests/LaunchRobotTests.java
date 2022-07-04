@@ -22,7 +22,7 @@ public class LaunchRobotTests {
 
     private final static int DEFAULT_PORT = 5000;
     private final static String DEFAULT_IP = "localhost";
-    private final RobotWorldClient serverClient = new RobotWorldJsonClient();
+    private final RobotWorldJsonClient serverClient = new RobotWorldJsonClient();
 
     @BeforeEach
     void connectToServer() {
@@ -146,8 +146,7 @@ public class LaunchRobotTests {
         assertTrue(serverClient.launchRobot("HAL"));
 
         // When I launch robot "R2D2" into the world
-        serverClient.sendRequest("R2D2", "launch", "[\"shooter\",\"7\",\"4\"]");
-
+        serverClient.launchRobot("R2D2");
 
         // Then the launch should be successful
         JsonNode response = serverClient.getResponse();
