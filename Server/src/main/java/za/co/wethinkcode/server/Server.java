@@ -14,8 +14,6 @@ import java.net.Socket;
 import java.util.*;
 
 public class Server {
-    private static final Queue<Request> requests = new PriorityQueue<Request>();
-
     protected static volatile boolean running = true;
 
     public static boolean isRunning(){
@@ -27,14 +25,6 @@ public class Server {
         System.out.println("**** Initialising the Robot World");
         Handler.setup();
         startRobotWorldServer();
-    }
-
-    
-    public static void addRequest(Request request){
-        requests.add(request);
-    }
-    public static Response getResponse(String robot) {
-        return null;
     }
 
     private static void startRobotWorldServer(){
