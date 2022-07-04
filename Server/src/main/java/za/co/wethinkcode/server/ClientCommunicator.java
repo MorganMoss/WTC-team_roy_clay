@@ -2,7 +2,9 @@ package za.co.wethinkcode.server;
 
 import java.net.Socket;
 import java.io.*;
+import java.text.DecimalFormat;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicLong;
 
 import za.co.wethinkcode.Request;
 import za.co.wethinkcode.Response;
@@ -39,15 +41,19 @@ public final class ClientCommunicator {
      */
     private boolean connected = true;
 
+    private final String clientID = Integer.toHexString(this.hashCode());
+
     /**
      * Constructor for a Server Client Communicator
      * @param socket The result of a connection to the server from the client.
      */
     public ClientCommunicator(Socket socket) throws IOException {
-        System.out.println("Connection from " + this + " with the address: " + socket.getInetAddress().getHostName());
+        System.out.println("Connection from " + clientID + " with the address: " + socket.getInetAddress().getHostName());
 
         requestIn = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         responseOut = new PrintStream(socket.getOutputStream());
+
+        AtomicLong latency = new AtomicLong();
 
         Thread requester = new Thread(
                 () -> {
@@ -77,7 +83,8 @@ public final class ClientCommunicator {
     private void handleDisconnection(){
         connected = false;
 
-        System.out.println(this + " has disconnected");
+
+        System.out.println(clientID + " has disconnected");
 
         for (String robot : launchedRobots.keySet()) {
             Server.purge(robot);
@@ -152,7 +159,7 @@ public final class ClientCommunicator {
             return;
         }
 
-        Handler.addRequest(this.toString() , request);
+        Handler.addRequest(clientID , request);
 
         handleNewAndLaunchedRobots(request);
     }
@@ -266,7 +273,7 @@ public final class ClientCommunicator {
     private void passingResponse() {
         for (String robot : getAllRobots()){
             //tries to get responses for all robots simultaneously.
-            Response response = Handler.getResponse(this.toString(), robot);
+            Response response = Handler.getResponse(clientID , robot);
 
             if (response == null){
                 continue;
@@ -288,7 +295,7 @@ public final class ClientCommunicator {
             responseOut.println(response.serialize());
             responseOut.flush();
 
-            System.out.println("Returning the response for " + this + "'s " + robot);
+            System.out.println("Returning the response for " + clientID + "'s " + robot);
             System.out.println(response.serialize());
         }
     }

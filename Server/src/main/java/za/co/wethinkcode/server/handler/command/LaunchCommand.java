@@ -38,7 +38,7 @@ public class LaunchCommand extends Command {
             return NAME_TAKEN;
         }
 
-        Point initialPosition = World.getOpenSpace();
+        Point initialPosition = World.getOpenPosition();
         if (initialPosition == null){
             return NO_SPACE;
         }

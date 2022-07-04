@@ -5,6 +5,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import za.co.wethinkcode.Response;
 import za.co.wethinkcode.server.Configuration;
+import za.co.wethinkcode.server.TestHelper;
 import za.co.wethinkcode.server.handler.world.World;
 
 import java.util.ArrayList;
@@ -19,22 +20,11 @@ class CommandTest {
     private Response response;
 
     /**
-     * Writes up a config to use during this test
-     */
-    @BeforeAll
-    static void makeConfig(){
-        String[] args = new String[2];
-        args[0] = "-o=0,0,1,2";
-        args[1] = "-s=3";
-        setConfiguration(args);
-    }
-
-    /**
      * Resets the world before each test
      */
     @BeforeEach
     void resetWorld(){
-        World.reset();
+        TestHelper.modifyWorld(new String[]{"-o=0,0,1,2","-s=3"});
     }
 
     /**
@@ -73,7 +63,7 @@ class CommandTest {
         //instantiating command
         command = new WorldCommand();
         //initializing values
-        command.setArguments(null);
+        command.setArguments(new ArrayList<>());
         command.setRobot("ignored");
         //running command
         response = command.execute();
@@ -162,7 +152,7 @@ class CommandTest {
         launchRobot("HAL", shield, shots);
 
         command = new StateCommand();
-        command.setArguments(null);
+        command.setArguments(new ArrayList<>());
         command.setRobot("HAL");
         response = command.execute();
 
