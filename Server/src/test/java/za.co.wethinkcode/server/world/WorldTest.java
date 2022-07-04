@@ -75,6 +75,15 @@ public class WorldTest {
     }
 
     //TODO:
+    // Test bad config errors (i.e bad predefined entities and size)
+
+    //TODO:
+    // Test adding Entity with a valid open position
+    // Test adding Entity out of bounds
+    // Test adding Entity to occupied space
+    // Test removal of Entity
+
+    //TODO:
     // Test seek from position method (i.e. the general method for the below)
     // Test the look method
     // Test path blocked method
