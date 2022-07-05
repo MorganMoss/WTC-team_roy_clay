@@ -1,9 +1,9 @@
 package za.co.wethinkcode.server.handler.command;
 
-import java.util.List;
-
 import za.co.wethinkcode.Response;
 import za.co.wethinkcode.server.handler.world.World;
+
+import java.util.List;
 
 public abstract class Command {
     protected String robot;
@@ -29,6 +29,8 @@ public abstract class Command {
             throw new CouldNotParseArgumentsException();
         }
     }
+
+
 
     /**
      * Validates and sets the name of the robot for the command by default

@@ -7,11 +7,11 @@ import za.co.wethinkcode.server.handler.world.entity.immovable.Obstacle;
 import za.co.wethinkcode.server.handler.world.entity.immovable.Pit;
 import za.co.wethinkcode.server.handler.world.entity.movable.robot.Robot;
 
-import static za.co.wethinkcode.server.Configuration.*;
-
 import java.awt.*;
-import java.util.*;
 import java.util.List;
+import java.util.*;
+
+import static za.co.wethinkcode.server.Configuration.*;
 
 /**
  * The world is a container that manages Entities,
@@ -29,7 +29,7 @@ public class World {
     /**
      * Map of all entities that exist in the world
      */
-    private final Hashtable<Point, Entity> entityTable = new Hashtable<>();
+    public final Hashtable<Point, Entity> entityTable = new Hashtable<>();
     /**
      * Set of open positions in the world,
      * makes adding robots to random spaces easier
@@ -152,6 +152,34 @@ public class World {
     }
 
     /**
+     * Updates value of x,y co-ordinates depending on whether an entity is found
+     */
+    public static Entity Seek(Point startingPosition, int steps, double angle) {
+
+        //updating temp value of y & x
+        for (int i = 1; i <= steps; i++) {
+
+            //get next position of robot if no obstruction
+            int tempY = startingPosition.y += Math.cos(angle);
+            int tempX = startingPosition.x += Math.sin(angle);
+
+            //check if that position is not already occupied. Not occupied if entity is null, otherwise occupied
+            Entity foundEntity = instance.entityTable.get(new Point(tempX, tempY));
+
+            //if occupied, stop moving and return obstruction
+            if (foundEntity != null) {
+                return foundEntity;
+            }
+
+            //if not occupied, move robot to that position
+            int y = tempY;
+            int x = tempX;
+        }
+        //moved all required steps without any obstructions along the way
+        return null;
+    }
+
+    /**
      * Tries to add any predefined entities to positions given
      */
     private void addPredefinedImmovables(){
@@ -167,7 +195,6 @@ public class World {
             if (!entityPositions.matches("[\\d+,?]+")){
                 throw new BadConfigurationException("Badly constructed arguments for predefined entities.");
             }
-
 
             Entity constructedEntity = null;
             for (Point position: iterateThroughPredefinedPositions(entityPositions)){
