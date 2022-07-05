@@ -102,7 +102,7 @@ public final class Handler extends Thread{
      * @return the latest response specific to those two
      */
     public static Response getResponse(String client, String robot){
-        Response response = null;
+        Response response;
         response = responses.remove(new Pair<>(client, robot));
         return response;
     }

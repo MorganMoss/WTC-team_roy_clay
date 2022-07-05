@@ -1,7 +1,6 @@
 package za.co.wethinkcode.server.handler.world.entity;
 
 import za.co.wethinkcode.server.handler.world.entity.movable.Movable;
-import za.co.wethinkcode.server.handler.world.entity.movable.robot.Robot;
 
 public interface Entity {
     /**
