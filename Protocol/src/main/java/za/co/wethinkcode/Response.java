@@ -9,6 +9,7 @@ import java.util.HashMap;
  * The response protocol should be made by the server and sent to the client for processing
  */
 public class Response extends Protocol{
+
     private final String result;
     private final HashMap<String, ?> data;
     private HashMap<String, ?> state = null;

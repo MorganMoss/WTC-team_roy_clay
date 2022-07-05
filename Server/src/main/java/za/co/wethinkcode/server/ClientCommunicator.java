@@ -159,6 +159,7 @@ public final class ClientCommunicator {
             }
             
             Handler.addRequest(this.toString() , request);
+
         } catch (IOException clientDisconnected) {
             return false;
         }

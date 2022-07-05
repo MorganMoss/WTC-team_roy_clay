@@ -6,18 +6,8 @@ import za.co.wethinkcode.Response;
 import za.co.wethinkcode.server.handler.world.World;
 
 public abstract class Command {
-    protected String robot;
 
-    /**
-     * Adds the robot of given name's state to a response.
-     * @param response needing the state
-     * @return response updated to contain the state
-     */
-    protected Response addRobotState(Response response){
-        //TODO: ADD STATE
-        response.addState(World.getRobot(robot).getState());
-        return response;
-    }
+    protected String robot;
 
     /**
      * Validates and sets the arguments for the command.
