@@ -101,7 +101,7 @@ public final class Configuration implements Callable<Integer> {
     public static Integer mine() { return MINE;}
 
     @Override
-    public Integer call() throws Exception {
+    public Integer call(){
         return 0;
     }
 

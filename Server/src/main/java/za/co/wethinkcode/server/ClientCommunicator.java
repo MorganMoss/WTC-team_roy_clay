@@ -2,9 +2,7 @@ package za.co.wethinkcode.server;
 
 import java.net.Socket;
 import java.io.*;
-import java.text.DecimalFormat;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicLong;
 
 import za.co.wethinkcode.Request;
 import za.co.wethinkcode.Response;
@@ -52,8 +50,6 @@ public final class ClientCommunicator {
 
         requestIn = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         responseOut = new PrintStream(socket.getOutputStream());
-
-        AtomicLong latency = new AtomicLong();
 
         Thread requester = new Thread(
                 () -> {

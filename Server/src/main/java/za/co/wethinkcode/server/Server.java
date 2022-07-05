@@ -63,7 +63,7 @@ public class Server {
          */
         @Override
         public void run() {
-            String command = "";
+            String command;
             while (running) {
                 try {
                     command = in.nextLine();
