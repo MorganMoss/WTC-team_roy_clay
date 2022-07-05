@@ -64,8 +64,7 @@ public final class Handler extends Thread{
             return INTERNAL_ERROR;
 
         if (request.getRobot() == null
-            | request.getCommand() == null
-            | request.getArguments() == null){
+            | request.getCommand() == null){
             return INTERNAL_ERROR;
         }
 
@@ -98,7 +97,6 @@ public final class Handler extends Thread{
     /**
      * Gets a response specific to the client
      * and the robot that was responsible for the request.
-     * Will hang until a response is found.
      * @param client that sent the request
      * @param robot (name) part of that request
      * @return the latest response specific to those two

@@ -4,6 +4,10 @@ import za.co.wethinkcode.Response;
 
 import java.util.HashMap;
 
+import za.co.wethinkcode.server.Configuration;
+
+import static za.co.wethinkcode.server.Configuration.*;
+
 public class WorldCommand extends Command {
 
     /**
@@ -12,9 +16,15 @@ public class WorldCommand extends Command {
      */
     @Override
     public Response execute() {
-        //TODO: Should make an acceptance test for this,
-        // then implement it correctly
-        return Response.createOK(new HashMap<>());
+        return Response.createOK(new HashMap<>(){{
+            put("dimensions", new int[]{Configuration.size(), Configuration.size()});
+            put("visibility", visibility());
+            put("max-shots", max_shots());
+            put("max-shields", max_shield());
+            put("repair", repair());
+            put("reload", reload());
+            put("mine", mine());
+        }});
     }
 
     /**

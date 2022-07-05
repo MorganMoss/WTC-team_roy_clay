@@ -66,6 +66,7 @@ public class RobotWorldJsonClient implements RobotWorldClient {
 
     @Override
     public JsonNode sendRequest(String requestString) {
+        System.out.println(requestString);
         lastResponse = null;
         try {
             requests.println(requestString);
@@ -83,12 +84,22 @@ public class RobotWorldJsonClient implements RobotWorldClient {
 
     public JsonNode sendRequest(String robot, String command, String args){
         String request = "{" +
-                "\"robot\": \""+robot+"\"," +
-                "\"command\": \""+command+"\"," +
-                "  \"arguments\": "+args +
+                "\"robot\":\""+robot+"\"," +
+                "\"command\":\""+command+"\"," +
+                "\"arguments\":"+args +
                 "}";
         return sendRequest(request);
     }
+
+    public JsonNode sendRequest(String robot, String command){
+        String request = "{" +
+                "\"robot\":\""+robot+"\"," +
+                "\"command\":\""+command+"\","+
+                "\"arguments\":[]}";
+        return sendRequest(request);
+    }
+
+
 
 
 
@@ -125,7 +136,7 @@ public class RobotWorldJsonClient implements RobotWorldClient {
 
     public void assertResult(JsonNode response, String status){
         assertNotNull(response.get("result"));
-        assertEquals( status, response.get("result").asText() );
+        assertEquals( status, response.get("result").asText() , response.asText());
     }
 
 

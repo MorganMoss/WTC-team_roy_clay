@@ -6,8 +6,17 @@ import za.co.wethinkcode.Response;
 import za.co.wethinkcode.server.handler.world.World;
 
 public abstract class Command {
-
     protected String robot;
+
+    /**
+     * Adds the robot of given name's state to a response.
+     * @param response needing the state
+     * @return response updated to contain the state
+     */
+    protected Response addRobotState(Response response){
+        response.addState(World.getRobot(robot).getState());
+        return response;
+    }
 
     /**
      * Validates and sets the arguments for the command.
@@ -16,7 +25,7 @@ public abstract class Command {
      * @throws CouldNotParseArgumentsException If any arguments are present
      */
     public void setArguments(List<String> arguments) {
-        if (arguments != null){
+        if (arguments.size() != 0){
             throw new CouldNotParseArgumentsException();
         }
     }
@@ -27,8 +36,10 @@ public abstract class Command {
      * @throws RobotNotFoundException if the robot does not exist
      */
     public void setRobot(String robot){
+        if (World.getRobot(robot) == null){
+            throw new RobotNotFoundException();
+        }
         this.robot = robot;
-        //TODO: VALIDATE
     }
 
     /**

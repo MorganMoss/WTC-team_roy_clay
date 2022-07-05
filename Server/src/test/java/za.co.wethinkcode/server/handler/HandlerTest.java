@@ -1,41 +1,86 @@
 package za.co.wethinkcode.server.handler;
 
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
-import za.co.wethinkcode.server.handler.Handler;
+import za.co.wethinkcode.Request;
+import za.co.wethinkcode.Response;
+import za.co.wethinkcode.server.TestHelper;
+import za.co.wethinkcode.server.handler.world.World;
+
+import java.util.ArrayList;
 
 public class HandlerTest {
 
-    //TODO:
-    // Test ExecuteRequest():
-    // - Check all scenarios:
-    // -> INTERNAL_ERROR
-    // -> ROBOT_NOT_FOUND
-    // -> INVALID_ARGUMENTS
-    // -> INVALID_COMMAND
-    // -> OK
-    // Test Run():
-    // -> add a request
-    // -> try get a response back
+    @BeforeAll
+    static void startHandler(){
+        TestHelper.modifyWorld(new String[]{});
+        Handler.setup();
+    }
 
-    @Test
-    void testExecuteRequestUnlaunchedRobot(){
-        assertNotNull(Handler.executeRequest(null));
+    @BeforeEach
+    void resetWorld(){
+        World.reset();
     }
 
     @Test
-    void testExecuteRequestInvalidCommand(){
-        assertNotNull(Handler.executeRequest(null));
+    void testExecuteValidRequest(){
+        Response r = Handler.executeRequest(new Request("HAL", "LAUNCH", new ArrayList<>(){{
+            add("sniper");
+            add("1");
+            add("1");
+        }}));
+
+        assertNotNull(r);
+        assertEquals("OK", r.getResult(), r.serialize());
     }
 
     @Test
-    void testExecuteRequestLaunchedRobot(){
-        assertNotNull(Handler.executeRequest(null));
+    void testExecuteRequestInvalidCommand() {
+        Handler.executeRequest(new Request("HAL", "LAUNCH", new ArrayList<>(){{
+            add("sniper");
+            add("1");
+            add("1");
+        }}));
+        Response r = Handler.executeRequest(new Request("HAL", "LUNCH", new ArrayList<>()));
+        assertEquals("Unsupported command", r.getData().get("message"));
     }
 
     @Test
-    void testExecuteRequestValidCommand(){
-        assertNotNull(Handler.executeRequest(null));
+    void testExecuteRequestInvalidRobot(){
+        Response r = Handler.executeRequest(new Request("PAL", "STATE", new ArrayList<>()));
+        assertEquals("Robot does not exist", r.getData().get("message"));
+    }
+
+    @Test
+    void testExecuteRequestInvalidArguments(){
+        Handler.executeRequest(new Request("HAL", "LAUNCH", new ArrayList<>(){{
+            add("sniper");
+            add("1");
+            add("1");
+        }}));
+        Response r = Handler.executeRequest(new Request("HAL", "STATE", new ArrayList<>(){{add("bad");}}));
+        assertEquals("Could not parse arguments", r.getData().get("message"));
+    }
+
+    @Test
+    void testExecuteRequestInvalidRobotWithCommandThatDoesNotCare(){
+        Response r = Handler.executeRequest(new Request("PAL", "WORLD", new ArrayList<>()));
+        assertEquals("OK", r.getResult());
+    }
+
+    @Test
+    void requestResponseLoopSuccessful(){
+        Handler.addRequest("Client", new Request("PAL", "WORLD", new ArrayList<>()));
+
+        Response r;
+
+        do {
+            r = Handler.getResponse("Client", "PAL");
+        } while (r == null);
+
+        assertEquals("OK", r.getResult());
     }
 }

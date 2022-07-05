@@ -3,7 +3,7 @@
 ##############################################
 version=1.0.1-SNAPSHOT
 reference=libs/reference-server-0.2.3.jar
-ours=Server/target/Server-$(version).jar
+ours=libs/Server-$(version).jar
 our_server_class="Server"
 output="Test_Output"
 build_args=""
@@ -35,6 +35,7 @@ define test
 	@echo "[1;33mRunning Test:[m[1;34m${1}[m"
 	@-mvn test -Dtest="${1}" > "$(output)/Test Results - ${test_running_in} -${1}.txt" || true
 	@cat "$(output)/Test Results - ${test_running_in} -${1}.txt" | grep "Tests run" | grep -v "Time elapsed"
+	@cat "$(output)/Test Results - ${test_running_in} -${1}.txt" | grep "expected" | grep -v "org.opentest"
 endef
 # Runs a .java file that has a main using maven with in.txt as System In
 define run_with_maven
@@ -83,7 +84,7 @@ help: ## List of commands
 	##############################################
 
 .PHONY: all
-all: build run_acceptance_tests release ## Builds, Tests and does versioning
+all: build test package run_acceptance_tests release deploy ## Builds, Tests and does versioning
 	@echo "[1;32mEverything is complete![m"
 	##############################################
 
@@ -94,13 +95,32 @@ build: ## Builds our project
 	@echo "[1;32mProject build complete![m"
 	##############################################
 
+.PHONY: test
+test: ## Run unit tests for our project
+#This will unit test our project
+	@mvn test
+	@echo "[1;32mProject testing complete![m"
+	##############################################
+
+.PHONY: package
+package: package_software_for_testing ## Packaging for acceptance tests
+	@echo "[1;32mContinuous integration and packaging complete![m"
+	##############################################
+package_software_for_testing:
+#This packages the software for release.
+
+	-@mvn clean install
+
+	@echo "Completed packaging of software for testing."
+	##############################################
+
 .PHONY: run_acceptance_tests
 run_acceptance_tests:
 	##############################################
-#	make command
-	-$(call run_test, "LookRobotTests#invalidLookArgumentsShouldFail$(,)ConnectionTests$(,)LaunchRobotTests$(,)StateRobotTests$(,)LookRobotTests#invalidLookCommandShouldFail" , "--size=1")
-	-$(call run_test, "LookRobotTests#validLookOtherArtifacts", "--size=2 --visibility=2 --obstacle=0$(,)1")
-	-$(call run_test, "LookRobotTests#validLookNoOtherArtifacts", "--size=2 --visibility=2")
+#	$(,)LookRobotTests#invalidLookCommandShouldFail$(,)LookRobotTests#invalidLookArgumentsShouldFail
+	-$(call run_test, "ConnectionTests$(,)LaunchRobotTests#validLaunchShouldSucceed+invalidLaunchShouldFail+checkForDuplicateRobotName+worldFullNoSpaceToLaunchRobot$(,)StateRobotTests" , "--size=1")
+#	-$(call run_test, "LookRobotTests#validLookOtherArtifacts", "--size=2 --visibility=2 --obstacle=0$(,)1")
+#	-$(call run_test, "LookRobotTests#validLookNoOtherArtifacts", "--size=2 --visibility=2")
 	@echo "[1;32mAll testing complete![m"
 	##############################################
 
@@ -125,8 +145,8 @@ run_test_own: ## Allows manual testing from our server
 	##############################################
 
 .PHONY: release
-release: version_software_for_release package_software_for_release tag_version_number_on_git ## Versions and packages our project
-	@echo "[1;32mProject packaging complete![m"
+release: version_software_for_release ## Versions and packages our project
+	@echo "[1;32mProject release complete![m"
 	##############################################
 version_software_for_release:
 #This must be able to distinguish
@@ -143,14 +163,17 @@ version_software_for_release:
 
 	@echo "Completed versioning of our software."
 	##############################################
+
+.PHONY: deploy
+deploy: package_software_for_release tag_version_number_on_git ## Versions and packages our project
+	@echo "[1;32mContinuous deployment and tagging complete![m"
+	##############################################
 package_software_for_release:
 #This packages the software for release.
-#For now we are skiping the tests
 
-	#mvn package -Dmaven.test.skip=true
 	-@mvn clean package $(build_args)
 
-	@echo "Completed packaging of software."
+	@echo "Completed packaging of software for release."
 	##############################################
 tag_version_number_on_git:
 #Tag the version number on git as release-x.y.z

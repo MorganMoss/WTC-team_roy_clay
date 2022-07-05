@@ -36,23 +36,15 @@ public class LaunchCommand extends Command {
      */
     @Override
     public Response execute() {
-        //TODO
-        // check if this robot exists in world already
-        // if it does, return NAME_TAKEN
         if (World.getRobot(robot) != null){
             return NAME_TAKEN;
         }
 
-        //TODO
-        // check if theres space in the world
-        // if there isn't, return NO_SPACE
-        Point initialPosition = World.getOpenSpace();
+        Point initialPosition = World.getOpenPosition();
         if (initialPosition == null){
             return NO_SPACE;
         }
-
-        //TODO
-        // add a robot to the world of the given name + any other arguments
+        
         World.addRobot(robot, new Robot(
                 initialPosition,
                 robot,
@@ -78,8 +70,7 @@ public class LaunchCommand extends Command {
         }
 
         try {
-            type = (String) arguments.get(0);
-            //TODO: Possible issue with int cast from string
+            type = arguments.get(0);
             max_shield = Integer.parseInt(arguments.get(1));
             max_shots = Integer.parseInt(arguments.get(2));
         } catch (NumberFormatException badArgument){

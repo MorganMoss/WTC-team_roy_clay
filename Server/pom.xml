@@ -13,7 +13,13 @@
 
     <artifactId>server</artifactId>
     <name>Robot Worlds Server</name>
-    <version>${major-revision}.${buildNumber}-${changelist}</version>
+    <version>${major-revision}.1-${changelist}</version>
+
+    <properties>
+        <maven.compiler.source>11</maven.compiler.source>
+        <maven.compiler.target>11</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
 
     <dependencies>
         <!-- This is for Tuples -->
@@ -27,7 +33,7 @@
         <dependency>
             <groupId>za.co.wethinkcode</groupId>
             <artifactId>protocol</artifactId>
-            <version>1.0.${buildNumber}-SNAPSHOT</version>
+            <version>1.0.0-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
@@ -38,11 +44,6 @@
         </dependency>
     </dependencies>
 
-    <properties>
-        <maven.compiler.source>11</maven.compiler.source>
-        <maven.compiler.target>11</maven.compiler.target>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    </properties>
 
     <build>
         <plugins>
@@ -72,6 +73,7 @@
                                     jar-with-dependencies
                                 </descriptorRef>
                             </descriptorRefs>
+                            <outputDirectory>${project.parent.basedir}/libs</outputDirectory>
                         </configuration>
                     </execution>
                 </executions>
@@ -104,5 +106,4 @@
             </plugin>
         </plugins>
     </build>
-
 </project>

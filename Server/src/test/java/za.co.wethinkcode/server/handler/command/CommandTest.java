@@ -5,6 +5,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import za.co.wethinkcode.Response;
 import za.co.wethinkcode.server.Configuration;
+import za.co.wethinkcode.server.TestHelper;
 import za.co.wethinkcode.server.handler.world.World;
 
 import java.util.ArrayList;
@@ -19,22 +20,11 @@ class CommandTest {
     private Response response;
 
     /**
-     * Writes up a config to use during this test
-     */
-    @BeforeAll
-    static void makeConfig(){
-        String[] args = new String[2];
-        args[0] = "-o=0,0,1,2";
-        args[1] = "-s=3";
-        setConfiguration(args);
-    }
-
-    /**
      * Resets the world before each test
      */
     @BeforeEach
     void resetWorld(){
-        World.reset();
+        TestHelper.modifyWorld(new String[]{"-o=0,0,1,2","-s=3"});
     }
 
     /**
@@ -73,25 +63,32 @@ class CommandTest {
         //instantiating command
         command = new WorldCommand();
         //initializing values
-        command.setArguments(null);
+        command.setArguments(new ArrayList<>());
         command.setRobot("ignored");
         //running command
         response = command.execute();
 
         assertNotNull(response);
         assertEquals("OK", response.getResult());
-        assertEquals(
-            new HashMap<String,String>(){{
-            put("dimensions", "["+Configuration.size()+","+ Configuration.size()+"]");
-            put("visibility", Configuration.visibility().toString());
-            put("reload", Configuration.reload().toString());
-            put("repair", Configuration.repair().toString());
-            put("mine", Configuration.mine().toString());
-            put("max-shields", max_shield().toString());
-            put("max-shots", max_shots().toString());
-            }},
-            response.getData()
-        );
+
+
+
+        HashMap<String, ?> correct = new HashMap<>(){{
+            put("visibility", Configuration.visibility());
+            put("max-shields", Configuration.max_shield());
+            put("max-shots", Configuration.max_shots());
+            put("reload", Configuration.reload());
+            put("repair", Configuration.repair());
+            put("mine", Configuration.mine());
+        }};
+
+        assertEquals(Configuration.size(), ((int[]) response.getData().get("dimensions"))[0]);
+        assertEquals(Configuration.size(), ((int[]) response.getData().get("dimensions"))[1]);
+
+        for (String key: correct.keySet()){
+            assertEquals(correct.get(key), response.getData().get(key), key);
+        }
+
         assertNull(response.getState());
     }
     @Test
@@ -119,16 +116,19 @@ class CommandTest {
         // It should be pulled from the World.
         int x = 0, y = 0;
 
-        assertEquals(
-            new HashMap<String, String>(){{
-               put("position", "["+World.getRobot("HAL").getPosition().x+","+World.getRobot("HAL").getPosition().y+"]");
-               put("direction", "NORTH");
-               put("shields", ((Integer)  min(shield, max_shield())).toString());
-               put("shots", ((Integer) min(shots, max_shots())).toString());
-               put("status", "NORMAL");
-            }},
-            response.getState()
-        );
+        assertEquals(World.getRobot("HAL").getPosition().x, ((int[]) response.getState().get("position"))[0]);
+        assertEquals(World.getRobot("HAL").getPosition().y, ((int[]) response.getState().get("position"))[1]);
+
+        HashMap<String, ?> correct = new HashMap<>(){{
+            put("direction", "NORTH");
+            put("shields", min(shield, max_shield()));
+            put("shots", min(shots, max_shots()));
+            put("status", "NORMAL");
+        }};
+
+        for (String key: correct.keySet()){
+           assertEquals(correct.get(key), response.getState().get(key));
+        }
     }
 
     //TODO:
@@ -152,22 +152,25 @@ class CommandTest {
         launchRobot("HAL", shield, shots);
 
         command = new StateCommand();
-        command.setArguments(null);
+        command.setArguments(new ArrayList<>());
         command.setRobot("HAL");
         response = command.execute();
 
         int x = 0, y = 0;
 
-        assertEquals(
-            new HashMap<String, String>(){{
-                put("position", "["+World.getRobot("HAL").getPosition().x+","+World.getRobot("HAL").getPosition().y+"]");
-                put("direction", "NORTH");
-                put("shields", ((Integer)  min(shield, max_shield())).toString());
-                put("shots", ((Integer) min(shots, max_shots())).toString());
-                put("status", "NORMAL");
-            }},
-            response.getState()
-        );
+        assertEquals(World.getRobot("HAL").getPosition().x, ((int[]) response.getState().get("position"))[0]);
+        assertEquals(World.getRobot("HAL").getPosition().y, ((int[]) response.getState().get("position"))[1]);
+
+        HashMap<String, ?> correct = new HashMap<>(){{
+            put("direction", "NORTH");
+            put("shields", min(shield, max_shield()));
+            put("shots", min(shots, max_shots()));
+            put("status", "NORMAL");
+        }};
+
+        for (String key: correct.keySet()){
+            assertEquals(correct.get(key), response.getState().get(key));
+        }
     }
 
     //TODO:

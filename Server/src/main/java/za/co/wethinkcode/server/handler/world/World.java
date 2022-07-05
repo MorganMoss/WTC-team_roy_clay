@@ -1,5 +1,6 @@
 package za.co.wethinkcode.server.handler.world;
 
+import za.co.wethinkcode.server.BadConfigurationException;
 import za.co.wethinkcode.server.handler.world.entity.Entity;
 import za.co.wethinkcode.server.handler.world.entity.immovable.Mine;
 import za.co.wethinkcode.server.handler.world.entity.immovable.Obstacle;
@@ -19,58 +20,135 @@ import java.util.List;
  */
 public class World {
 
-    private static volatile World instance = new World();
+    private static volatile World instance = initializeWorld();
 
+    /**
+     * Lookup Table for existing robots
+     */
     private final Hashtable<String, Robot> robots = new Hashtable<>();
+    /**
+     * Map of all entities that exist in the world
+     */
     private final Hashtable<Point, Entity> entityTable = new Hashtable<>();
+    /**
+     * Set of open positions in the world,
+     * makes adding robots to random spaces easier
+     */
+    private final Set<Point> openPositions = new HashSet<>();
+
+    /**
+     * Creates a list of all available spaces in the world
+     */
+    private void createOpenPositions(){
+        for (int x = 0; x < size(); x++) {
+            for (int y = 0; y < size(); y++) {
+                openPositions.add(new Point(x, y));
+            }
+        }
+    }
 
     /**
      * Gets a random open position in the world
      * @return A position that contains no entity.
+     * Returns null if no positions available
      */
-    public static Point getOpenSpace() {
-        boolean[][] availablePositions = new boolean[size()][size()];
-        ArrayList<Point> openPositions = new ArrayList<>();
-
-
-        for (Point occupiedPosition : instance.entityTable.keySet()){
-            availablePositions[occupiedPosition.x][occupiedPosition.y] = true;
-        }
-
-
-        for (int x = 0; x < size(); x++){
-            for (int y = 0; y < size(); y++){
-                if (!availablePositions[x][y]){
-                    //open position
-                    openPositions.add(new Point(x,y));
-                }
-            }
-        }
-
-        if (openPositions.size() <= 0){
+    public static Point getOpenPosition() {
+        if (instance.openPositions.size() <= 0){
             return null;
         }
 
-        Random r = new Random();
-        int randomOpenPositionIndex = r.nextInt(openPositions.size());
-
-        return openPositions.get(randomOpenPositionIndex);
+        return (Point) instance.openPositions.toArray()[new Random().nextInt(instance.openPositions.size())];
     }
 
+    /**
+     * Gets the robot object mapped to the robot name given
+     * @param robot's name
+     * @return the instance mapped to that name
+     */
     public static Robot getRobot(String robot) {
         return instance.robots.get(robot);
     }
 
-    public static void addRobot(String robotName, Robot robotEntity) {
-        instance.robots.put(robotName, robotEntity);
-        instance.entityTable.put(robotEntity.getPosition(), robotEntity);
+    /**
+     * Adds an entity to a specific position
+     * and marks that position as occupied.
+     * @param position of the entity
+     * @param entity added
+     * @throws OccupiedPositionException if the space is already occupied,
+     * {@link OutOfBoundsException} if the position given is outside the region defined by size.
+     */
+    public static void addEntity(Point position, Entity entity){
+        boolean availableOnMap = instance.entityTable.getOrDefault(position, null) == null;
+        boolean outOfBounds = !instance.openPositions.contains(position);
+
+        if (availableOnMap && !outOfBounds){
+            instance.entityTable.put(position, entity);
+            instance.openPositions.remove(position);
+            return;
+        }
+
+        if (!availableOnMap)
+            throw new OccupiedPositionException();
+
+        throw new OutOfBoundsException();
     }
 
+    /**
+     * Removes the entity at the given position
+     * @param position of the entity
+     */
+    public static void removeEntity(Point position){
+        instance.entityTable.remove(position);
+        instance.openPositions.add(position);
+    }
+
+    /**
+     * Adds a robot to both the robot lookup table and the map of entities
+     */
+    public static void addRobot(String robotName, Robot robotEntity) {
+        instance.robots.put(robotName, robotEntity);
+        addEntity(robotEntity.getPosition(), robotEntity);
+    }
+
+    /**
+     * Removes a robot to both the robot lookup table and the map of entities
+     */
     public static void removeRobot(String robot) {
         try {
             Point robotPosition = instance.robots.remove(robot).getPosition();
-            instance.entityTable.remove(robotPosition);
+            removeEntity(robotPosition);
         } catch (NullPointerException ignored) {}
+    }
+
+    /**
+     * Get the list of all robots in this world
+     * @return the names of all robots
+     */
+    public static Set<String> getRobots() {
+        return instance.robots.keySet();
+    }
+
+    /**
+     * Parses the entity positions given in the configuration and converts it to a list of Points
+     * @param entityPositions given in the configuration
+     * @return a list of Points to put respective entities
+     */
+    private static ArrayList<Point> iterateThroughPredefinedPositions(String entityPositions){
+        String[] numbers = entityPositions.split(",");
+        ArrayList<Point> positions = new ArrayList<>();
+
+        for (int i = 0; i < numbers.length-1; i+=2){
+            int x = Integer.parseInt(numbers[i]);
+            int y = Integer.parseInt(numbers[i+1]);
+
+            if (x > size() | y > size()){
+                throw new BadConfigurationException("Predefined position given is out of bounds for this world size");
+            }
+
+            positions.add(new Point(x,y));
+        }
+
+        return positions;
     }
 
     /**
@@ -78,46 +156,53 @@ public class World {
      */
     private void addPredefinedImmovables(){
         List<String> predefined_immovable = List.of(obstacle(), pits(), mines());
-        for (int j = 0; j<predefined_immovable.size(); j++) {
-            String entity = predefined_immovable.get(j);
 
-            if (entity.equalsIgnoreCase("none")
-                    | !entity.matches("[\\d+,?]+")){
+        for (int j = 0; j<predefined_immovable.size(); j++) {
+            String entityPositions = predefined_immovable.get(j);
+
+            if (entityPositions.equalsIgnoreCase("none")){
                 continue;
             }
 
-            int x, y;
+            if (!entityPositions.matches("[\\d+,?]+")){
+                throw new BadConfigurationException("Badly constructed arguments for predefined entities.");
+            }
 
-            String[] numbers = entity.split(",");
-            for (int i = 0; i < numbers.length-1; i+=2){
-                x = Integer.parseInt(numbers[i]);
-                y = Integer.parseInt(numbers[i+1]);
 
-                if (x > size() | y > size()){
-                    System.out.println("Bad obstacle, pit or mine position for this world size");
-                    System.exit(2);
-                }
-
+            Entity constructedEntity = null;
+            for (Point position: iterateThroughPredefinedPositions(entityPositions)){
                 switch (j){
                     case 0:
-                        entityTable.put(new Point(x,y), new Obstacle(new Point(x,y)));
+                        constructedEntity = new Obstacle(position);
                         break;
                     case 1:
-                        entityTable.put(new Point(x,y), new Pit(new Point(x,y)));
+                        constructedEntity = new Pit(position);
                         break;
                     case 2:
-                        entityTable.put(new Point(x,y), new Mine(new Point(x,y)));
+                        constructedEntity = new Mine(position);
                         break;
                 }
+
+                addEntity(position, constructedEntity);
             }
         }
     }
 
-//    public
-
+    /**
+     * Made private, as this is a singleton class.
+     * The public static members manage the instance of the world
+     */
     private World(){
-        //Use configuration values here to dictate properties of the world.
-        addPredefinedImmovables();
+    }
+
+    /**
+     * Called to instantiate the world's instance
+     * Used as a workaround, since the constructor cannot directly call reset()
+     * @return that instance
+     */
+    private static World initializeWorld() {
+        reset();
+        return instance;
     }
 
     public static World getInstance(){
@@ -131,13 +216,21 @@ public class World {
         return instance;
     }
 
-
+    /**
+     * A saved instance of a world overwrites the current world instance
+     * @param savedInstance given by a database
+     */
+    public static void loadWorldInstance(World savedInstance){
+        instance = savedInstance;
+    }
 
     /**
      * Resets world to initial values
      */
     public static void reset() {
         instance = new World();
+        instance.createOpenPositions();
+        instance.addPredefinedImmovables();
     }
 }
 

@@ -1,8 +1,10 @@
 package za.co.wethinkcode.server;
 
-import java.io.*;
 import java.net.Socket;
+import java.io.*;
+import java.text.DecimalFormat;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicLong;
 
 import za.co.wethinkcode.Request;
 import za.co.wethinkcode.Response;
@@ -13,69 +15,81 @@ import za.co.wethinkcode.server.handler.Handler;
  * and handles communication between the two.
  */
 public final class ClientCommunicator {
-
     /**
-     * Using a synchronizedSet,
-     * as there should only be one of each robot name in this collection,
-     * and it is used in multiple threads.
-     * Having it synchronized makes it threadsafe.
+     * Socket's inStream
      */
     private final BufferedReader requestIn;
+    /**
+     * Socket's outStream
+     */
     private final PrintStream responseOut;
-    private final String clientMachine;
-
-    private final Set<String> launchedRobots = Collections.synchronizedSet(new HashSet<>());
-//    private final List<String> unLaunchedRobots = Collections.synchronizedList(new ArrayList<>());
+    /**
+     * Launched robots are a collection of robot names that were part of a launch request.
+     */
+    private final Hashtable<String, Boolean> launchedRobots = new Hashtable<>();
+    /**
+     * Unlaunched robots are a collection of robot names that were part of a command,
+     * but not a launch command. They are removed once they get a response
+     */
     private final Hashtable<String, Integer> unLaunchedRobots = new Hashtable<>();
-
+    /**
+     * flag if a robot is launched more than once
+     */
     private boolean duplicateLaunch = false;
+    /**
+     * flag to stop processes once the client disconnects
+     */
     private boolean connected = true;
 
-    private final Thread responder;
-    private final Thread requester;
-
+    private final String clientID = Integer.toHexString(this.hashCode());
 
     /**
      * Constructor for a Server Client Communicator
      * @param socket The result of a connection to the server from the client.
      */
     public ClientCommunicator(Socket socket) throws IOException {
-        clientMachine = socket.getInetAddress().getHostName();
-        System.out.println("Connection from " + clientMachine);
+        System.out.println("Connection from " + clientID + " with the address: " + socket.getInetAddress().getHostName());
 
         requestIn = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         responseOut = new PrintStream(socket.getOutputStream());
 
-        requester = new Thread(
+        AtomicLong latency = new AtomicLong();
+
+        Thread requester = new Thread(
                 () -> {
                     while (connected) {
-                        if (!passingRequest()) {
-                            break;
-                        }
-
+                        passingRequest();
                     }
-                    System.out.println(clientMachine + " has disconnected");
-
-                    for (String robot : launchedRobots) {
-                        Server.purge(robot);
-                    }
-
-                    connected = false;
                 }
         );
 
-       responder = new Thread(
+        Thread responder = new Thread(
                 () -> {
                     while (connected) {
-                        if (!passingResponse()) {
-                            break;
-                        }
+                        passingResponse();
                     }
                 }
         );
 
         requester.start();
         responder.start();
+    }
+
+    /**
+     * Handles the disconnection of the client,
+     * will flag that they've disconnected
+     * and purge all robots referenced by this client.
+     */
+    private void handleDisconnection(){
+        connected = false;
+
+
+        System.out.println(clientID + " has disconnected");
+
+        for (String robot : launchedRobots.keySet()) {
+            Server.purge(robot);
+        }
+
     }
 
     /**
@@ -92,7 +106,7 @@ public final class ClientCommunicator {
      * @param robot from a new request
      */
     private void addLaunchedRobot(String robot){
-        launchedRobots.add(robot);
+        launchedRobots.put(robot, false);
     }
 
     /**
@@ -123,47 +137,56 @@ public final class ClientCommunicator {
 
     /**
      * Gets the request from the client and adds it to the server
-     * @return true if still connected
      */
-    private boolean passingRequest(){
+    private void passingRequest(){
+        String requestJSON = "";
+
         try {
-            String requestJSON = requestIn.readLine();
+            requestJSON = requestIn.readLine();
+        } catch (IOException ignored) {}
 
-            //null when socket is closed on the client side
-            if (requestJSON == null){
-                return false;
-            }
-
-            Request request = Request.deSerialize(requestJSON);
-
-            if (request == null){
-                responseOut.println(Response.createError("Bad JSON format").serialize());
-                responseOut.flush();
-                return true;
-            }
-
-            boolean newRobot = isNewRobot(request.getRobot());
-            boolean launchCommand = isLaunchCommand(request.getCommand());
-
-            if ( newRobot ){
-                if (launchCommand){
-                    addLaunchedRobot(request.getRobot());
-                } else {
-                    addUnLaunchedRobot(request.getRobot());
-                }
-            } else {
-                if (launchCommand){
-                    //this robot exists already, we can duplicateLaunch this when we check the response later
-                    duplicateLaunch = true;
-                }
-            }
-            
-            Handler.addRequest(this.toString() , request);
-
-        } catch (IOException clientDisconnected) {
-            return false;
+        //null when socket is closed on the client side
+        if (requestJSON == null){
+            handleDisconnection();
+            return;
         }
-        return true;
+
+        Request request = Request.deSerialize(requestJSON);
+
+        if (request == null){
+            responseOut.println(Response.createError("Bad JSON format").serialize());
+            responseOut.flush();
+            return;
+        }
+
+        Handler.addRequest(clientID , request);
+
+        handleNewAndLaunchedRobots(request);
+    }
+
+    /**
+     * Handles the addition of new robots and prevents issues with repetitive launches.
+     * @param request that just came in
+     */
+    private void handleNewAndLaunchedRobots(Request request) {
+        String robot = request.getRobot();
+
+        boolean newRobot = isNewRobot(robot);
+        boolean launchCommand = isLaunchCommand(request.getCommand());
+
+        if (launchCommand && newRobot){
+            addLaunchedRobot(robot);
+            return;
+        }
+
+        if (newRobot){
+            addUnLaunchedRobot(robot);
+            return;
+        }
+
+        if (launchCommand){
+            duplicateLaunch = true;
+        }
     }
 
     /**
@@ -186,8 +209,9 @@ public final class ClientCommunicator {
         }
 
         return !(message.equalsIgnoreCase("No more space in this world") |
-        message.equalsIgnoreCase("Too many of you in this world")|
-        result.equalsIgnoreCase("ERROR"));
+            message.equalsIgnoreCase("Internal error occurred")|
+            message.equalsIgnoreCase("Too many of you in this world")|
+            message.equalsIgnoreCase("Could not parse arguments"));
     }
 
     /**
@@ -224,52 +248,55 @@ public final class ClientCommunicator {
             }
 
             unLaunchedRobots.remove(robot);
+            Server.purge(robot);
+        }
+    }
+
+    /**
+     * Collects the names of all launched and unlaunched robots
+     * @return a set of all robot names
+     */
+    private HashSet<String> getAllRobots(){
+        synchronized (launchedRobots) {
+            synchronized (unLaunchedRobots) {
+                return new HashSet<>() {{
+                    addAll(launchedRobots.keySet());
+                    addAll(unLaunchedRobots.keySet());
+                }};
+            }
         }
     }
 
     /**
      * Gets a response from the server and sends it to the client
-     * @return true if still connected
      */
-    private boolean passingResponse() {
-        HashSet<String> robots = new HashSet<>();
-
-        synchronized (launchedRobots) {
-            synchronized (unLaunchedRobots) {
-                robots = new HashSet<>() {{
-                    addAll(launchedRobots);
-                    addAll(unLaunchedRobots.keySet());
-                }};
-            }
-        }
-
-
-        for (String robot : robots){
+    private void passingResponse() {
+        for (String robot : getAllRobots()){
             //tries to get responses for all robots simultaneously.
-            Response response = Handler.getResponse(this.toString(), robot);
+            Response response = Handler.getResponse(clientID , robot);
 
             if (response == null){
                 continue;
             }
 
+            try {
+                if ((!isSuccessfulLaunch(response) && launchedRobots.get(robot))| isRobotDead(response)) {
+                    launchedRobots.remove(robot);
+                    Server.purge(robot);
+                }
 
-            if (!isSuccessfulLaunch(response) | isRobotDead(response)) {
-                launchedRobots.remove(robot);
-            }
+                if (!launchedRobots.get(robot)){
+                    launchedRobots.put(robot, true);
+                }
+            } catch (NullPointerException ignored){}
 
             tryRemoveUnLaunchedRobot(robot);
-
 
             responseOut.println(response.serialize());
             responseOut.flush();
 
-            System.out.println("Returning the response for " + this.toString() + "'s " + robot);
+            System.out.println("Returning the response for " + clientID + "'s " + robot);
             System.out.println(response.serialize());
-
-
         }
-
-
-        return !responseOut.checkError();
     }
 }
