@@ -1,9 +1,10 @@
 package za.co.wethinkcode.server;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.sql.Statement;
+import za.co.wethinkcode.server.handler.world.World;
+
+import java.sql.*;
+import java.util.Objects;
+import java.util.Scanner;
 
 /**
  * DbTest is a small command-line tool used to check that we can connect to a SQLite database.
@@ -18,43 +19,155 @@ import java.sql.Statement;
  *  for later examination if desired.
  */
 public class DatabaseManager {
-    public static final String IN_MEMORY_DB_URL = "jdbc:sqlite::memory:";
+    private static final String DISK_DB_URL = "jdbc:sqlite:";
+    private static final String table = "saved_worlds";
+    private static Connection connection;
 
-    public static final String DISK_DB_URL = "jdbc:sqlite:";
+    /**
+     * Tries to open a database at the given URL.
+     * If there is no save_worlds table present, this will create it.
+     */
+    private static void openDatabase(){
+        try {
+            connection = DriverManager.getConnection(DISK_DB_URL + Configuration.save_location());
+            System.out.println( "Connected to database" );
+        } catch( SQLException e ){
+            System.err.println( e.getMessage() );
+            return;
+        }
 
-    public static void main( String[] args ) {
-        final DatabaseManager tester = new DatabaseManager( args );
+        createTable();
     }
 
-    private String dbUrl = null;
-
-    private DatabaseManager( String[] args ) {
-        processCmdLineArgs( args );
-
-        try( final Connection connection = DriverManager.getConnection( dbUrl ) ){
-            System.out.println( "Connected to database " );
-            runTest( connection );
-        }catch( SQLException e ){
+    private static void closeDatabase(){
+        try {
+            connection.close();
+        } catch (SQLException e) {
             System.err.println( e.getMessage() );
         }
     }
 
-    private void runTest( Connection connection ) {
+
+    /**
+     * Takes the current data in the server and stores it in a database
+     * @param save name of the instance
+     */
+    public static void save(String save){
+        if (Objects.equals(save, "")){
+            System.out.println("Failed! Please enter save name");
+        }
+
+        String world_json = World.serialize();
+        String configuration_json = Configuration.serialize();
+
+        openDatabase();
+
         try( final Statement stmt = connection.createStatement() ){
-            stmt.executeUpdate( "CREATE TABLE test( test_id, success )" );
-            System.out.println( "Success creating test table!" );
+            if (!
+                stmt.executeQuery(
+                "SELECT * FROM " + table + " WHERE save_name = \""+save+"\""
+            ).isClosed()){
+                System.out.println( "Found existing save of that name!");
+
+                System.out.println("Overwrite? (Y/N) : ");
+
+                if (!(new Scanner(System.in)).nextLine().equalsIgnoreCase("Y")){
+                    System.out.println("Aborting save . . .");
+                    return;
+                }
+            }
+
+            System.out.println("Saving this current server under the name: " + save);
+            stmt.executeUpdate(
+            "INSERT INTO "+ table +" " +
+                    "(" +
+                        "save_name," +
+                        "world_json," +
+                        "configuration_json" +
+                    ") " +
+
+                "VALUES " +
+                    "(" +
+                        "\"" + save + "\", " +
+                        "'" + world_json + "', " +
+                        "'" + configuration_json + "'" +
+                    ")"
+            );
+
+            System.out.println( "Saving complete!" );
+        }catch( SQLException e ){
+            System.err.println( e.getMessage() );
+
+        }
+
+        closeDatabase();
+    }
+
+    public static void load(String save) {
+        openDatabase();
+
+        try( final Statement stmt = connection.createStatement() ){
+            ResultSet resultSet = stmt.executeQuery("SELECT * FROM " + table + " WHERE save_name = \""+save+"\"");
+
+            if (resultSet.isClosed()){
+                System.out.println( "No save found. Aborting . . . ");
+                return;
+            }
+
+            System.out.println("Loading " + resultSet.getString("save_name") + " . . .");
+
+            Configuration.loadConfiguration(resultSet.getString("configuration_json"));
+            System.out.println("Loaded Configuration");
+
+            World.loadWorld(resultSet.getString("world_json"));
+            System.out.println("Loaded World");
+
+            System.out.println( "Loading complete!" );
+        }catch( SQLException e ){
+            System.err.println( e.getMessage() );
+        }
+
+
+        closeDatabase();
+    }
+
+
+    /**
+     * Creates the saved_worlds in the database,
+     * if it is not already present
+     */
+    private static void createTable() {
+        try( final Statement stmt = connection.createStatement() ){
+            if (!
+                stmt.executeQuery(
+                "SELECT name FROM sqlite_master " +
+                    "WHERE type='table' AND name='"+ table +"';"
+            ).isClosed()){
+                System.out.println( "Found existing table!");
+                return;
+            }
+
+            System.out.println( "Table not found, creating table . . .");
+            stmt.executeUpdate(
+            "CREATE TABLE IF NOT EXISTS " +
+                    table +" " +
+                    "(" +
+                        "save_name          STRING NOT NULL, " +
+                        "world_json         STRING NOT NULL, " +
+                        "configuration_json STRING NOT NULL, " +
+                        "PRIMARY KEY (save_name)" +
+                    ")"
+            );
+            System.out.println( "Success creating table!");
+
         }catch( SQLException e ){
             System.err.println( e.getMessage() );
         }
     }
 
-    private void processCmdLineArgs( String[] args ){
-        if( args.length == 2 && args[ 0 ].equals( "-f" )){
-            dbUrl = DISK_DB_URL + args[ 1 ];
-        }else if( args.length == 0 ){
-            dbUrl = IN_MEMORY_DB_URL;
-        }else{
-            throw new RuntimeException( "Illegal command-line arguments." );
-        }
+    public static void main(String[] args) {
+        Configuration.setConfiguration(args);
     }
+
+    private DatabaseManager() {}
 }

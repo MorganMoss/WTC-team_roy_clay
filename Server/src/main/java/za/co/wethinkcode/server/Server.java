@@ -84,16 +84,32 @@ public class Server {
                         System.out.println(World.getRobots());
                         break;
                     case "purge":
+                        if (command.split(" ").length < 2) {
+                            System.out.println("Please enter the name of the robot to be purged");
+                            break;
+                        }
                         String robot = command.split(" ")[1];
                         purge(robot);
+                        break;
+                    case "save":
+                        if (command.split(" ").length < 2) {
+                            System.out.println("Please enter the name of the saved world");
+                            break;
+                        }
+                        DatabaseManager.save(command.split(" ")[1]);
+                        break;
+                    case "load":
+                        if (command.split(" ").length < 2) {
+                            System.out.println("Please enter the name of the saved world");
+                            break;
+                        }
+                        DatabaseManager.load(command.split(" ")[1]);
                         break;
                     default:
                         System.out.println("Invalid command");
                 }
             }
             System.out.println("Server closing...");
-            //TODO:
-            // NotifyClients()
             System.exit(0);
         }
     }
