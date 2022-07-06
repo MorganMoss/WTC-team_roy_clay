@@ -25,6 +25,8 @@ public class Robot extends Movable {
         this.status = "NORMAL";
     }
 
+
+
     /**
      * A robot obstructs the path,
      * It forces another robot to move back to one position before this entity

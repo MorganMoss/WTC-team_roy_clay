@@ -6,6 +6,7 @@ import za.co.wethinkcode.server.handler.world.World;
 import java.util.List;
 
 public abstract class Command {
+
     protected String robot;
 
     /**

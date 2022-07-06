@@ -8,6 +8,7 @@ import za.co.wethinkcode.server.TestHelper;
 import za.co.wethinkcode.server.handler.world.World;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 
 import static java.lang.Math.min;
@@ -22,8 +23,11 @@ class CommandTest {
      * Resets the world before each test
      */
     @BeforeEach
+//    void resetWorld(){
+//        TestHelper.modifyWorld(new String[]{"-o=0,0,1,2","-s=3"});
+//    }
     void resetWorld(){
-        TestHelper.modifyWorld(new String[]{"-o=0,0,1,2","-s=3"});
+        TestHelper.modifyWorld(new String[]{"-o=0,1,0,9","-s=20"});
     }
 
     /**
@@ -106,6 +110,7 @@ class CommandTest {
 
         launchRobot("HAL", shield, shots);
 
+
         assertNotNull(response);
         assertEquals("OK", response.getResult());
         assertEquals(new HashMap<String,String>(), response.getData());
@@ -171,6 +176,46 @@ class CommandTest {
             assertEquals(correct.get(key), response.getState().get(key));
         }
     }
+
+    private void look(String name) {
+
+        command = new LookCommand();
+        command.setRobot(name);
+        response = command.execute();
+    }
+    @Test
+    void LookCommandTest(){
+
+        Integer shield = 5, shots = 5;
+        launchRobot("HAL", shield, shots);
+        look("HAL");
+
+//        assertNotNull(response);
+//        assertEquals("OK", response.getResult());
+//        assertEquals(new HashMap<String,String>(), response.getData());
+//
+//        //TODO:
+//        // This should not necessarily be 0,0.
+//        // It should be pulled from the World.
+//        int x = 0, y = 0;
+//
+//        assertEquals(World.getRobot("HAL").getPosition().x, ((int[]) response.getState().get("position"))[0]);
+//        assertEquals(World.getRobot("HAL").getPosition().y, ((int[]) response.getState().get("position"))[1]);
+//
+//        HashMap<String, ?> correct = new HashMap<>(){{
+//            put("direction", "NORTH");
+//            put("shields", min(shield, max_shield()));
+//            put("shots", min(shots, max_shots()));
+//            put("status", "NORMAL");
+//        }};
+//
+//        for (String key: correct.keySet()){
+//            assertEquals(correct.get(key), response.getState().get(key));
+//        }
+    }
+
+
+
 
     //TODO:
     // - All the other command success and fail cases

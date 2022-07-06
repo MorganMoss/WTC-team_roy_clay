@@ -9,6 +9,7 @@ import java.awt.*;
  * An entity with a mutable position
  */
 public abstract class Movable implements Entity {
+
     protected Point position;
     protected Direction direction;
 
