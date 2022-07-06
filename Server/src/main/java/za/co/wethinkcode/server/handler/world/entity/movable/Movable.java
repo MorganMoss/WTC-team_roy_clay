@@ -12,7 +12,7 @@ public abstract class Movable implements Entity {
     protected Point position;
     protected Direction direction;
 
-    protected enum Direction {
+    public enum Direction {
         NORTH (0),
         EAST (90),
         SOUTH (180),
