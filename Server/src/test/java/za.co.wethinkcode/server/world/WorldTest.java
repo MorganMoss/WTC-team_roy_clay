@@ -2,7 +2,7 @@ package za.co.wethinkcode.server.world;
 
 
 import org.junit.jupiter.api.Test;
-import za.co.wethinkcode.server.Configuration;
+import za.co.wethinkcode.server.configuration.Configuration;
 import za.co.wethinkcode.server.TestHelper;
 import za.co.wethinkcode.server.handler.world.World;
 import za.co.wethinkcode.server.handler.world.entity.movable.robot.Robot;

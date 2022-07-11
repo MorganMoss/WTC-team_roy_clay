@@ -1,7 +1,7 @@
 package za.co.wethinkcode.server.handler.command;
 
 import za.co.wethinkcode.Response;
-import za.co.wethinkcode.server.Configuration;
+import za.co.wethinkcode.server.configuration.Configuration;
 import za.co.wethinkcode.server.handler.world.World;
 import za.co.wethinkcode.server.handler.world.entity.Entity;
 import za.co.wethinkcode.server.handler.world.entity.movable.Movable;
@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import static java.lang.Math.round;
-import static za.co.wethinkcode.server.Configuration.size;
+import static za.co.wethinkcode.server.configuration.Configuration.size;
 
 
 //TODO: Implement correct functionality.

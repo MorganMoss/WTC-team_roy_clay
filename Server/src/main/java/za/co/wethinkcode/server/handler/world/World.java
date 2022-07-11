@@ -1,6 +1,6 @@
 package za.co.wethinkcode.server.handler.world;
 
-import za.co.wethinkcode.server.BadConfigurationException;
+import za.co.wethinkcode.server.configuration.BadConfigurationException;
 import za.co.wethinkcode.server.handler.world.entity.Entity;
 import za.co.wethinkcode.server.handler.world.entity.immovable.Edge;
 import za.co.wethinkcode.server.handler.world.entity.immovable.Mine;
@@ -13,7 +13,7 @@ import java.awt.*;
 import java.util.List;
 import java.util.*;
 
-import static za.co.wethinkcode.server.Configuration.*;
+import static za.co.wethinkcode.server.configuration.Configuration.*;
 
 /**
  * The world is a container that manages Entities,
@@ -252,6 +252,21 @@ public class World {
         return instance;
     }
 
+    public static String getEntities(Class<?> entityClass){
+        StringBuilder result = new StringBuilder();
+
+        for (Point position : instance.entityTable.keySet()){
+            if (instance.entityTable.get(position).getClass().equals(entityClass)){
+                result.append(position.x).append(",").append(position.y).append(",");
+            }
+        }
+        if (result.charAt(result.length()-1) == ','){
+            result.deleteCharAt(result.length()-1);
+        }
+
+        return result.toString();
+    }
+
     public static World getInstance(){
         if(instance == null){
             synchronized (World.class){
@@ -262,6 +277,8 @@ public class World {
         }
         return instance;
     }
+
+
 
     /**
      * Resets world to initial values

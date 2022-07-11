@@ -1,15 +1,15 @@
-package za.co.wethinkcode.server;
-
-import za.co.wethinkcode.server.handler.world.World;
+package za.co.wethinkcode.server.configuration;
 
 import java.sql.*;
 import java.util.Objects;
 import java.util.Scanner;
 
+import static za.co.wethinkcode.server.configuration.Configuration.save_location;
+
 /**
  * DbTest is a small command-line tool used to check that we can connect to a SQLite database.
  *
- * By default (without any command-line arguments) it attempts to create a SQLite table in an in-memory database.
+ * By default, (without any command-line arguments) it attempts to create a SQLite table in an in-memory database.
  * If it succeeds, we assume that all the working parts we need to use SQLite databases are in place and working.
  *
  * The only command-line argument this app understands is
@@ -30,7 +30,7 @@ public class DatabaseManager {
      */
     private static void openDatabase(){
         try {
-            connection = DriverManager.getConnection(DISK_DB_URL + Configuration.save_location());
+            connection = DriverManager.getConnection(DISK_DB_URL + save_location());
             System.out.println( "Connected to database" );
         } catch( SQLException e ){
             System.err.println( e.getMessage() );
@@ -58,7 +58,6 @@ public class DatabaseManager {
             System.out.println("Failed! Please enter save name");
         }
 
-//        String world_json = World.serialize();
         String configuration_json = Configuration.serialize();
 
         openDatabase();
@@ -116,10 +115,6 @@ public class DatabaseManager {
             System.out.println("Loading " + resultSet.getString("save_name") + " . . .");
 
             Configuration.loadConfiguration(resultSet.getString("configuration_json"));
-            System.out.println("Loaded Configuration");
-//
-//            World.loadWorld(resultSet.getString("world_json"));
-//            System.out.println("Loaded World");
 
             System.out.println( "Loading complete!" );
         }catch( SQLException e ){
@@ -152,7 +147,6 @@ public class DatabaseManager {
                     table +" " +
                     "(" +
                         "save_name          STRING NOT NULL, " +
-//                        "world_json         STRING NOT NULL, " +
                         "configuration_json STRING NOT NULL, " +
                         "PRIMARY KEY (save_name)" +
                     ")"
@@ -162,10 +156,6 @@ public class DatabaseManager {
         }catch( SQLException e ){
             System.err.println( e.getMessage() );
         }
-    }
-
-    public static void main(String[] args) {
-        Configuration.setConfiguration(args);
     }
 
     private DatabaseManager() {}
