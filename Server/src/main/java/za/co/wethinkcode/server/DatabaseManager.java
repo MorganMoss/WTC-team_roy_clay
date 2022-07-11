@@ -83,14 +83,12 @@ public class DatabaseManager {
             "INSERT INTO "+ table +" " +
                     "(" +
                         "save_name," +
-                        "world_json," +
                         "configuration_json" +
                     ") " +
 
                 "VALUES " +
                     "(" +
                         "\"" + save + "\", " +
-                        "'" + world_json + "', " +
                         "'" + configuration_json + "'" +
                     ")"
             );
@@ -154,7 +152,7 @@ public class DatabaseManager {
                     table +" " +
                     "(" +
                         "save_name          STRING NOT NULL, " +
-                        "world_json         STRING NOT NULL, " +
+//                        "world_json         STRING NOT NULL, " +
                         "configuration_json STRING NOT NULL, " +
                         "PRIMARY KEY (save_name)" +
                     ")"
