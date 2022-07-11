@@ -165,10 +165,14 @@ public class World {
     /**
      * Updates value of x,y co-ordinates depending on whether an entity is found
      */
-    public static Entity Seek(Point startingPosition, int angle_degrees, int steps) {
+    public static Entity Seek(Point startingPosition, double angle_degrees, int steps) {
 
-        int startX = startingPosition.x;
-        int startY = startingPosition.y;
+//        int startX = startingPosition.x;
+//        int startY = startingPosition.y;
+
+
+        int startX = 0;
+        int startY = 0;
 
         //updating temp value of y & x
         for (int i = 1; i <= steps; i++) {
@@ -188,7 +192,7 @@ public class World {
             }
 
         }
-        //moved all required steps without any obstructions along the way
+        //looked in all required steps without any obstructions along the way
         return null;
     }
 

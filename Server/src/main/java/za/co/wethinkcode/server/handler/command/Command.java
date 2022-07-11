@@ -32,7 +32,6 @@ public abstract class Command {
     }
 
 
-
     /**
      * Validates and sets the name of the robot for the command by default
      * @param robot name of the robot being acted upon
@@ -51,5 +50,4 @@ public abstract class Command {
      * @return a response formulated off the results of the execution.
      */
     public abstract Response execute();
-
 }

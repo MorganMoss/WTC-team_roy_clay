@@ -74,6 +74,8 @@ public final class Handler extends Thread{
             return UNSUPPORTED_COMMAND;
         }
 
+        //what happens if we have not null but not supported command like run, add oor in the condition above
+
         try {
             command.setRobot(request.getRobot());
         } catch (RobotNotFoundException robotDoesNotExist){

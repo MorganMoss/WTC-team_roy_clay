@@ -1,20 +1,19 @@
 package za.co.wethinkcode.server.handler.command;
 
+import za.co.wethinkcode.server.Configuration;
+import za.co.wethinkcode.server.handler.world.World;
+import za.co.wethinkcode.server.handler.world.entity.Entity;
+import za.co.wethinkcode.server.handler.world.entity.movable.Movable;
+
+import java.awt.*;
+import java.util.List;
+
 public class ForwardCommand extends Movement {
 
-    //get steps
-    //get robots current direction & corresponding angle
-    //get robots starting position
+    @Override
+    public void setArguments(List<String> arguments) {
+        super.setArguments(arguments);
+    }
 
-
-//   Entity foundEntity = World.Seek(startingPosition, steps, angle);
-
-   //if found entity is null
-        //update position to y final = y temp
-        //response = get response from updating a position
-    //else if found entity not null
-        //update position to y final = y temp
-        //get response for updating
-        //get response for hitting obstacle
 }
 

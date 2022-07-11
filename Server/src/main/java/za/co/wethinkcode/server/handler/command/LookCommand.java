@@ -44,20 +44,14 @@ public class LookCommand extends Command {
         //robot looks in each direction within visible range and returns the first entity it sees in that direction
         for (Movable.Direction direction : directions) {
 
-            int directionAngle = direction.angle;
+            double directionAngle = direction.angle;
             Entity foundEntity = World.Seek(currentPosition, directionAngle, visibility);
 
-            if (foundEntity != null) {
-                System.out.println("entity found: ");
-                System.out.println(foundEntity);
-            }
-
-            System.out.println("entity reported: ");
-            System.out.println(foundEntity);
-
+            //add information about the found entity to the response object
         }
 
         Response response = Response.createOK(new HashMap<>());
+        System.out.println(response.getResult());
         return addRobotState(response);
     }
 }

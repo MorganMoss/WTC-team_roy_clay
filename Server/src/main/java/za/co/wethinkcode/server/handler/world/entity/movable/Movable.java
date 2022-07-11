@@ -11,7 +11,7 @@ import java.awt.*;
 public abstract class Movable implements Entity {
 
     protected Point position;
-    protected Direction direction;
+    public Direction direction;
 
     public enum Direction {
         NORTH (0),

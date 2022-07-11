@@ -17,6 +17,7 @@ import static za.co.wethinkcode.server.Configuration.*;
 
 class CommandTest {
     private Command command;
+    private Movement movement;
     private Response response;
 
     /**
@@ -27,7 +28,7 @@ class CommandTest {
 //        TestHelper.modifyWorld(new String[]{"-o=0,0,1,2","-s=3"});
 //    }
     void resetWorld(){
-        TestHelper.modifyWorld(new String[]{"-o=0,1,0,9","-s=20"});
+        TestHelper.modifyWorld(new String[]{"-o=none","-s=20"});
     }
 
     /**
@@ -73,7 +74,6 @@ class CommandTest {
 
         assertNotNull(response);
         assertEquals("OK", response.getResult());
-
 
 
         HashMap<String, ?> correct = new HashMap<>(){{
@@ -183,39 +183,31 @@ class CommandTest {
         command.setRobot(name);
         response = command.execute();
     }
+
+    private void forward(String name) {
+        movement = new ForwardCommand();
+        movement.setArguments(Arrays.asList("10"));
+        movement.setRobot(name);
+        response = movement.execute();
+
+    }
+
+
     @Test
     void LookCommandTest(){
 
         Integer shield = 5, shots = 5;
         launchRobot("HAL", shield, shots);
         look("HAL");
-
-//        assertNotNull(response);
-//        assertEquals("OK", response.getResult());
-//        assertEquals(new HashMap<String,String>(), response.getData());
-//
-//        //TODO:
-//        // This should not necessarily be 0,0.
-//        // It should be pulled from the World.
-//        int x = 0, y = 0;
-//
-//        assertEquals(World.getRobot("HAL").getPosition().x, ((int[]) response.getState().get("position"))[0]);
-//        assertEquals(World.getRobot("HAL").getPosition().y, ((int[]) response.getState().get("position"))[1]);
-//
-//        HashMap<String, ?> correct = new HashMap<>(){{
-//            put("direction", "NORTH");
-//            put("shields", min(shield, max_shield()));
-//            put("shots", min(shots, max_shots()));
-//            put("status", "NORMAL");
-//        }};
-//
-//        for (String key: correct.keySet()){
-//            assertEquals(correct.get(key), response.getState().get(key));
-//        }
     }
 
+    @Test
+    void ForwardCommandTest(){
 
-
+        Integer shield = 5, shots = 5;
+        launchRobot("HAL", shield, shots);
+        forward("HAL");
+    }
 
     //TODO:
     // - All the other command success and fail cases
@@ -240,6 +232,5 @@ class CommandTest {
     //      - Miss
 
     static class BadDataType {
-
     }
 }
