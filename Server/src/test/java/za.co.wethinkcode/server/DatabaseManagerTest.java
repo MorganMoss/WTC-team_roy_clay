@@ -1,10 +1,10 @@
 package za.co.wethinkcode.server;
 
 import com.google.gson.Gson;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import za.co.wethinkcode.server.configuration.Configuration;
+import za.co.wethinkcode.server.configuration.DatabaseManager;
 
-import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.*;
 import java.util.Hashtable;

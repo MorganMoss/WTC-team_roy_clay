@@ -3,7 +3,7 @@ package za.co.wethinkcode.server.handler.command;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import za.co.wethinkcode.Response;
-import za.co.wethinkcode.server.Configuration;
+import za.co.wethinkcode.server.configuration.Configuration;
 import za.co.wethinkcode.server.TestHelper;
 import za.co.wethinkcode.server.handler.world.World;
 
@@ -14,8 +14,8 @@ import java.util.List;
 
 import static java.lang.Math.min;
 import static org.junit.jupiter.api.Assertions.*;
-import static za.co.wethinkcode.server.Configuration.max_shield;
-import static za.co.wethinkcode.server.Configuration.max_shots;
+import static za.co.wethinkcode.server.configuration.Configuration.max_shield;
+import static za.co.wethinkcode.server.configuration.Configuration.max_shots;
 
 class CommandTest {
     private Command command;

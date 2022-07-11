@@ -1,6 +1,6 @@
 package za.co.wethinkcode.server.handler.world;
 
-import za.co.wethinkcode.server.BadConfigurationException;
+import za.co.wethinkcode.server.configuration.BadConfigurationException;
 import za.co.wethinkcode.server.handler.world.entity.Entity;
 import za.co.wethinkcode.server.handler.world.entity.immovable.Edge;
 import za.co.wethinkcode.server.handler.world.entity.immovable.Mine;
@@ -13,7 +13,7 @@ import java.awt.*;
 import java.util.List;
 import java.util.*;
 
-import static za.co.wethinkcode.server.Configuration.*;
+import static za.co.wethinkcode.server.configuration.Configuration.*;
 
 /**
  * The world is a container that manages Entities,

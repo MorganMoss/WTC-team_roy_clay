@@ -1,4 +1,4 @@
-package za.co.wethinkcode.server;
+package za.co.wethinkcode.server.configuration;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;

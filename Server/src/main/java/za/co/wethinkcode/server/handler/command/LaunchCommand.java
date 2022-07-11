@@ -9,8 +9,8 @@ import java.awt.*;
 import java.util.List;
 
 import static java.lang.Math.min;
-import static za.co.wethinkcode.server.Configuration.max_shield;
-import static za.co.wethinkcode.server.Configuration.max_shots;
+import static za.co.wethinkcode.server.configuration.Configuration.max_shield;
+import static za.co.wethinkcode.server.configuration.Configuration.max_shots;
 
 public class LaunchCommand extends Command {
 

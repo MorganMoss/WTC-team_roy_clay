@@ -1,8 +1,10 @@
-package za.co.wethinkcode.server;
+package za.co.wethinkcode.server.configuration;
 
 import java.sql.*;
 import java.util.Objects;
 import java.util.Scanner;
+
+import static za.co.wethinkcode.server.configuration.Configuration.save_location;
 
 /**
  * DbTest is a small command-line tool used to check that we can connect to a SQLite database.
@@ -28,7 +30,7 @@ public class DatabaseManager {
      */
     private static void openDatabase(){
         try {
-            connection = DriverManager.getConnection(DISK_DB_URL + Configuration.save_location());
+            connection = DriverManager.getConnection(DISK_DB_URL + save_location());
             System.out.println( "Connected to database" );
         } catch( SQLException e ){
             System.err.println( e.getMessage() );
