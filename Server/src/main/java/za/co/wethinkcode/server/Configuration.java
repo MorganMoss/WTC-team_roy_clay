@@ -32,7 +32,7 @@ public final class Configuration implements Callable<Integer> {
     @CommandLine.Option(
             names = {"-s", "--size"},
             description = {"Size of the world as one side of a square grid"},
-            defaultValue = "1"
+            defaultValue = "2"
     )
     private static Integer SIZE;
     public static Integer size() {return  SIZE;}

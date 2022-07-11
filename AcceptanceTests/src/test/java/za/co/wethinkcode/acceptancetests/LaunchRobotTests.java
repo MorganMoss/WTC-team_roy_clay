@@ -4,11 +4,13 @@ import com.fasterxml.jackson.databind.JsonNode;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import za.co.wethinkcode.acceptancetests.protocoldrivers.RobotWorldClient;
 import za.co.wethinkcode.acceptancetests.protocoldrivers.RobotWorldJsonClient;
-import java.util.List;
+
 import java.util.Arrays;
-import static org.junit.jupiter.api.Assertions.*;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 
 
@@ -147,20 +149,17 @@ public class LaunchRobotTests {
 
         // When I launch robot "R2D2" into the world
         serverClient.launchRobot("R2D2");
-
-        // Then the launch should be successful
+//
+//        // Then the launch should be successful
         JsonNode response = serverClient.getResponse();
         serverClient.assertResult(response, "OK");
         assertNotNull(response.get("state"));
 
-        // and a randomly allocated position of R2D2 should be returned.
-        assertNotNull(response.get("data"));
-        assertNotNull(response.get("data").get("position"));
-
-        assertTrue(response.get("data").get("position").get(1).isInt());
-        assertTrue(response.get("data").get("position").get(0).isInt());
-
-
+//        // and a randomly allocated position of R2D2 should be returned.
+        assertTrue(response.get("state").get("position").get(1).isInt());
+        assertTrue(response.get("state").get("position").get(0).isInt());
+//
+//
         assertTrue(serverClient.getX(response) >= -1 && serverClient.getX(response) <= 1);
         assertTrue(serverClient.getY(response) >= -1 && serverClient.getY(response) <= 1);
     }
