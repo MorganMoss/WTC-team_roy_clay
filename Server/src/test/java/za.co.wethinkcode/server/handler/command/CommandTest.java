@@ -8,16 +8,17 @@ import za.co.wethinkcode.server.TestHelper;
 import za.co.wethinkcode.server.handler.world.World;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 
 import static java.lang.Math.min;
 import static org.junit.jupiter.api.Assertions.*;
-import static za.co.wethinkcode.server.Configuration.*;
+import static za.co.wethinkcode.server.Configuration.max_shield;
+import static za.co.wethinkcode.server.Configuration.max_shots;
 
 class CommandTest {
     private Command command;
-    private Movement movement;
     private Response response;
 
     /**
@@ -28,7 +29,7 @@ class CommandTest {
 //        TestHelper.modifyWorld(new String[]{"-o=0,0,1,2","-s=3"});
 //    }
     void resetWorld(){
-        TestHelper.modifyWorld(new String[]{"-o=none","-s=20"});
+        TestHelper.modifyWorld(new String[]{"-o=0,1","-s=20"});
     }
 
     /**
@@ -74,6 +75,7 @@ class CommandTest {
 
         assertNotNull(response);
         assertEquals("OK", response.getResult());
+
 
 
         HashMap<String, ?> correct = new HashMap<>(){{
@@ -178,36 +180,83 @@ class CommandTest {
     }
 
     private void look(String name) {
-
         command = new LookCommand();
         command.setRobot(name);
         response = command.execute();
     }
+    @Test
+    void LookCommandTestSeeAll4Edges() {
+        TestHelper.modifyWorld(new String[]{"-s=18"});
 
-    private void forward(String name) {
-        movement = new ForwardCommand();
-        movement.setArguments(Arrays.asList("10"));
-        movement.setRobot(name);
-        response = movement.execute();
+        Integer shield = 5, shots = 5;
+        launchRobot("HAL", shield, shots);
+        look("HAL");
 
     }
 
+    @Test
+    void LookCommandTestSeeNoEdges() {
+        TestHelper.modifyWorld(new String[]{"-s=25"});
+
+        Integer shield = 5, shots = 5;
+        launchRobot("HAL", shield, shots);
+        look("HAL");
+
+    }
 
     @Test
-    void LookCommandTest(){
+    void LookCommandTestSeeObstacle() {
+        TestHelper.modifyWorld(new String[]{"-o=12,13,12,11,11,12,13,12","-s=25"});
 
         Integer shield = 5, shots = 5;
         launchRobot("HAL", shield, shots);
         look("HAL");
     }
 
+    private void forward(String name, List<String> arguments) {
+
+        command = new ForwardCommand();
+        command.setRobot(name);
+        command.setArguments(arguments);
+        response = command.execute();
+    }
+
     @Test
-    void ForwardCommandTest(){
+    void ForwardCommandTest() {
 
         Integer shield = 5, shots = 5;
         launchRobot("HAL", shield, shots);
-        forward("HAL");
+        forward("HAL", Collections.singletonList("10"));
+
     }
+
+
+//        assertNotNull(response);
+//        assertEquals("OK", response.getResult());
+//        assertEquals(new HashMap<String,String>(), response.getData());
+//
+//        //TODO:
+//        // This should not necessarily be 0,0.
+//        // It should be pulled from the World.
+//        int x = 0, y = 0;
+//
+//        assertEquals(World.getRobot("HAL").getPosition().x, ((int[]) response.getState().get("position"))[0]);
+//        assertEquals(World.getRobot("HAL").getPosition().y, ((int[]) response.getState().get("position"))[1]);
+//
+//        HashMap<String, ?> correct = new HashMap<>(){{
+//            put("direction", "NORTH");
+//            put("shields", min(shield, max_shield()));
+//            put("shots", min(shots, max_shots()));
+//            put("status", "NORMAL");
+//        }};
+//
+//        for (String key: correct.keySet()){
+//            assertEquals(correct.get(key), response.getState().get(key));
+//        }
+
+
+
+
 
     //TODO:
     // - All the other command success and fail cases
@@ -232,5 +281,6 @@ class CommandTest {
     //      - Miss
 
     static class BadDataType {
+
     }
 }

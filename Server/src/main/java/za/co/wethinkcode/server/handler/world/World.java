@@ -1,13 +1,12 @@
 package za.co.wethinkcode.server.handler.world;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonSyntaxException;
 import za.co.wethinkcode.server.BadConfigurationException;
 import za.co.wethinkcode.server.handler.world.entity.Entity;
+import za.co.wethinkcode.server.handler.world.entity.immovable.Edge;
 import za.co.wethinkcode.server.handler.world.entity.immovable.Mine;
 import za.co.wethinkcode.server.handler.world.entity.immovable.Obstacle;
 import za.co.wethinkcode.server.handler.world.entity.immovable.Pit;
+import za.co.wethinkcode.server.handler.world.entity.movable.Movable;
 import za.co.wethinkcode.server.handler.world.entity.movable.robot.Robot;
 
 import java.awt.*;
@@ -39,13 +38,6 @@ public class World {
      * makes adding robots to random spaces easier
      */
     private final Set<Point> openPositions = new HashSet<>();
-
-    /**
-     * Current position of robot
-     */
-
-
-
 
     /**
      * Creates a list of all available spaces in the world
@@ -165,14 +157,11 @@ public class World {
     /**
      * Updates value of x,y co-ordinates depending on whether an entity is found
      */
-    public static Entity Seek(Point startingPosition, double angle_degrees, int steps) {
+    public static Entity Seek(Point startingPosition, int angle_degrees, int steps) {
 
-//        int startX = startingPosition.x;
-//        int startY = startingPosition.y;
+        int x = startingPosition.x;
+        int y = startingPosition.y;
 
-
-        int startX = 0;
-        int startY = 0;
 
         //updating temp value of y & x
         for (int i = 1; i <= steps; i++) {
@@ -180,20 +169,34 @@ public class World {
             //get next position of robot if no obstruction
             double angle_radians = Math.toRadians(angle_degrees);
 
-            int tempY = startY += Math.cos(angle_radians);
-            int tempX = startX += Math.sin(angle_radians);
+            x += Math.sin(angle_radians);
+            y += Math.cos(angle_radians);
 
             //check if that position is not already occupied. Not occupied if entity is null, otherwise occupied
-            Entity foundEntity = instance.entityTable.get(new Point(tempX, tempY));
+            Point position = new Point(x,y);
+
+            Entity foundEntity = instance.entityTable.get(position);
 
             //if occupied, stop moving and return obstruction
             if (foundEntity != null) {
                 return foundEntity;
             }
 
+            if (!instance.openPositions.contains(position)){
+                //Edge
+                return new Edge(position);
+            }
+
         }
-        //looked in all required steps without any obstructions along the way
+        //moved all required steps without any obstructions along the way
         return null;
+    }
+
+    public static void updatePosition(String robot, Point newPosition) {
+        Movable movable = getRobot(robot);
+        removeEntity(movable.getPosition());
+        movable.updatePosition(newPosition);
+        addEntity(newPosition, movable);
     }
 
     /**
@@ -258,39 +261,6 @@ public class World {
             }
         }
         return instance;
-    }
-
-    /**
-     * this function uses Google Gson
-     * (a java data serialization package)
-     * that takes this worlds instance and converts it into a String Json
-     * @return a String Json of the worlds instance
-     */
-    public static String serialize(){
-        Gson gson = new GsonBuilder().enableComplexMapKeySerialization().create();
-        return gson.toJson(instance);
-    }
-
-    /**
-     * this function uses Google Gson
-     * (a java data serialization package)
-     * A saved instance of a world (in a serialized form)
-     * overwrites the current world instance
-     * @param world_json given by a database
-     */
-    public static void loadWorld(String world_json){
-        try {
-            instance = new Gson().fromJson(world_json, World.class);
-
-            //Removing old robots
-            for (String robot : instance.robots.keySet()){
-                removeRobot(robot);
-            }
-        } catch (JsonSyntaxException badJSON){
-            System.out.println("Bad world loaded. Aborting . . .");
-            System.err.println(badJSON);
-            System.exit(1);
-        }
     }
 
     /**

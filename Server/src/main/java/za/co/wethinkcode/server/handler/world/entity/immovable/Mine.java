@@ -27,4 +27,9 @@ public class Mine extends Immovable {
         //Remove this mine from the world
         return "Mine";
     }
+
+    @Override
+    public String toString() {
+        return "MINE";
+    }
 }

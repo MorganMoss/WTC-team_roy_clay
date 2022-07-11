@@ -21,6 +21,7 @@ import java.util.Scanner;
 public class DatabaseManager {
     private static final String DISK_DB_URL = "jdbc:sqlite:";
     private static final String table = "saved_worlds";
+
     private static Connection connection;
 
     /**
@@ -57,7 +58,7 @@ public class DatabaseManager {
             System.out.println("Failed! Please enter save name");
         }
 
-        String world_json = World.serialize();
+//        String world_json = World.serialize();
         String configuration_json = Configuration.serialize();
 
         openDatabase();
@@ -82,14 +83,12 @@ public class DatabaseManager {
             "INSERT INTO "+ table +" " +
                     "(" +
                         "save_name," +
-                        "world_json," +
                         "configuration_json" +
                     ") " +
 
                 "VALUES " +
                     "(" +
                         "\"" + save + "\", " +
-                        "'" + world_json + "', " +
                         "'" + configuration_json + "'" +
                     ")"
             );
@@ -118,9 +117,9 @@ public class DatabaseManager {
 
             Configuration.loadConfiguration(resultSet.getString("configuration_json"));
             System.out.println("Loaded Configuration");
-
-            World.loadWorld(resultSet.getString("world_json"));
-            System.out.println("Loaded World");
+//
+//            World.loadWorld(resultSet.getString("world_json"));
+//            System.out.println("Loaded World");
 
             System.out.println( "Loading complete!" );
         }catch( SQLException e ){
@@ -153,7 +152,7 @@ public class DatabaseManager {
                     table +" " +
                     "(" +
                         "save_name          STRING NOT NULL, " +
-                        "world_json         STRING NOT NULL, " +
+//                        "world_json         STRING NOT NULL, " +
                         "configuration_json STRING NOT NULL, " +
                         "PRIMARY KEY (save_name)" +
                     ")"

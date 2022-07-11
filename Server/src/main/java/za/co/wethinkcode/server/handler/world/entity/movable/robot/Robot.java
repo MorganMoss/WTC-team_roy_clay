@@ -76,4 +76,9 @@ public class Robot extends Movable {
             put("status", status);
         }};
     }
+
+    @Override
+    public String toString() {
+        return "ROBOT";
+    }
 }
