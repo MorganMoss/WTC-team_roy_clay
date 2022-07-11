@@ -75,6 +75,8 @@ public class RobotWorldJsonClient implements RobotWorldClient {
             lastResponse = OBJECT_MAPPER.readTree(responses.readLine());
         } catch (IOException e) {
             throw new RuntimeException("Error reading server response.", e);
+            //Q: what if the error was due to the response not being sent successfully?
+
         }
         return lastResponse;
     }
@@ -123,6 +125,7 @@ public class RobotWorldJsonClient implements RobotWorldClient {
                 name, "launch", "[\"shooter\",\"5\",\"5\"]");
 
         System.out.println(launch_response);
+        //Q: why do we want to print out this response?
 
         return (
             launch_response.get("result") != null

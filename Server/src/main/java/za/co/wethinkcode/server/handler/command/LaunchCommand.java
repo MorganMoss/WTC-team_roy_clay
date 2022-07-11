@@ -13,10 +13,12 @@ import static za.co.wethinkcode.server.Configuration.max_shield;
 import static za.co.wethinkcode.server.Configuration.max_shots;
 
 public class LaunchCommand extends Command {
+
     /**
      * Pre-formatted Response
      * for if there is no space in the world for a new robot
      */
+
     private static final Response NO_SPACE = Response.createError("No more space in this world");
     /**
      * Pre-formatted Response
@@ -38,7 +40,7 @@ public class LaunchCommand extends Command {
             return NAME_TAKEN;
         }
 
-        Point initialPosition = World.getOpenSpace();
+        Point initialPosition = World.getOpenPosition();
         if (initialPosition == null){
             return NO_SPACE;
         }

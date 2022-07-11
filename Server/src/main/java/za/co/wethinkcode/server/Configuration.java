@@ -1,8 +1,19 @@
 package za.co.wethinkcode.server;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 import picocli.CommandLine;
+
+import java.util.Hashtable;
 import java.util.concurrent.Callable;
 import java.lang.reflect.*;
+
+import static java.lang.Math.round;
+
+/**
+ * Configuration Class stores all the values provided via CLI or a loaded set of values
+ * It has default values.
+ */
 @CommandLine.Command(
         name = "robots-world",
         mixinStandardHelpOptions = true,
@@ -16,6 +27,7 @@ public final class Configuration implements Callable<Integer> {
             defaultValue = "5000"
     )
     private static Integer PORT;
+    public static Integer port() {return PORT;}
 
     @CommandLine.Option(
             names = {"-s", "--size"},
@@ -23,6 +35,7 @@ public final class Configuration implements Callable<Integer> {
             defaultValue = "1"
     )
     private static Integer SIZE;
+    public static Integer size() {return  SIZE;}
 
     @CommandLine.Option(
             names = {"-o", "--obstacle"},
@@ -30,6 +43,7 @@ public final class Configuration implements Callable<Integer> {
             defaultValue = "none"
     )
     private static String OBSTACLE;
+    public static String obstacle() {return OBSTACLE;}
 
     @CommandLine.Option(
             names = {"-pt", "--pit"},
@@ -37,6 +51,7 @@ public final class Configuration implements Callable<Integer> {
             defaultValue = "none"
     )
     private static String PITS;
+    public static String pits() {return PITS;}
 
     @CommandLine.Option(
             names = {"-m", "--mine"},
@@ -44,6 +59,7 @@ public final class Configuration implements Callable<Integer> {
             defaultValue = "none"
     )
     private static String MINES;
+    public static String mines() {return MINES;}
 
     @CommandLine.Option(
             names = {"-v", "--visibility"},
@@ -51,6 +67,7 @@ public final class Configuration implements Callable<Integer> {
             defaultValue = "10"
     )
     private static Integer VISIBILITY;
+    public static Integer visibility() {return VISIBILITY;}
 
     @CommandLine.Option(
             names = {"-r", "--repair"},
@@ -58,6 +75,7 @@ public final class Configuration implements Callable<Integer> {
             defaultValue = "5"
     )
     private static Integer REPAIR;
+    public static Integer repair() {return  REPAIR;}
 
     @CommandLine.Option(
             names = {"-l" , "--reload"},
@@ -65,6 +83,7 @@ public final class Configuration implements Callable<Integer> {
             defaultValue = "7"
     )
     private static Integer RELOAD;
+    public static Integer reload() {return  RELOAD;}
 
     @CommandLine.Option(
             names = {"-mt", "--mine_time"},
@@ -72,6 +91,7 @@ public final class Configuration implements Callable<Integer> {
             defaultValue = "3"
     )
     private static Integer MINE;
+    public static Integer mine() { return MINE;}
 
     @CommandLine.Option(
             names = {"-shield", "--max_shield"},
@@ -79,6 +99,7 @@ public final class Configuration implements Callable<Integer> {
             defaultValue = "3"
     )
     private static Integer MAX_SHIELD;
+    public static Integer max_shield() {return MAX_SHIELD;}
 
     @CommandLine.Option(
             names = {"-shots", "--max_shots"},
@@ -86,22 +107,18 @@ public final class Configuration implements Callable<Integer> {
             defaultValue = "3"
     )
     private static Integer MAX_SHOTS;
-
-
-    public static Integer port() {return PORT;}
-    public static Integer size() {return  SIZE;}
-    public static String obstacle() {return OBSTACLE;}
-    public static String pits() {return PITS;}
-    public static String mines() {return MINES;}
-    public static Integer visibility() {return VISIBILITY;}
-    public static Integer repair() {return  REPAIR;}
-    public static Integer reload() {return  RELOAD;}
-    public static Integer max_shield() {return MAX_SHIELD;}
     public static Integer max_shots() {return MAX_SHOTS;}
-    public static Integer mine() { return MINE;}
+
+    @CommandLine.Option(
+            names = {"-saves", "--save_location"},
+            description = {"Location of the saves database"},
+            defaultValue = "Saves"
+    )
+    private static String SAVE_LOCATION;
+    public static String save_location() { return SAVE_LOCATION;}
 
     @Override
-    public Integer call() throws Exception {
+    public Integer call(){
         return 0;
     }
 
@@ -109,7 +126,7 @@ public final class Configuration implements Callable<Integer> {
      * Initializes all initial variable values.
      */
     public static void setConfiguration(String[] args){
-        int exitCodeServer = (new CommandLine(new Configuration())).execute(args);
+        (new CommandLine(new Configuration())).execute(args);
         inspect();
     }
 
@@ -118,27 +135,105 @@ public final class Configuration implements Callable<Integer> {
      */
     private static void inspect() {
         Field[] fields = Configuration.class.getDeclaredFields();
-        System.out.printf("%d fields:%n", fields.length);
-        Object o;
+        System.out.print("Configuration set: ");
+
         for (Field field : fields) {
             try {
                 String fieldName = field.getName().toLowerCase();
-                System.out.println(fieldName + " = " + Configuration.class.getMethod(fieldName).invoke(Configuration.class));
-            } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+
+                if (fieldName.equals("instance") || fieldName.equals("values")) {
+                    continue;
+                }
+
+                field.setAccessible(true);
+                System.out.println(fieldName + " = " + field.get(null));
+            } catch (IllegalAccessException e) {
                 throw new RuntimeException(e);
             }
         }
     }
 
     /**
-     * Private constructor not to be used outside this class,
-     * as it is treated as static
+     * this function uses Google Gson
+     * (a java data serialization package)
+     * that takes this configurations instance and converts it into a String Json
+     * @return a String Json of the configurations instance
      */
-    private Configuration(){}
+    public static String serialize(){
+        return new Gson().toJson(storeFields());
+    }
 
-    //TODO: for later implementation.
-    //    /**
-    //     * Dynamically load default values from a config file
-    //     */
-    //    private static String getDefaultValue(String field){return "";}
+    /**
+     * this function uses Google Gson
+     * (a java data serialization package)
+     * Takes a serialized configuration instance and loads values from it.
+     * Can change the configuration during operation.
+     * @param configuration_json serialized instance of this class
+     */
+    public static void loadConfiguration(String configuration_json){
+        Hashtable<String, Object> values;
+
+        try {
+            values = new Gson().fromJson(configuration_json, Hashtable.class);
+        } catch (JsonSyntaxException badJSON){
+            System.out.println("Bad configuration loaded. Aborting . . .");
+            System.err.println(badJSON.getMessage());
+            System.exit(1);
+            return;
+        }
+
+        if (values == null){
+            return;
+        }
+
+        Field[] fields = Configuration.class.getDeclaredFields();
+
+        for (Field field : fields){
+            try {
+                field.setAccessible(true);
+                Object value = values.get(field.getName());
+                Type fieldType = field.getType();
+
+                if (fieldType.equals(Integer.class)){
+                    field.set(null, (int) round((double) value));
+                    continue;
+                }
+
+                field.set(null, value);
+            } catch (IllegalAccessException e) {
+                System.out.println("Bad configuration loaded. Aborting . . .");
+                System.exit(1);
+            }
+        }
+
+        inspect();
+    }
+
+    private static Hashtable<String, Object> storeFields(){
+        Hashtable<String, Object> values = new Hashtable<>();
+        Field[] fields = Configuration.class.getDeclaredFields();
+        for (Field field : fields) {
+            try {
+                String fieldName = field.getName();
+
+                if (fieldName.equals("instance") || fieldName.equals("values")) {
+                    continue;
+                }
+
+                field.setAccessible(true);
+
+                values.put(fieldName , field.get(null));
+            } catch ( IllegalAccessException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        return values;
+    }
+
+    /**
+     * Private constructor
+     */
+    private Configuration(){
+    }
+
 }

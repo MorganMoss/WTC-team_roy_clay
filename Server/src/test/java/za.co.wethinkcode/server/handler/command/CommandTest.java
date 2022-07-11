@@ -1,13 +1,14 @@
 package za.co.wethinkcode.server.handler.command;
 
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import za.co.wethinkcode.Response;
 import za.co.wethinkcode.server.Configuration;
+import za.co.wethinkcode.server.TestHelper;
 import za.co.wethinkcode.server.handler.world.World;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 
 import static java.lang.Math.min;
@@ -19,22 +20,14 @@ class CommandTest {
     private Response response;
 
     /**
-     * Writes up a config to use during this test
-     */
-    @BeforeAll
-    static void makeConfig(){
-        String[] args = new String[2];
-        args[0] = "-o=0,0,1,2";
-        args[1] = "-s=3";
-        setConfiguration(args);
-    }
-
-    /**
      * Resets the world before each test
      */
     @BeforeEach
+//    void resetWorld(){
+//        TestHelper.modifyWorld(new String[]{"-o=0,0,1,2","-s=3"});
+//    }
     void resetWorld(){
-        World.reset();
+        TestHelper.modifyWorld(new String[]{"-o=0,1,0,9","-s=20"});
     }
 
     /**
@@ -73,7 +66,7 @@ class CommandTest {
         //instantiating command
         command = new WorldCommand();
         //initializing values
-        command.setArguments(null);
+        command.setArguments(new ArrayList<>());
         command.setRobot("ignored");
         //running command
         response = command.execute();
@@ -116,6 +109,7 @@ class CommandTest {
         Integer shield = 5, shots = 5;
 
         launchRobot("HAL", shield, shots);
+
 
         assertNotNull(response);
         assertEquals("OK", response.getResult());
@@ -162,7 +156,7 @@ class CommandTest {
         launchRobot("HAL", shield, shots);
 
         command = new StateCommand();
-        command.setArguments(null);
+        command.setArguments(new ArrayList<>());
         command.setRobot("HAL");
         response = command.execute();
 
@@ -182,6 +176,46 @@ class CommandTest {
             assertEquals(correct.get(key), response.getState().get(key));
         }
     }
+
+    private void look(String name) {
+
+        command = new LookCommand();
+        command.setRobot(name);
+        response = command.execute();
+    }
+    @Test
+    void LookCommandTest(){
+
+        Integer shield = 5, shots = 5;
+        launchRobot("HAL", shield, shots);
+        look("HAL");
+
+//        assertNotNull(response);
+//        assertEquals("OK", response.getResult());
+//        assertEquals(new HashMap<String,String>(), response.getData());
+//
+//        //TODO:
+//        // This should not necessarily be 0,0.
+//        // It should be pulled from the World.
+//        int x = 0, y = 0;
+//
+//        assertEquals(World.getRobot("HAL").getPosition().x, ((int[]) response.getState().get("position"))[0]);
+//        assertEquals(World.getRobot("HAL").getPosition().y, ((int[]) response.getState().get("position"))[1]);
+//
+//        HashMap<String, ?> correct = new HashMap<>(){{
+//            put("direction", "NORTH");
+//            put("shields", min(shield, max_shield()));
+//            put("shots", min(shots, max_shots()));
+//            put("status", "NORMAL");
+//        }};
+//
+//        for (String key: correct.keySet()){
+//            assertEquals(correct.get(key), response.getState().get(key));
+//        }
+    }
+
+
+
 
     //TODO:
     // - All the other command success and fail cases
