@@ -3,7 +3,7 @@
 ##############################################
 version=1.0.1-SNAPSHOT
 reference=libs/reference-server-0.2.3.jar
-ours=libs/Server-$(version).jar
+ours=Server/target/Server-$(version).jar
 our_server_class="Server"
 output="Test_Output"
 build_args=""
@@ -117,10 +117,23 @@ package_software_for_testing:
 .PHONY: run_acceptance_tests
 run_acceptance_tests:
 	##############################################
-#	$(,)LookRobotTests#invalidLookCommandShouldFail$(,)LookRobotTests#invalidLookArgumentsShouldFail
-	-$(call run_test, "ConnectionTests$(,)LaunchRobotTests#validLaunchShouldSucceed+invalidLaunchShouldFail+checkForDuplicateRobotName+worldFullNoSpaceToLaunchRobot$(,)StateRobotTests" , "--size=1")
-#	-$(call run_test, "LookRobotTests#validLookOtherArtifacts", "--size=2 --visibility=2 --obstacle=0$(,)1")
-#	-$(call run_test, "LookRobotTests#validLookNoOtherArtifacts", "--size=2 --visibility=2")
+	-$(call run_test, "ConnectionTests" , )
+
+	-$(call run_test, "LaunchRobotTests#validLaunchShouldSucceed+invalidLaunchShouldFail+checkForDuplicateRobotName+worldFullNoSpaceToLaunchRobot", )
+	-$(call run_test, "LaunchRobotTests#worldWithoutObsIsFull", "-s=3")
+	-$(call run_test, "LaunchRobotTests#WorldWithAnObstacleIsFull", "-s=3 -o=1$(,)1")
+
+	-$(call run_test, "StateRobotTests" , )
+
+	-$(call run_test, "LookRobotTests#invalidLookCommandShouldFail" , )
+	-$(call run_test, "LookRobotTests#validLookAndWorldShouldBeEmpty" , "--size=1")
+	-$(call run_test, "LookRobotTests#robotShouldSeeAnObstacle" , "-s=2 -o=0$(,)1")
+	-$(call run_test, "LookRobotTests#seeRobotsAndObstacles" , "-s=2 -o=0$(,)1")
+
+	-$(call run_test, "ForwardTests#movingAtTheEdgeOfTheWorldShouldFail" , "--size=1")
+
+	-$(call run_test, "DatabaseTests" , "--size=1, -o=1$(,)1 -p=2$(,)2")
+
 	@echo "[1;32mAll testing complete![m"
 	##############################################
 
