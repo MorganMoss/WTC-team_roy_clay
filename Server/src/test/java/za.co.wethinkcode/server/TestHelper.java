@@ -2,7 +2,7 @@ package za.co.wethinkcode.server;
 
 import za.co.wethinkcode.server.handler.world.World;
 
-import static za.co.wethinkcode.server.Configuration.setConfiguration;
+import static za.co.wethinkcode.server.configuration.Configuration.setConfiguration;
 
 public class TestHelper {
     /**

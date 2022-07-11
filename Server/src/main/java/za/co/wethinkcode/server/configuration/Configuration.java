@@ -1,8 +1,12 @@
-package za.co.wethinkcode.server;
+package za.co.wethinkcode.server.configuration;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import picocli.CommandLine;
+import za.co.wethinkcode.server.handler.world.World;
+import za.co.wethinkcode.server.handler.world.entity.immovable.Mine;
+import za.co.wethinkcode.server.handler.world.entity.immovable.Obstacle;
+import za.co.wethinkcode.server.handler.world.entity.immovable.Pit;
 
 import java.util.Hashtable;
 import java.util.concurrent.Callable;
@@ -135,18 +139,13 @@ public final class Configuration implements Callable<Integer> {
      */
     private static void inspect() {
         Field[] fields = Configuration.class.getDeclaredFields();
-        System.out.print("Configuration set: ");
+        System.out.println("Configuration set: ");
 
         for (Field field : fields) {
             try {
                 String fieldName = field.getName().toLowerCase();
-
-                if (fieldName.equals("instance") || fieldName.equals("values")) {
-                    continue;
-                }
-
                 field.setAccessible(true);
-                System.out.println(fieldName + " = " + field.get(null));
+                System.out.println("\t" + fieldName + " = " + field.get(null));
             } catch (IllegalAccessException e) {
                 throw new RuntimeException(e);
             }
@@ -160,6 +159,45 @@ public final class Configuration implements Callable<Integer> {
      * @return a String Json of the configurations instance
      */
     public static String serialize(){
+        Hashtable<String, Class<?>> Entities = new Hashtable<>(){{
+            put("OBSTACLE", Obstacle.class);
+            put("PITS", Pit.class);
+            put("MINES", Mine.class);
+        }};
+
+        for (String fieldName : Entities.keySet()){
+
+            Field field;
+
+            try {
+                field = Configuration.class.getField(fieldName);
+            } catch (NoSuchFieldException ignored) {
+                continue;
+            }
+
+            field.setAccessible(true);
+
+            String value = "";
+
+            try {
+                value = (String) field.get(null);
+            } catch (IllegalAccessException ignored) {}
+
+            if (!value.isBlank()){
+                value += ",";
+            }
+
+            value += World.getEntities(Entities.get(fieldName));
+
+            try {
+                field.set(null, value);
+            } catch (IllegalAccessException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+
+
         return new Gson().toJson(storeFields());
     }
 
@@ -207,6 +245,8 @@ public final class Configuration implements Callable<Integer> {
         }
 
         inspect();
+
+        World.reset();
     }
 
     private static Hashtable<String, Object> storeFields(){

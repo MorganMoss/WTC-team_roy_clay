@@ -4,9 +4,9 @@ import za.co.wethinkcode.Response;
 
 import java.util.HashMap;
 
-import za.co.wethinkcode.server.Configuration;
+import za.co.wethinkcode.server.configuration.Configuration;
 
-import static za.co.wethinkcode.server.Configuration.*;
+import static za.co.wethinkcode.server.configuration.Configuration.*;
 
 public class WorldCommand extends Command {
 

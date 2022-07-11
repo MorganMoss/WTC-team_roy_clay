@@ -41,34 +41,38 @@ public final class ClientCommunicator {
 
     private final String clientID = Integer.toHexString(this.hashCode());
 
-    /**
-     * Constructor for a Server Client Communicator
-     * @param socket The result of a connection to the server from the client.
-     */
-    public ClientCommunicator(Socket socket) throws IOException {
-        System.out.println("Connection from " + clientID + " with the address: " + socket.getInetAddress().getHostName());
-
-        requestIn = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-        responseOut = new PrintStream(socket.getOutputStream());
+    public static void openCommunication(Socket socket) throws IOException {
+        ClientCommunicator instance = new ClientCommunicator(socket);
 
         Thread requester = new Thread(
                 () -> {
-                    while (connected) {
-                        passingRequest();
+                    while (instance.connected) {
+                        instance.passingRequest();
                     }
                 }
         );
 
         Thread responder = new Thread(
                 () -> {
-                    while (connected) {
-                        passingResponse();
+                    while (instance.connected) {
+                        instance.passingResponse();
                     }
                 }
         );
 
         requester.start();
         responder.start();
+    }
+
+    /**
+     * Constructor for a Server Client Communicator
+     * @param socket The result of a connection to the server from the client.
+     */
+    private ClientCommunicator(Socket socket) throws IOException {
+        System.out.println("Connection from " + clientID + " with the address: " + socket.getInetAddress().getHostName());
+
+        requestIn = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+        responseOut = new PrintStream(socket.getOutputStream());
     }
 
     /**

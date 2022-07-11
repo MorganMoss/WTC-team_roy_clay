@@ -1,7 +1,10 @@
 package za.co.wethinkcode.server;
 
-import static za.co.wethinkcode.server.Configuration.*;
+import static za.co.wethinkcode.server.ClientCommunicator.openCommunication;
+import static za.co.wethinkcode.server.configuration.Configuration.port;
 
+import za.co.wethinkcode.server.configuration.Configuration;
+import za.co.wethinkcode.server.configuration.DatabaseManager;
 import za.co.wethinkcode.server.handler.Handler;
 import za.co.wethinkcode.server.handler.world.World;
 
@@ -14,7 +17,6 @@ public class Server {
     protected static volatile boolean running = true;
 
     public static void main(String[] args) {
-
         Configuration.setConfiguration(args);
         System.out.println("**** Initialising the Robot World");
         Handler.setup();
@@ -34,8 +36,7 @@ public class Server {
             while(running) {
                 try {
                     Socket socket = serverSocket.accept();
-                    ClientCommunicator clientCommunicator = new ClientCommunicator(socket);
-
+                    openCommunication(socket);
                 } catch(IOException clientFailedToConnect) {
                     System.out.println("Failed to connect a client.");
                 }
