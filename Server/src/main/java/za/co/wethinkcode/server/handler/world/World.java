@@ -252,11 +252,11 @@ public class World {
         return instance;
     }
 
-    public static String getEntities(Type entityType){
+    public static String getEntities(Class<?> entityClass){
         StringBuilder result = new StringBuilder();
 
         for (Point position : instance.entityTable.keySet()){
-            if (instance.entityTable.get(position).getClass().equals(entityType)){
+            if (instance.entityTable.get(position).getClass().equals(entityClass)){
                 result.append(position.x).append(",").append(position.y).append(",");
             }
         }
