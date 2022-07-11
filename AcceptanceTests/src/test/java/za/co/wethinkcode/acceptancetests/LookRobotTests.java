@@ -163,7 +163,7 @@ public class LookRobotTests {
         //When I send an invalid look arguments (i.e. a non-empty list, because the world command does not take any arguments)
         serverClient.sendRequest("HAL", "look", "[height, width]");
 
-        //Then I should get an error result
+        //Then I should get an error-  result
         JsonNode response = serverClient.getResponse();
         serverClient.assertResult(response, "ERROR");
 

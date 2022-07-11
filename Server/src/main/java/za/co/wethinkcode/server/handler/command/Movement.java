@@ -12,7 +12,7 @@ import static java.lang.Math.round;
 
 public abstract class Movement extends Command {
 
-    int steps;
+   protected int steps;
 
     /**
      * TODO

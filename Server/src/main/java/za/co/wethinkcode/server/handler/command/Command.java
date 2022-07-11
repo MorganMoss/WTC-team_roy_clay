@@ -54,5 +54,4 @@ public abstract class Command {
      * @return a response formulated off the results of the execution.
      */
     public abstract Response execute();
-
 }
