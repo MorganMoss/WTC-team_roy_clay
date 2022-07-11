@@ -1,7 +1,5 @@
 package za.co.wethinkcode.server;
 
-import za.co.wethinkcode.server.handler.world.World;
-
 import java.sql.*;
 import java.util.Objects;
 import java.util.Scanner;
@@ -116,10 +114,6 @@ public class DatabaseManager {
             System.out.println("Loading " + resultSet.getString("save_name") + " . . .");
 
             Configuration.loadConfiguration(resultSet.getString("configuration_json"));
-            System.out.println("Loaded Configuration");
-//
-//            World.loadWorld(resultSet.getString("world_json"));
-//            System.out.println("Loaded World");
 
             System.out.println( "Loading complete!" );
         }catch( SQLException e ){
