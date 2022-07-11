@@ -2,6 +2,8 @@ package za.co.wethinkcode.server.handler.world.entity;
 
 import za.co.wethinkcode.server.handler.world.entity.movable.Movable;
 
+import java.awt.*;
+
 public interface Entity {
     /**
      * Called when an entity is collided with,
@@ -13,4 +15,6 @@ public interface Entity {
      * will be put into the message value in the data of the Response
      */
     String collidedWith(Movable entity);
+
+    Point getPosition();
 }
