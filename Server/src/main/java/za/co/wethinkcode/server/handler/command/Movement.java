@@ -1,12 +1,18 @@
 package za.co.wethinkcode.server.handler.command;
 
 import za.co.wethinkcode.Response;
+import za.co.wethinkcode.server.handler.world.World;
+import za.co.wethinkcode.server.handler.world.entity.Entity;
+import za.co.wethinkcode.server.handler.world.entity.movable.robot.Robot;
 
+import java.awt.*;
 import java.util.List;
+
+import static java.lang.Math.round;
 
 public abstract class Movement extends Command {
 
-    int steps;
+   protected int steps;
 
     /**
      * TODO
@@ -14,16 +20,24 @@ public abstract class Movement extends Command {
      */
     @Override
     public Response execute() {
-        //TODO
-//        int nrSteps = Integer.parseInt(getArgument());
-//        if (target.getWorld().updatePosition(-nrSteps).equals(World.UpdateResponse.SUCCESS)){
-//            target.setStatus("Moved back by "+nrSteps+" steps.");
-//        }else if (target.getWorld().updatePosition(-nrSteps).equals(World.UpdateResponse.FAILED_OUTSIDE_WORLD)) {
-//            target.setStatus("Sorry, I cannot go outside my safe zone.");
-//        }else if (target.getWorld().updatePosition(-nrSteps).equals(World.UpdateResponse.FAILED_OBSTRUCTED)) {
-//            target.setStatus("Sorry, there is an obstacle in the way.");}
-//        return true;
-        Response response = Response.createOK("Done");
+        Robot robotEntity = World.getRobot(robot);
+        Point currentPosition = robotEntity.getPosition();
+        int directionAngle = robotEntity.getDirection().angle;
+        String result = "Done";
+
+        Entity foundEntity = World.Seek(currentPosition, directionAngle, steps);
+
+        if (foundEntity == null){
+            double radAngle = Math.toRadians(directionAngle);
+            currentPosition.x += round(steps*Math.sin(radAngle));
+            currentPosition.y += round(steps*Math.cos(radAngle));
+
+            World.updatePosition(robot, currentPosition);
+        } else {
+            result = foundEntity.collidedWith(robotEntity);
+        }
+
+        Response response = Response.createOK(result);
         return addRobotState(response);
     }
 

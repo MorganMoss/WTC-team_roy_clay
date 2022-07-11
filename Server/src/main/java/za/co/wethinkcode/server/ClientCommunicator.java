@@ -42,10 +42,19 @@ public final class ClientCommunicator {
     private final String clientID = Integer.toHexString(this.hashCode());
 
     /**
+     * Opens server communication with the client
+     * @param socket used to connect to client
+     * @throws IOException if it cannot create the I/O objects
+     */
+    public static void openCommunication(Socket socket) throws IOException {
+        new ClientCommunicator(socket);
+    }
+
+    /**
      * Constructor for a Server Client Communicator
      * @param socket The result of a connection to the server from the client.
      */
-    public ClientCommunicator(Socket socket) throws IOException {
+    private ClientCommunicator(Socket socket) throws IOException {
         System.out.println("Connection from " + clientID + " with the address: " + socket.getInetAddress().getHostName());
 
         requestIn = new BufferedReader(new InputStreamReader(socket.getInputStream()));

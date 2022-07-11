@@ -3,17 +3,20 @@ package za.co.wethinkcode.server.handler.command;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import za.co.wethinkcode.Response;
-import za.co.wethinkcode.server.Configuration;
+import za.co.wethinkcode.server.configuration.Configuration;
 import za.co.wethinkcode.server.TestHelper;
 import za.co.wethinkcode.server.handler.world.World;
 
+import java.awt.*;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 
 import static java.lang.Math.min;
 import static org.junit.jupiter.api.Assertions.*;
-import static za.co.wethinkcode.server.Configuration.*;
+import static za.co.wethinkcode.server.configuration.Configuration.max_shield;
+import static za.co.wethinkcode.server.configuration.Configuration.max_shots;
 
 class CommandTest {
     private Command command;
@@ -27,7 +30,7 @@ class CommandTest {
 //        TestHelper.modifyWorld(new String[]{"-o=0,0,1,2","-s=3"});
 //    }
     void resetWorld(){
-        TestHelper.modifyWorld(new String[]{"-o=0,1,0,9","-s=20"});
+        TestHelper.modifyWorld(new String[]{"-o=0,1","-s=20"});
     }
 
     /**
@@ -178,17 +181,175 @@ class CommandTest {
     }
 
     private void look(String name) {
-
         command = new LookCommand();
         command.setRobot(name);
         response = command.execute();
     }
     @Test
-    void LookCommandTest(){
+    void LookCommandTestSeeAll4Edges() {
+        TestHelper.modifyWorld(new String[]{"-s=18"});
 
         Integer shield = 5, shots = 5;
         launchRobot("HAL", shield, shots);
         look("HAL");
+
+    }
+
+    @Test
+    void LookCommandTestSeeNoEdges() {
+        TestHelper.modifyWorld(new String[]{"-s=25"});
+        Integer shield = 5, shots = 5;
+        launchRobot("HAL", shield, shots);
+        look("HAL");
+
+    }
+
+    @Test
+    void LookCommandTestSeeObstacle() {
+        TestHelper.modifyWorld(new String[]{"-o=12,13,12,11,11,12,13,12","-s=25"});
+
+        Integer shield = 5, shots = 5;
+        launchRobot("HAL", shield, shots);
+        look("HAL");
+    }
+
+
+    @Test
+    void ForwardCommandNoObstructsTest() {
+
+        //Given default visibility = 5 & world size > visibility
+        TestHelper.modifyWorld(new String[]{"-o=none","-s=20"});
+        launchRobot("HAL", 5, 5);
+
+        Point position = World.getRobot("HAL").getPosition();
+
+        //command should be processed successfully with result "OK"
+        response = executeForward("HAL", Collections.singletonList("3"));
+        position.y += 3;
+
+        assertEquals(response.getResult(), "OK");
+
+        //Robot should move the full distance of steps
+        assertEquals("Done", response.getData().get("message"));
+        assertEquals(position, World.getRobot("HAL").getPosition());
+    }
+
+
+    @Test
+    void ForwardCommandEdgeObstructTest() {
+
+        //Given default visibility = 5 & world size > visibility
+        TestHelper.modifyWorld(new String[]{"-o=none","-s=1"});
+        launchRobot("HAL", 5, 5);
+
+        Point position = World.getRobot("HAL").getPosition();
+
+        //command should be processed successfully with result "OK"
+        response = executeForward("HAL", Collections.singletonList("1"));
+
+        assertEquals(response.getResult(), "OK");
+
+        //Robot should move the full distance of steps
+        assertEquals("Obstructed", response.getData().get("message"));
+        assertEquals(position, World.getRobot("HAL").getPosition());
+    }
+
+    @Test
+    void ForwardCommandObstacleObstructTest() {
+
+        //Given default visibility = 5 & world size > visibility
+        TestHelper.modifyWorld(new String[]{"-o=0,1,1,1,1,0","-s=2"});
+        launchRobot("HAL", 5, 5);
+
+        Point position = World.getRobot("HAL").getPosition();
+
+        //command should be processed successfully with result "OK"
+        response = executeForward("HAL", Collections.singletonList("1"));
+
+        assertEquals(response.getResult(), "OK");
+
+        //Robot should move the full distance of steps
+        assertEquals("Obstructed", response.getData().get("message"));
+        assertEquals(position, World.getRobot("HAL").getPosition());
+    }
+
+    @Test
+    void ForwardCommandMineObstructTest() {
+
+        //Given default visibility = 5 & world size > visibility
+        TestHelper.modifyWorld(new String[]{"-m=0,1,1,1,1,0","-s=2"});
+        launchRobot("HAL", 5, 5);
+
+        Point position = World.getRobot("HAL").getPosition();
+
+        //command should be processed successfully with result "OK"
+        response = executeForward("HAL", Collections.singletonList("1"));
+
+        assertEquals(response.getResult(), "OK");
+
+        //Robot should move the full distance of steps
+        assertEquals("Mine", response.getData().get("message"));
+        assertEquals(position, World.getRobot("HAL").getPosition());
+    }
+
+    @Test
+    void ForwardCommandPitObstructTest() {
+
+        //Given default visibility = 5 & world size > visibility
+        TestHelper.modifyWorld(new String[]{"-pt=0,1,1,1,1,0","-s=2"});
+        launchRobot("HAL", 5, 5);
+
+        Point position = World.getRobot("HAL").getPosition();
+
+        //command should be processed successfully with result "OK"
+        response = executeForward("HAL", Collections.singletonList("1"));
+
+        assertEquals(response.getResult(), "OK");
+
+        //Robot should move the full distance of steps
+        assertEquals("Fell", response.getData().get("message"));
+        assertEquals(position, World.getRobot("HAL").getPosition());
+    }
+
+    @Test
+    void ForwardCommandRobotObstructTest() {
+
+        //Given default visibility = 5 & world size > visibility
+        TestHelper.modifyWorld(new String[]{"-o=0,1,1,1","-s=2"});
+        launchRobot("R1", 5, 5);
+        launchRobot("R2", 5, 5);
+
+        Point position_R1 = World.getRobot("R1").getPosition();
+        Point position_R2 = World.getRobot("R2").getPosition();
+
+        String robotToExecute = position_R1 == new Point(0,0) ? "R1" : "R2";
+
+        //command should be processed successfully with result "OK"
+        response = executeForward(robotToExecute, Collections.singletonList("1"));
+
+        assertEquals(response.getResult(), "OK");
+
+        //Robot should move the full distance of steps
+        assertEquals("Obstructed", response.getData().get("message"));
+        assertEquals(new Point(0,0) , World.getRobot(robotToExecute).getPosition());
+    }
+
+    private Response executeForward(String name, List<String> arguments) {
+        command = new ForwardCommand();
+        command.setRobot(name);
+        command.setArguments(arguments);
+        response = command.execute();
+        return response;
+    }
+
+//    private Response executeForwardSuccessfully(String name, List<String> arguments) {
+//        response = executeForward(name, arguments);
+//
+//    }
+
+
+
+
 
 //        assertNotNull(response);
 //        assertEquals("OK", response.getResult());
@@ -212,7 +373,7 @@ class CommandTest {
 //        for (String key: correct.keySet()){
 //            assertEquals(correct.get(key), response.getState().get(key));
 //        }
-    }
+
 
 
 

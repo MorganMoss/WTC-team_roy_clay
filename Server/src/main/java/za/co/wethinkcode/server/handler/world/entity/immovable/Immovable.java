@@ -17,6 +17,10 @@ public abstract class Immovable implements Entity {
     protected Immovable(Point position){
         this.position = position;
     }
+
+    public Point getPosition() {
+        return position;
+    }
 }
 
 //    /**

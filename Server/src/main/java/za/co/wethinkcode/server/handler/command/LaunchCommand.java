@@ -9,8 +9,8 @@ import java.awt.*;
 import java.util.List;
 
 import static java.lang.Math.min;
-import static za.co.wethinkcode.server.Configuration.max_shield;
-import static za.co.wethinkcode.server.Configuration.max_shots;
+import static za.co.wethinkcode.server.configuration.Configuration.max_shield;
+import static za.co.wethinkcode.server.configuration.Configuration.max_shots;
 
 public class LaunchCommand extends Command {
 
@@ -38,6 +38,7 @@ public class LaunchCommand extends Command {
     public Response execute() {
         if (World.getRobot(robot) != null){
             return NAME_TAKEN;
+
         }
 
         Point initialPosition = World.getOpenPosition();

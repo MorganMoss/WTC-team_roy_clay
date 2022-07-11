@@ -11,7 +11,7 @@ import java.awt.*;
 public abstract class Movable implements Entity {
 
     protected Point position;
-    protected Direction direction;
+    public Direction direction;
 
     public enum Direction {
         NORTH (0),
@@ -67,6 +67,9 @@ public abstract class Movable implements Entity {
         return position;
     }
 
+    public Direction getDirection() {
+        return direction;
+    }
 
     /**
      * A movable entity is instantiated with its starting position
@@ -80,7 +83,7 @@ public abstract class Movable implements Entity {
      * Change the position of the entity
      * @param newPosition the new position of this entity
      */
-    void updatePosition(Point newPosition){
+    public void updatePosition(Point newPosition){
         position = newPosition;
     }
 }
