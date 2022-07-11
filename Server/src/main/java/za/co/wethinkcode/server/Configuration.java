@@ -139,18 +139,13 @@ public final class Configuration implements Callable<Integer> {
      */
     private static void inspect() {
         Field[] fields = Configuration.class.getDeclaredFields();
-        System.out.print("Configuration set: ");
+        System.out.println("Configuration set: ");
 
         for (Field field : fields) {
             try {
                 String fieldName = field.getName().toLowerCase();
-
-                if (fieldName.equals("instance") || fieldName.equals("values")) {
-                    continue;
-                }
-
                 field.setAccessible(true);
-                System.out.println(fieldName + " = " + field.get(null));
+                System.out.println("\t" + fieldName + " = " + field.get(null));
             } catch (IllegalAccessException e) {
                 throw new RuntimeException(e);
             }

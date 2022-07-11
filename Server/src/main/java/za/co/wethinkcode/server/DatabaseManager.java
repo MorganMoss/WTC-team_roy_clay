@@ -7,7 +7,7 @@ import java.util.Scanner;
 /**
  * DbTest is a small command-line tool used to check that we can connect to a SQLite database.
  *
- * By default (without any command-line arguments) it attempts to create a SQLite table in an in-memory database.
+ * By default, (without any command-line arguments) it attempts to create a SQLite table in an in-memory database.
  * If it succeeds, we assume that all the working parts we need to use SQLite databases are in place and working.
  *
  * The only command-line argument this app understands is
@@ -56,7 +56,6 @@ public class DatabaseManager {
             System.out.println("Failed! Please enter save name");
         }
 
-//        String world_json = World.serialize();
         String configuration_json = Configuration.serialize();
 
         openDatabase();
@@ -146,7 +145,6 @@ public class DatabaseManager {
                     table +" " +
                     "(" +
                         "save_name          STRING NOT NULL, " +
-//                        "world_json         STRING NOT NULL, " +
                         "configuration_json STRING NOT NULL, " +
                         "PRIMARY KEY (save_name)" +
                     ")"
@@ -156,10 +154,6 @@ public class DatabaseManager {
         }catch( SQLException e ){
             System.err.println( e.getMessage() );
         }
-    }
-
-    public static void main(String[] args) {
-        Configuration.setConfiguration(args);
     }
 
     private DatabaseManager() {}
