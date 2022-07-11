@@ -132,7 +132,8 @@ run_acceptance_tests:
 
 	-$(call run_test, "ForwardTests#movingAtTheEdgeOfTheWorldShouldFail" , "--size=1")
 
-	-$(call run_test, "DatabaseTests" , "--size=1, -o=1$(,)1 -p=2$(,)2")
+#From Here-on, we don't have a reference.
+	-$(call run_test_own, "DatabaseTests" , "--size=1, -o=1$(,)1 -p=2$(,)2")
 
 	@echo "[1;32mAll testing complete![m"
 	##############################################
@@ -200,48 +201,3 @@ tag_version_number_on_git:
 
 	@echo "Completed tagging version number on git."
 	##############################################
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-##This is where we will put all the scripting
-##In order to run the acceptance tests on
-##The Reference Server
-
-##This is where we will put all the scripting
-##In order to run the acceptance tests on
-##Our server
