@@ -45,6 +45,13 @@ public class World {
     private final Set<Point> openPositions = new HashSet<>();
 
     /**
+     * Current position of robot
+     */
+
+
+
+
+    /**
      * Creates a list of all available spaces in the world
      */
     private void createOpenPositions(){
@@ -162,14 +169,19 @@ public class World {
     /**
      * Updates value of x,y co-ordinates depending on whether an entity is found
      */
-    public static Entity Seek(Point startingPosition, int steps, double angle) {
+    public static Entity Seek(Point startingPosition, int angle_degrees, int steps) {
+
+        int startX = startingPosition.x;
+        int startY = startingPosition.y;
 
         //updating temp value of y & x
         for (int i = 1; i <= steps; i++) {
 
             //get next position of robot if no obstruction
-            int tempY = startingPosition.y += Math.cos(angle);
-            int tempX = startingPosition.x += Math.sin(angle);
+            double angle_radians = Math.toRadians(angle_degrees);
+
+            int tempY = startY += Math.cos(angle_radians);
+            int tempX = startX += Math.sin(angle_radians);
 
             //check if that position is not already occupied. Not occupied if entity is null, otherwise occupied
             Entity foundEntity = instance.entityTable.get(new Point(tempX, tempY));
@@ -179,9 +191,6 @@ public class World {
                 return foundEntity;
             }
 
-            //if not occupied, move robot to that position
-            int y = tempY;
-            int x = tempX;
         }
         //moved all required steps without any obstructions along the way
         return null;

@@ -14,6 +14,7 @@ public class Server {
     protected static volatile boolean running = true;
 
     public static void main(String[] args) {
+
         Configuration.setConfiguration(args);
         System.out.println("**** Initialising the Robot World");
         Handler.setup();
