@@ -21,6 +21,7 @@ import java.util.Scanner;
 public class DatabaseManager {
     private static final String DISK_DB_URL = "jdbc:sqlite:";
     private static final String table = "saved_worlds";
+
     private static Connection connection;
 
     /**
@@ -57,7 +58,7 @@ public class DatabaseManager {
             System.out.println("Failed! Please enter save name");
         }
 
-        String world_json = World.serialize();
+//        String world_json = World.serialize();
         String configuration_json = Configuration.serialize();
 
         openDatabase();
@@ -118,9 +119,9 @@ public class DatabaseManager {
 
             Configuration.loadConfiguration(resultSet.getString("configuration_json"));
             System.out.println("Loaded Configuration");
-
-            World.loadWorld(resultSet.getString("world_json"));
-            System.out.println("Loaded World");
+//
+//            World.loadWorld(resultSet.getString("world_json"));
+//            System.out.println("Loaded World");
 
             System.out.println( "Loading complete!" );
         }catch( SQLException e ){

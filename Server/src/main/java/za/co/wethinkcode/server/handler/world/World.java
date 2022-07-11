@@ -11,6 +11,8 @@ import za.co.wethinkcode.server.handler.world.entity.immovable.Pit;
 import za.co.wethinkcode.server.handler.world.entity.movable.robot.Robot;
 
 import java.awt.*;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Type;
 import java.util.List;
 import java.util.*;
 
@@ -22,6 +24,8 @@ import static za.co.wethinkcode.server.Configuration.*;
  *
  */
 public class World {
+
+    private static final String SEPARATOR = "ThisShouldBeAnAdequateSeparator";
 
 
     private static volatile World instance = initializeWorld();
@@ -183,6 +187,7 @@ public class World {
         return null;
     }
 
+
     /**
      * Tries to add any predefined entities to positions given
      */
@@ -245,39 +250,6 @@ public class World {
             }
         }
         return instance;
-    }
-
-    /**
-     * this function uses Google Gson
-     * (a java data serialization package)
-     * that takes this worlds instance and converts it into a String Json
-     * @return a String Json of the worlds instance
-     */
-    public static String serialize(){
-        Gson gson = new GsonBuilder().enableComplexMapKeySerialization().create();
-        return gson.toJson(instance);
-    }
-
-    /**
-     * this function uses Google Gson
-     * (a java data serialization package)
-     * A saved instance of a world (in a serialized form)
-     * overwrites the current world instance
-     * @param world_json given by a database
-     */
-    public static void loadWorld(String world_json){
-        try {
-            instance = new Gson().fromJson(world_json, World.class);
-
-            //Removing old robots
-            for (String robot : instance.robots.keySet()){
-                removeRobot(robot);
-            }
-        } catch (JsonSyntaxException badJSON){
-            System.out.println("Bad world loaded. Aborting . . .");
-            System.err.println(badJSON);
-            System.exit(1);
-        }
     }
 
     /**
