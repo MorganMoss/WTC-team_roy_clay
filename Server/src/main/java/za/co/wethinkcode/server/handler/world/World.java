@@ -250,6 +250,21 @@ public class World {
         return instance;
     }
 
+    public static String getEntities(Type entityType){
+        StringBuilder result = new StringBuilder();
+
+        for (Point position : instance.entityTable.keySet()){
+            if (instance.entityTable.get(position).getClass().equals(entityType)){
+                result.append(position.x).append(",").append(position.y).append(",");
+            }
+        }
+        if (result.charAt(result.length()-1) == ','){
+            result.deleteCharAt(result.length()-1);
+        }
+
+        return result.toString();
+    }
+
     public static World getInstance(){
         if(instance == null){
             synchronized (World.class){
@@ -260,6 +275,8 @@ public class World {
         }
         return instance;
     }
+
+
 
     /**
      * Resets world to initial values
