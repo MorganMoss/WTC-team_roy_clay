@@ -5,9 +5,11 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonSyntaxException;
 import za.co.wethinkcode.server.BadConfigurationException;
 import za.co.wethinkcode.server.handler.world.entity.Entity;
+import za.co.wethinkcode.server.handler.world.entity.immovable.Edge;
 import za.co.wethinkcode.server.handler.world.entity.immovable.Mine;
 import za.co.wethinkcode.server.handler.world.entity.immovable.Obstacle;
 import za.co.wethinkcode.server.handler.world.entity.immovable.Pit;
+import za.co.wethinkcode.server.handler.world.entity.movable.Movable;
 import za.co.wethinkcode.server.handler.world.entity.movable.robot.Robot;
 
 import java.awt.*;
@@ -39,13 +41,6 @@ public class World {
      * makes adding robots to random spaces easier
      */
     private final Set<Point> openPositions = new HashSet<>();
-
-    /**
-     * Current position of robot
-     */
-
-
-
 
     /**
      * Creates a list of all available spaces in the world
@@ -167,8 +162,9 @@ public class World {
      */
     public static Entity Seek(Point startingPosition, int angle_degrees, int steps) {
 
-        int startX = startingPosition.x;
-        int startY = startingPosition.y;
+        int x = startingPosition.x;
+        int y = startingPosition.y;
+
 
         //updating temp value of y & x
         for (int i = 1; i <= steps; i++) {
@@ -176,20 +172,34 @@ public class World {
             //get next position of robot if no obstruction
             double angle_radians = Math.toRadians(angle_degrees);
 
-            int tempY = startY += Math.cos(angle_radians);
-            int tempX = startX += Math.sin(angle_radians);
+            x += Math.sin(angle_radians);
+            y += Math.cos(angle_radians);
 
             //check if that position is not already occupied. Not occupied if entity is null, otherwise occupied
-            Entity foundEntity = instance.entityTable.get(new Point(tempX, tempY));
+            Point position = new Point(x,y);
+
+            Entity foundEntity = instance.entityTable.get(position);
 
             //if occupied, stop moving and return obstruction
             if (foundEntity != null) {
                 return foundEntity;
             }
 
+            if (!instance.openPositions.contains(position)){
+                //Edge
+                return new Edge(position);
+            }
+
         }
         //moved all required steps without any obstructions along the way
         return null;
+    }
+
+    public static void updatePosition(String robot, Point newPosition) {
+        Movable movable = getRobot(robot);
+        removeEntity(movable.getPosition());
+        movable.updatePosition(newPosition);
+        addEntity(newPosition, movable);
     }
 
     /**

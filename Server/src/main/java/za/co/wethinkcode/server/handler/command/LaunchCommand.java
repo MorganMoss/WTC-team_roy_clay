@@ -38,6 +38,7 @@ public class LaunchCommand extends Command {
     public Response execute() {
         if (World.getRobot(robot) != null){
             return NAME_TAKEN;
+
         }
 
         Point initialPosition = World.getOpenPosition();

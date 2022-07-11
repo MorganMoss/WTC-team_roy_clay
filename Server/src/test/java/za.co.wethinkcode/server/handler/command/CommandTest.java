@@ -8,12 +8,14 @@ import za.co.wethinkcode.server.TestHelper;
 import za.co.wethinkcode.server.handler.world.World;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 
 import static java.lang.Math.min;
 import static org.junit.jupiter.api.Assertions.*;
-import static za.co.wethinkcode.server.Configuration.*;
+import static za.co.wethinkcode.server.Configuration.max_shield;
+import static za.co.wethinkcode.server.Configuration.max_shots;
 
 class CommandTest {
     private Command command;
@@ -27,7 +29,7 @@ class CommandTest {
 //        TestHelper.modifyWorld(new String[]{"-o=0,0,1,2","-s=3"});
 //    }
     void resetWorld(){
-        TestHelper.modifyWorld(new String[]{"-o=0,1,0,9","-s=20"});
+        TestHelper.modifyWorld(new String[]{"-o=0,1","-s=20"});
     }
 
     /**
@@ -178,17 +180,56 @@ class CommandTest {
     }
 
     private void look(String name) {
-
         command = new LookCommand();
         command.setRobot(name);
         response = command.execute();
     }
     @Test
-    void LookCommandTest(){
+    void LookCommandTestSeeAll4Edges() {
+        TestHelper.modifyWorld(new String[]{"-s=18"});
 
         Integer shield = 5, shots = 5;
         launchRobot("HAL", shield, shots);
         look("HAL");
+
+    }
+
+    @Test
+    void LookCommandTestSeeNoEdges() {
+        TestHelper.modifyWorld(new String[]{"-s=25"});
+
+        Integer shield = 5, shots = 5;
+        launchRobot("HAL", shield, shots);
+        look("HAL");
+
+    }
+
+    @Test
+    void LookCommandTestSeeObstacle() {
+        TestHelper.modifyWorld(new String[]{"-o=12,13,12,11,11,12,13,12","-s=25"});
+
+        Integer shield = 5, shots = 5;
+        launchRobot("HAL", shield, shots);
+        look("HAL");
+    }
+
+    private void forward(String name, List<String> arguments) {
+
+        command = new ForwardCommand();
+        command.setRobot(name);
+        command.setArguments(arguments);
+        response = command.execute();
+    }
+
+    @Test
+    void ForwardCommandTest() {
+
+        Integer shield = 5, shots = 5;
+        launchRobot("HAL", shield, shots);
+        forward("HAL", Collections.singletonList("10"));
+
+    }
+
 
 //        assertNotNull(response);
 //        assertEquals("OK", response.getResult());
@@ -212,7 +253,7 @@ class CommandTest {
 //        for (String key: correct.keySet()){
 //            assertEquals(correct.get(key), response.getState().get(key));
 //        }
-    }
+
 
 
 
