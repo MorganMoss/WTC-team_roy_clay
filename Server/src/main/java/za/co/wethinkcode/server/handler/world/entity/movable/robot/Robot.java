@@ -1,5 +1,6 @@
 package za.co.wethinkcode.server.handler.world.entity.movable.robot;
 
+import za.co.wethinkcode.server.handler.world.entity.immovable.Obstacle;
 import za.co.wethinkcode.server.handler.world.entity.movable.Movable;
 
 import java.awt.*;
@@ -37,8 +38,9 @@ public class Robot extends Movable {
     public String collidedWith(Movable entity) {
         //entity should be moved to the closest empty block to their previous position.
         if (entity.getClass() == Robot.class){
-            return "Obstructed";
+            return new Obstacle(position).collidedWith(entity);
         }
+
         //if entity is a bullet, lose shield
         current_shield--;
 
@@ -75,6 +77,10 @@ public class Robot extends Movable {
             put("shots", current_shield);
             put("status", status);
         }};
+    }
+
+    public String getName() {
+        return name;
     }
 
     @Override

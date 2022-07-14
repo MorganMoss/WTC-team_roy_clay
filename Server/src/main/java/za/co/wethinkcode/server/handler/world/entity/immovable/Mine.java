@@ -1,6 +1,8 @@
 package za.co.wethinkcode.server.handler.world.entity.immovable;
 
+import za.co.wethinkcode.server.handler.world.World;
 import za.co.wethinkcode.server.handler.world.entity.movable.Movable;
+import za.co.wethinkcode.server.handler.world.entity.movable.robot.Robot;
 
 import java.awt.*;
 
@@ -23,8 +25,17 @@ public class Mine extends Immovable {
      */
     @Override
     public String collidedWith(Movable entity) {
-        //Remove 3 shield
+
         //Remove this mine from the world
+        World.removeEntity(position);
+
+        if (entity.getClass().equals(Robot.class)){
+            String robot = ((Robot) entity).getName();
+            //TODO: Remove 3 shield
+
+            World.updatePosition(robot, position);
+        }
+
         return "Mine";
     }
 
