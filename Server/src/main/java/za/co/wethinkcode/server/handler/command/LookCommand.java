@@ -11,36 +11,24 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import static java.lang.Math.round;
-import static za.co.wethinkcode.server.configuration.Configuration.size;
-
 
 //TODO: Implement correct functionality.
 public class LookCommand extends Command {
-
-    private static final Response ENTITY_FOUND = Response.createOK();
-
 
     /**
      * TODO
      * @return
      */
-
     @Override
     public Response execute() {
-
-
         HashMap<String, ArrayList<HashMap<String, ?>>> dataMap = new HashMap<>();
         ArrayList<HashMap<String, ?>> objects = new ArrayList<>();
-
-
 
         //returns how many steps ahead the robot can see
         int visibility = Configuration.visibility();
 
         //returns the position of the robot when look command is called
         Point currentPosition = World.getRobot(robot).getPosition();
-
-        currentPosition = new Point(round(size()/2),round(size()/2));
 
         //List of directions that the robot needs to look in
         Movable.Direction[] directions = new Movable.Direction[]{

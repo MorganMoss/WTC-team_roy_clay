@@ -3,6 +3,7 @@ package za.co.wethinkcode.server.handler.command;
 import za.co.wethinkcode.Response;
 import za.co.wethinkcode.server.handler.world.World;
 import za.co.wethinkcode.server.handler.world.entity.Entity;
+import za.co.wethinkcode.server.handler.world.entity.movable.Movable;
 import za.co.wethinkcode.server.handler.world.entity.movable.robot.Robot;
 
 import java.awt.*;
@@ -12,7 +13,17 @@ import static java.lang.Math.round;
 
 public abstract class Movement extends Command {
 
-   protected int steps;
+   private int steps;
+   private Robot robotEntity;
+   private Point currentPosition;
+
+   protected Movable.Direction direction;
+   private void move(){
+       double radAngle = Math.toRadians(direction.angle);
+       currentPosition.x += round(steps*Math.sin(radAngle));
+       currentPosition.y += round(steps*Math.cos(radAngle));
+       World.updatePosition(robot, currentPosition);
+   }
 
     /**
      * TODO
@@ -20,19 +31,13 @@ public abstract class Movement extends Command {
      */
     @Override
     public Response execute() {
-        Robot robotEntity = World.getRobot(robot);
-        Point currentPosition = robotEntity.getPosition();
-        int directionAngle = robotEntity.getDirection().angle;
-        String result = "Done";
+        Entity foundEntity = World.Seek(currentPosition, direction.angle, steps);
 
-        Entity foundEntity = World.Seek(currentPosition, directionAngle, steps);
+        String result;
 
         if (foundEntity == null){
-            double radAngle = Math.toRadians(directionAngle);
-            currentPosition.x += round(steps*Math.sin(radAngle));
-            currentPosition.y += round(steps*Math.cos(radAngle));
-
-            World.updatePosition(robot, currentPosition);
+            move();
+            result = "Done";
         } else {
             result = foundEntity.collidedWith(robotEntity);
         }
@@ -57,5 +62,17 @@ public abstract class Movement extends Command {
         } catch (NumberFormatException badArgument){
             throw new CouldNotParseArgumentsException();
         }
+
+        if (steps <= 0) {
+            throw new CouldNotParseArgumentsException();
+        }
+    }
+
+    @Override
+    public void setRobot(String robot) {
+        super.setRobot(robot);
+        direction = World.getRobot(robot).getDirection();
+        robotEntity = World.getRobot(robot);
+        currentPosition = robotEntity.getPosition();
     }
 }
