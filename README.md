@@ -60,8 +60,8 @@ $ docker pull gitlab.wethinkco.de:5050/ammlospe021/robot_world-server:latest
 $ docker build -t gitlab.wethinkco.de:5050/ammlospe021/team_roy_clay .
 $ docker push gitlab.wethinkco.de:5050/ammlospe021/team_roy_clay
 
-git branch -M main
-git push -uf origin main
+# Pull the image from the private registry
+$ docker pull gitlab.wethinkco.de:5050/ammlospe021/team_roy_clay
 ```
 
 ## Add your files
