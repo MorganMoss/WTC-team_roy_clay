@@ -67,7 +67,7 @@
     <build>
         <defaultGoal>clean verify apache-rat:check checkstyle:check spotbugs:check javadoc:javadoc</defaultGoal>
 
-        <finalName>${artifactId}</finalName>
+        <finalName>${project.artifactId}</finalName>
 
         <!-- Suppresses the default jar packaging -->
         <plugins>
@@ -96,11 +96,18 @@
                 </configuration>
             </plugin>
 
-            <!-- Handles mvn test -->
+            <!-- Handles mvn test and force dependency for offline build with docker-->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>3.0.0-M5</version>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.apache.maven.surefire</groupId>
+                        <artifactId>maven-surefire-common</artifactId>
+                        <version>3.0.0-M5</version>
+                    </dependency>
+                </dependencies>
                 <configuration>
                     <forkedProcessTimeoutInSeconds>2</forkedProcessTimeoutInSeconds>
                 </configuration>
