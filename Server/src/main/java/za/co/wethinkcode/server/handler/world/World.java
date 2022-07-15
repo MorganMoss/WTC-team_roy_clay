@@ -10,6 +10,7 @@ import za.co.wethinkcode.server.handler.world.entity.movable.Movable;
 import za.co.wethinkcode.server.handler.world.entity.movable.robot.Robot;
 
 import java.awt.*;
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.*;
 
@@ -43,8 +44,10 @@ public class World {
      * Creates a list of all available spaces in the world
      */
     private void createOpenPositions(){
-        for (int x = 0; x < size(); x++) {
-            for (int y = 0; y < size(); y++) {
+        int start = - size()/2;
+        int end = size()/2;
+        for (int x = start; x <= end; x++) {
+            for (int y = start; y <= end; y++) {
                 openPositions.add(new Point(x, y));
             }
         }
@@ -131,41 +134,16 @@ public class World {
         return instance.robots.keySet();
     }
 
-    /**
-     * Parses the entity positions given in the configuration and converts it to a list of Points
-     * @param entityPositions given in the configuration
-     * @return a list of Points to put respective entities
-     */
-    private static ArrayList<Point> iterateThroughPredefinedPositions(String entityPositions){
-        String[] numbers = entityPositions.split(",");
-        ArrayList<Point> positions = new ArrayList<>();
-
-        for (int i = 0; i < numbers.length-1; i+=2){
-            int x = Integer.parseInt(numbers[i]);
-            int y = Integer.parseInt(numbers[i+1]);
-
-            if (x > size() | y > size()){
-                throw new BadConfigurationException("Predefined position given is out of bounds for this world size");
-            }
-
-            positions.add(new Point(x,y));
-        }
-
-        return positions;
-    }
 
     /**
      * Updates value of x,y co-ordinates depending on whether an entity is found
      */
     public static Entity Seek(Point startingPosition, int angle_degrees, int steps) {
-
         int x = startingPosition.x;
         int y = startingPosition.y;
 
-
         //updating temp value of y & x
-        for (int i = 1; i <= steps; i++) {
-
+        for (int i = 1; steps > 0 ? i <= steps : i >= steps; i += steps > 0 ? 1 : -1) {
             //get next position of robot if no obstruction
             double angle_radians = Math.toRadians(angle_degrees);
 
@@ -183,10 +161,8 @@ public class World {
             }
 
             if (!instance.openPositions.contains(position)){
-                //Edge
                 return new Edge(position);
             }
-
         }
         //moved all required steps without any obstructions along the way
         return null;
@@ -194,45 +170,65 @@ public class World {
 
     public static void updatePosition(String robot, Point newPosition) {
         Movable movable = getRobot(robot);
+
+        if (movable.getPosition().equals(newPosition)){
+            return;
+        }
+
+        //If bad position is given.
+        if (!instance.openPositions.contains(newPosition)){
+            throw new OutOfBoundsException();
+        }
+
+
         removeEntity(movable.getPosition());
         movable.updatePosition(newPosition);
         addEntity(newPosition, movable);
+    }
+
+    private void addEntityOfType(Class<?> type, List<Point> positions){
+        for (Point position : positions){
+            try {
+                addEntity(position, (Entity) type.getConstructor(Point.class).newInstance(position));
+            } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
+                     NoSuchMethodException | OccupiedPositionException e) {
+                throw new BadConfigurationException(e.toString());
+            }
+        }
+    }
+
+    /**
+     * Parses the entity positions given in the configuration and converts it to a list of Points
+     * @param entityPositions given in the configuration
+     * @return a list of Points to put respective entities
+     */
+    private static ArrayList<Point> iterateThroughPredefinedPositions(String entityPositions){
+        ArrayList<Point> positions = new ArrayList<>();
+
+        if (!entityPositions.equalsIgnoreCase("none")) {
+            String[] numbers = entityPositions.split(",");
+
+            for (int i = 0; i < numbers.length - 1; i += 2) {
+                try {
+                    int x = Integer.parseInt(numbers[i]);
+                    int y = Integer.parseInt(numbers[i + 1]);
+                    positions.add(new Point(x, y));
+                } catch (NumberFormatException badNumber) {
+                    throw new BadConfigurationException(badNumber.toString());
+                }
+            }
+        }
+
+        return positions;
     }
 
     /**
      * Tries to add any predefined entities to positions given
      */
     private void addPredefinedImmovables(){
-        List<String> predefined_immovable = List.of(obstacle(), pits(), mines());
-
-        for (int j = 0; j<predefined_immovable.size(); j++) {
-            String entityPositions = predefined_immovable.get(j);
-
-            if (entityPositions.equalsIgnoreCase("none")){
-                continue;
-            }
-
-            if (!entityPositions.matches("[\\d+,?]+")){
-                throw new BadConfigurationException("Badly constructed arguments for predefined entities.");
-            }
-
-            Entity constructedEntity = null;
-            for (Point position: iterateThroughPredefinedPositions(entityPositions)){
-                switch (j){
-                    case 0:
-                        constructedEntity = new Obstacle(position);
-                        break;
-                    case 1:
-                        constructedEntity = new Pit(position);
-                        break;
-                    case 2:
-                        constructedEntity = new Mine(position);
-                        break;
-                }
-
-                addEntity(position, constructedEntity);
-            }
-        }
+        addEntityOfType(Obstacle.class, iterateThroughPredefinedPositions(obstacle()));
+        addEntityOfType(Pit.class, iterateThroughPredefinedPositions(pits()));
+        addEntityOfType(Mine.class, iterateThroughPredefinedPositions(mines()));
     }
 
     /**
@@ -287,6 +283,22 @@ public class World {
         instance = new World();
         instance.createOpenPositions();
         instance.addPredefinedImmovables();
+
+    }
+
+    public static void dump(){
+        int start = - size()/2 -1;
+        int end = size()/2+1;
+        for (int y = start; y <= end; y++) {
+            for (int x = start; x <= end; x++) {
+                if (!instance.openPositions.contains(new Point(x,y))){
+                    System.out.print(instance.entityTable.getOrDefault(new Point(x,y), new Edge(new Point(x, y))).toString().charAt(0));
+                } else {
+                    System.out.print("_");
+                }
+            }
+            System.out.println();
+        }
     }
 }
 

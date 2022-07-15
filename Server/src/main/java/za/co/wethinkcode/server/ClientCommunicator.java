@@ -41,27 +41,13 @@ public final class ClientCommunicator {
 
     private final String clientID = Integer.toHexString(this.hashCode());
 
+    /**
+     * Opens server communication with the client
+     * @param socket used to connect to client
+     * @throws IOException if it cannot create the I/O objects
+     */
     public static void openCommunication(Socket socket) throws IOException {
-        ClientCommunicator instance = new ClientCommunicator(socket);
-
-        Thread requester = new Thread(
-                () -> {
-                    while (instance.connected) {
-                        instance.passingRequest();
-                    }
-                }
-        );
-
-        Thread responder = new Thread(
-                () -> {
-                    while (instance.connected) {
-                        instance.passingResponse();
-                    }
-                }
-        );
-
-        requester.start();
-        responder.start();
+        new ClientCommunicator(socket);
     }
 
     /**
@@ -73,6 +59,25 @@ public final class ClientCommunicator {
 
         requestIn = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         responseOut = new PrintStream(socket.getOutputStream());
+
+        Thread requester = new Thread(
+                () -> {
+                    while (connected) {
+                        passingRequest();
+                    }
+                }
+        );
+
+        Thread responder = new Thread(
+                () -> {
+                    while (connected) {
+                        passingResponse();
+                    }
+                }
+        );
+
+        requester.start();
+        responder.start();
     }
 
     /**

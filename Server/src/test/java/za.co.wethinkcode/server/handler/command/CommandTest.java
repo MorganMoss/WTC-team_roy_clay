@@ -8,9 +8,7 @@ import za.co.wethinkcode.server.TestHelper;
 import za.co.wethinkcode.server.handler.world.World;
 
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
+import java.util.*;
 import java.util.List;
 
 import static java.lang.Math.min;
@@ -26,31 +24,8 @@ class CommandTest {
      * Resets the world before each test
      */
     @BeforeEach
-//    void resetWorld(){
-//        TestHelper.modifyWorld(new String[]{"-o=0,0,1,2","-s=3"});
-//    }
     void resetWorld(){
-        TestHelper.modifyWorld(new String[]{"-o=0,1","-s=20"});
-    }
-
-    /**
-     * Quick way to launch a robot
-     */
-    void launchRobot(String name, Integer shield, Integer shots){
-        ArrayList<String> kinds = new ArrayList<>(){{
-            add("sniper");
-        }};
-        //instantiating command
-        command = new LaunchCommand();
-        //initializing values
-        command.setArguments(new ArrayList<>(){{
-            add(kinds.get(0));
-            add(String.valueOf(shield));
-            add(String.valueOf(shots));
-        }});
-        command.setRobot(name);
-        //running command
-        response = command.execute();
+        TestHelper.modifyWorld(new String[]{"-s=1"});
     }
 
     /**
@@ -77,8 +52,6 @@ class CommandTest {
         assertNotNull(response);
         assertEquals("OK", response.getResult());
 
-
-
         HashMap<String, ?> correct = new HashMap<>(){{
             put("visibility", Configuration.visibility());
             put("max-shields", Configuration.max_shield());
@@ -98,7 +71,7 @@ class CommandTest {
         assertNull(response.getState());
     }
     @Test
-    void worldCommandBadArgs(){
+    void WorldCommandBadArgs(){
         //instantiating command
         command = new WorldCommand();
         //initializing values
@@ -106,6 +79,27 @@ class CommandTest {
         //check if bad args response
         assertBadArguments();
     }
+
+    /**
+     * Quick way to launch a robot
+     */
+    void launchRobot(String name, Integer shield, Integer shots){
+        ArrayList<String> kinds = new ArrayList<>(){{
+            add("sniper");
+        }};
+        //instantiating command
+        command = new LaunchCommand();
+        //initializing values
+        command.setArguments(new ArrayList<>(){{
+            add(kinds.get(0));
+            add(String.valueOf(shield));
+            add(String.valueOf(shots));
+        }});
+        command.setRobot(name);
+        //running command
+        response = command.execute();
+    }
+
 
     @Test
     void LaunchCommandTest(){
@@ -118,10 +112,6 @@ class CommandTest {
         assertEquals("OK", response.getResult());
         assertEquals(new HashMap<String,String>(), response.getData());
 
-        //TODO:
-        // This should not necessarily be 0,0.
-        // It should be pulled from the World.
-        int x = 0, y = 0;
 
         assertEquals(World.getRobot("HAL").getPosition().x, ((int[]) response.getState().get("position"))[0]);
         assertEquals(World.getRobot("HAL").getPosition().y, ((int[]) response.getState().get("position"))[1]);
@@ -137,11 +127,35 @@ class CommandTest {
            assertEquals(correct.get(key), response.getState().get(key));
         }
     }
+    @Test
+    void LaunchNoFreeLocation(){
 
-    //TODO:
-    // - No Free Location
-    // - Name Already Taken
+        launchRobot("R1", 1, 1);
+        launchRobot("R2", 1, 1);
 
+        assertNotNull(response);
+        assertEquals("ERROR", response.getResult());
+        HashMap<String, ?> correct = new HashMap<>(){{put("message", "No more space in this world");}};
+
+        for (String key: correct.keySet()){
+            assertEquals(correct.get(key), response.getState().get(key));
+        }
+    }
+    @Test
+    void LaunchNameAlreadyTaken(){
+        TestHelper.modifyWorld(new String[]{"-s=2"});
+
+        launchRobot("R1", 1, 1);
+        launchRobot("R1", 1, 1);
+
+        assertNotNull(response);
+        assertEquals("ERROR", response.getResult());
+        HashMap<String, ?> correct = new HashMap<>(){{put("message", "Too many of you in this world");}};
+
+        for (String key: correct.keySet()){
+            assertEquals(correct.get(key), response.getState().get(key));
+        }
+    }
     @Test
     void launchCommandBadArgs(){
         //instantiating command
@@ -151,7 +165,6 @@ class CommandTest {
         //check if bad args response
         assertBadArguments();
     }
-
     @Test
     void stateCommandTest(){
         Integer shield = 5, shots = 5;
@@ -187,12 +200,24 @@ class CommandTest {
     }
     @Test
     void LookCommandTestSeeAll4Edges() {
-        TestHelper.modifyWorld(new String[]{"-s=18"});
-
-        Integer shield = 5, shots = 5;
-        launchRobot("HAL", shield, shots);
+        launchRobot("HAL",1, 1);
         look("HAL");
 
+        ArrayList<String> directions = new ArrayList<>(){{
+            add("NORTH");
+            add("EAST");
+            add("SOUTH");
+            add("WEST");
+        }};
+
+        Arrays.stream((Hashtable<String, ?>[]) response.getData().get("objects")).forEach(object -> {
+            assertTrue(directions.contains((String) object.get("direction")));
+            directions.remove((String) object.get("direction"));
+            assertEquals("EDGE", object.get("type"));
+            assertEquals(1, (Integer) object.get("distance"));
+        });
+
+        assertEquals(new ArrayList<>(), directions);
     }
 
     @Test
@@ -320,9 +345,8 @@ class CommandTest {
         launchRobot("R2", 5, 5);
 
         Point position_R1 = World.getRobot("R1").getPosition();
-        Point position_R2 = World.getRobot("R2").getPosition();
 
-        String robotToExecute = position_R1 == new Point(0,0) ? "R1" : "R2";
+        String robotToExecute = position_R1.equals(new Point(0,0)) ? "R1" : "R2";
 
         //command should be processed successfully with result "OK"
         response = executeForward(robotToExecute, Collections.singletonList("1"));

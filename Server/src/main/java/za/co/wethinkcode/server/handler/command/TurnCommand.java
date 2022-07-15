@@ -1,6 +1,7 @@
 package za.co.wethinkcode.server.handler.command;
 
 import za.co.wethinkcode.Response;
+import za.co.wethinkcode.server.handler.world.World;
 
 import java.util.List;
 
@@ -20,6 +21,12 @@ public class TurnCommand extends Command {
     public Response execute() {
         //TODO: Should make an acceptance test for this,
         // then implement it correctly
+        if (direction){
+            World.getRobot(robot).setDirection(World.getRobot(robot).getDirection().left());
+        } else {
+            World.getRobot(robot).setDirection(World.getRobot(robot).getDirection().right());
+        }
+
         Response response = Response.createOK("Done");
         return addRobotState(response);
     }
@@ -44,10 +51,5 @@ public class TurnCommand extends Command {
             default:
                 throw new CouldNotParseArgumentsException();
         }
-    }
-
-    @Override
-    public void setRobot(String robot) {
-
     }
 }

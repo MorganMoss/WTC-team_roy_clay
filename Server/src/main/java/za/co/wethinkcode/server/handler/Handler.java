@@ -91,7 +91,7 @@ public final class Handler extends Thread{
         try {
             return command.execute();
         } catch (Exception internalError){
-            System.out.println(internalError.getMessage());
+            internalError.printStackTrace();
             return INTERNAL_ERROR;
         }
     }
@@ -179,20 +179,4 @@ public final class Handler extends Thread{
      */
     private Handler(){}
 }
-
-//TODO: Remove this
-//    /**
-//     * FOR TESTING PURPOSES
-//     */
-//    public static void main(String[] args) {
-//        Scanner in = new Scanner(System.in);
-//        while (true) {
-//            try {
-//                Command c = createCommand(in.nextLine());
-//                System.out.println(c.getClass().toString());
-//            } catch (RuntimeException e) {
-//                System.out.println(e);
-//            }
-//        }
-//    }
 

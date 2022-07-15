@@ -79,8 +79,7 @@ public class Server {
                         Server.running = false;
                         break;
                     case "dump":
-                        //TODO:
-                        // Iterate through the worlds map
+                        World.dump();
                         break;
                     case "robots":
                         System.out.println(World.getRobots());
