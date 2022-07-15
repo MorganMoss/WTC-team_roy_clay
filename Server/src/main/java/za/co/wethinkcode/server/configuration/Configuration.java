@@ -208,6 +208,7 @@ public final class Configuration implements Callable<Integer> {
      * Can change the configuration during operation.
      * @param configuration_json serialized instance of this class
      */
+    @SuppressWarnings("unchecked")
     public static void loadConfiguration(String configuration_json){
         Hashtable<String, Object> values;
 
