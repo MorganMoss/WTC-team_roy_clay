@@ -62,6 +62,9 @@ $ docker push gitlab.wethinkco.de:5050/ammlospe021/team_roy_clay
 
 # Pull the image from the private registry
 $ docker pull gitlab.wethinkco.de:5050/ammlospe021/team_roy_clay
+
+# Running server for testing - map port to server port
+$ docker run -p 5000:5050 gitlab.wethinkco.de:5050/ammlospe021/team_roy_clay
 ```
 
 ## Add your files

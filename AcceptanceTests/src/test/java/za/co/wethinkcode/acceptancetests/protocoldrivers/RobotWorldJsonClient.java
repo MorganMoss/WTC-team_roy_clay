@@ -100,9 +100,6 @@ public class RobotWorldJsonClient implements RobotWorldClient {
     }
 
 
-
-
-
     @Override
     public void ping() {
         sendRequest("ping");

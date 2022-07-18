@@ -1,4 +1,18 @@
 package za.co.wethinkcode.server.handler.command;
 
-public class ForwardCommand extends Movement {}
+import za.co.wethinkcode.Response;
+
+public class ForwardCommand extends Movement {
+
+    /**
+     * TODO
+     * @return
+     */
+    @Override
+    public Response execute() {
+        //TODO
+        Response response = Response.createOK("Done");
+        return addRobotState(response);
+    }
+}
 

@@ -7,6 +7,7 @@ FROM debian:buster-slim
 RUN apt-get update
 RUN apt-get install -y openjdk-11-jre curl
 
+
 WORKDIR /app
 
 ADD libs/Server-1.0.3-SNAPSHOT.jar /app

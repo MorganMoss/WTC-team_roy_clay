@@ -30,7 +30,7 @@ public class DatabaseManager {
      */
     private static void openDatabase(){
         try {
-            connection = DriverManager.getConnection(DISK_DB_URL + save_location());
+            connection = DriverManager.getConnection(DISK_DB_URL + save_location()); // locates where database is/saves it
             System.out.println( "Connected to database" );
         } catch( SQLException e ){
             System.err.println( e.getMessage() );
