@@ -42,7 +42,7 @@ public class LookCommand extends Command {
         for (Movable.Direction direction : directions) {
 
             int directionAngle = direction.angle;
-            Entity foundEntity = World.Seek(currentPosition, directionAngle, visibility);
+            Entity foundEntity = World.seek(currentPosition, directionAngle, visibility);
 
             if (foundEntity != null) {
                 Integer distance = Math.toIntExact(round(currentPosition.distance(foundEntity.getPosition())));

@@ -138,7 +138,7 @@ public class World {
     /**
      * Updates value of x,y co-ordinates depending on whether an entity is found
      */
-    public static Entity Seek(Point startingPosition, int angle_degrees, int steps) {
+    public static Entity seek(Point startingPosition, int angle_degrees, int steps) {
         int x = startingPosition.x;
         int y = startingPosition.y;
 
@@ -168,9 +168,8 @@ public class World {
         return null;
     }
 
-    public static void updatePosition(String robot, Point newPosition) {
-        Movable movable = getRobot(robot);
-
+    public static void updatePosition(Movable movable, Point newPosition){
+        //Not actually moving
         if (movable.getPosition().equals(newPosition)){
             return;
         }
@@ -180,10 +179,15 @@ public class World {
             throw new OutOfBoundsException();
         }
 
-
         removeEntity(movable.getPosition());
         movable.updatePosition(newPosition);
         addEntity(newPosition, movable);
+    }
+
+    public static void updatePosition(String robot, Point newPosition) {
+        Movable movable = getRobot(robot);
+
+        updatePosition(movable, newPosition);
     }
 
     private void addEntityOfType(Class<?> type, List<Point> positions){

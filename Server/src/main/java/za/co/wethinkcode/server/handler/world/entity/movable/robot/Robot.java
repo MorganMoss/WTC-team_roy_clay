@@ -1,6 +1,7 @@
 package za.co.wethinkcode.server.handler.world.entity.movable.robot;
 
 import za.co.wethinkcode.server.handler.world.entity.immovable.Obstacle;
+import za.co.wethinkcode.server.handler.world.entity.movable.Bullet;
 import za.co.wethinkcode.server.handler.world.entity.movable.Movable;
 
 import java.awt.*;
@@ -41,14 +42,18 @@ public class Robot extends Movable {
             return new Obstacle(position).collidedWith(entity);
         }
 
-        //if entity is a bullet, lose shield
-        current_shield--;
+        if (entity.getClass() == Bullet.class){
+            //if entity is a bullet, lose shield
+            current_shield--;
 
-        if (current_shield <= 0){
-            status = "DEAD";
+            if (current_shield <= 0){
+                status = "DEAD";
+            }
+
+            return "Hit";
         }
 
-        return "Hit";
+        return "There be dragons . . . ";
     }
 
     public void fire(){

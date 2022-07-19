@@ -31,7 +31,7 @@ public abstract class Movement extends Command {
      */
     @Override
     public Response execute() {
-        Entity foundEntity = World.Seek(currentPosition, direction.angle, steps);
+        Entity foundEntity = World.seek(currentPosition, direction.angle, steps);
 
         String result;
 
