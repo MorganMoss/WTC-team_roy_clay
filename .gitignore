@@ -13,6 +13,7 @@ target/
 precompile_report.txt
 pretest_report.txt
 dockDockBuildParams.json
+mvn_experiment.Dockerfile
 
 #VSCode Files
 .vscode/

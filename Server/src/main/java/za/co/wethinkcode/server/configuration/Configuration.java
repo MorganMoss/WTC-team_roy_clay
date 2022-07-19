@@ -36,7 +36,7 @@ public final class Configuration implements Callable<Integer> {
     @CommandLine.Option(
             names = {"-s", "--size"},
             description = {"Size of the world as one side of a square grid"},
-            defaultValue = "1"
+            defaultValue = "4"
     )
     private static Integer SIZE;
     public static Integer size() {return  SIZE;}
@@ -44,7 +44,7 @@ public final class Configuration implements Callable<Integer> {
     @CommandLine.Option(
             names = {"-o", "--obstacle"},
             description = {"Position of fixed obstacle as [x,y] coordinate in form 'x,y', or 'none' or 'random'"},
-            defaultValue = "none"
+            defaultValue = "0,1"
     )
     private static String OBSTACLE;
     public static String obstacle() {return OBSTACLE;}

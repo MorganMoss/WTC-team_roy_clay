@@ -99,11 +99,13 @@ public class LookRobotTests {
         for (String item : robotNames) {
             serverClient.sendRequest(item, "launch", "[\"shooter\",\"7\",\"4\"]");
             JsonNode response = serverClient.getResponse();
+            System.out.println(response);
             serverClient.assertResult(response, "OK");
         }
 
         //When I ask the first robot to look
         serverClient.sendRequest("R1", "look", "[]");
+        //TODO: check code base to see if robot is being placed randomly.
 
         //Then I should get a response back with one object being an OBSTACLE that is one step away.
         //and three objects should be ROBOTs that is one step away
