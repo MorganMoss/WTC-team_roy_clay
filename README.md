@@ -33,6 +33,40 @@ to pipe the test output to a text file use this command format:
 e.g: > make | tee acceptancetests_results.txt
 ```
 
+## Working with Docker
+
+- [ ] [Install Docker](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#create-a-file) or [upload](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#upload-a-file) files
+- [ ] [Add user to docker group](https://docs.gitlab.com/ee/gitlab-basics/add-file.html#add-a-file-using-the-command-line) or push an existing Git repository with the following command:
+
+```
+# Install docker from command line
+$ sudo apt update
+$ sudo apt install docker
+
+# Create the docker group
+$ sudo groupadd docker
+
+# Add your user to the docker group and update the command line
+$ sudo usermod -aG docker $USER
+$ newgrp docker
+
+# Connect to the private container registry:
+$ docker login gitlab.wethinkco.de:5050
+
+# Pull the docker image from the registry
+$ docker pull gitlab.wethinkco.de:5050/ammlospe021/robot_world-server:latest
+
+# Add image to the registry from your local machine
+$ docker build -t gitlab.wethinkco.de:5050/ammlospe021/team_roy_clay .
+$ docker push gitlab.wethinkco.de:5050/ammlospe021/team_roy_clay
+
+# Pull the image from the private registry
+$ docker pull gitlab.wethinkco.de:5050/ammlospe021/team_roy_clay
+
+# Running server for testing - map port to server port
+$ docker run -p 5000:5050 gitlab.wethinkco.de:5050/ammlospe021/team_roy_clay
+```
+
 ## Add your files
 
 - [ ] [Create](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#create-a-file) or [upload](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#upload-a-file) files

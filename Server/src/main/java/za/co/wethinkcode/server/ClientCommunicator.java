@@ -55,7 +55,7 @@ public final class ClientCommunicator {
      * @param socket The result of a connection to the server from the client.
      */
     private ClientCommunicator(Socket socket) throws IOException {
-        System.out.println("Connection from " + clientID + " with the address: " + socket.getInetAddress().getHostName());
+        Server.println("Connection from " + clientID + " with the address: " + socket.getInetAddress().getHostName());
 
         requestIn = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         responseOut = new PrintStream(socket.getOutputStream());
@@ -76,6 +76,9 @@ public final class ClientCommunicator {
                 }
         );
 
+
+        requester.setName(clientID + " Requester Thread");
+        responder.setName(clientID + " Responder Thread");
         requester.start();
         responder.start();
     }
@@ -89,7 +92,7 @@ public final class ClientCommunicator {
         connected = false;
 
 
-        System.out.println(clientID + " has disconnected");
+        Server.println(clientID + " has disconnected");
 
         for (String robot : launchedRobots.keySet()) {
             Server.purge(robot);
@@ -144,6 +147,7 @@ public final class ClientCommunicator {
      * Gets the request from the client and adds it to the server
      */
     private void passingRequest(){
+
         String requestJSON = "";
 
         try {
@@ -167,6 +171,15 @@ public final class ClientCommunicator {
         Handler.addRequest(clientID , request);
 
         handleNewAndLaunchedRobots(request);
+        synchronized (this){
+            notify();
+            try {
+                wait(100);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
     }
 
     /**
@@ -276,6 +289,15 @@ public final class ClientCommunicator {
      * Gets a response from the server and sends it to the client
      */
     private void passingResponse() {
+        try {
+            synchronized (this) {
+                wait(100);
+            }
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+
+
         for (String robot : getAllRobots()){
             //tries to get responses for all robots simultaneously.
             Response response = Handler.getResponse(clientID , robot);
@@ -300,8 +322,11 @@ public final class ClientCommunicator {
             responseOut.println(response.serialize());
             responseOut.flush();
 
-            System.out.println("Returning the response for " + clientID + "'s " + robot);
-            System.out.println(response.serialize());
+            Server.println("Returning the response for " + clientID + "'s " + robot);
+            Server.println(response.serialize());
+        }
+        synchronized (this){
+            notify();
         }
     }
 }

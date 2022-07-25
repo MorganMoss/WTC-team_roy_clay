@@ -37,15 +37,15 @@ public class LaunchCommand extends Command {
     @Override
     public Response execute() {
         if (World.getRobot(robot) != null){
+            System.out.println(robot);
             return NAME_TAKEN;
-
         }
 
         Point initialPosition = World.getOpenPosition();
         if (initialPosition == null){
             return NO_SPACE;
         }
-        
+
         World.addRobot(robot, new Robot(
                 initialPosition,
                 robot,

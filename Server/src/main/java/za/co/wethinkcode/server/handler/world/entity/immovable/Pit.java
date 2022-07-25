@@ -23,7 +23,7 @@ public class Pit extends Immovable {
      */
     @Override
     public String collidedWith(Movable entity) {
-        //Kill the movable entity
+        //TODO: Kill the movable entity
 
         return "Fell";
     }

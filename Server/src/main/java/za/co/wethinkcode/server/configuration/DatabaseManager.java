@@ -1,5 +1,7 @@
 package za.co.wethinkcode.server.configuration;
 
+import za.co.wethinkcode.server.Server;
+
 import java.sql.*;
 import java.util.Objects;
 import java.util.Scanner;
@@ -30,8 +32,8 @@ public class DatabaseManager {
      */
     private static void openDatabase(){
         try {
-            connection = DriverManager.getConnection(DISK_DB_URL + save_location());
-            System.out.println( "Connected to database" );
+            connection = DriverManager.getConnection(DISK_DB_URL + save_location()); // locates where database is/saves it
+            Server.println( "Connected to database" );
         } catch( SQLException e ){
             System.err.println( e.getMessage() );
             return;
@@ -55,44 +57,52 @@ public class DatabaseManager {
      */
     public static void save(String save){
         if (Objects.equals(save, "")){
-            System.out.println("Failed! Please enter save name");
+            Server.println("Failed! Please enter save name");
         }
 
         String configuration_json = Configuration.serialize();
 
         openDatabase();
 
+        Server.println("Saving this current server under the name: " + save);
+
         try( final Statement stmt = connection.createStatement() ){
             if (!
                 stmt.executeQuery(
                 "SELECT * FROM " + table + " WHERE save_name = \""+save+"\""
             ).isClosed()){
-                System.out.println( "Found existing save of that name!");
+                Server.println( "Found existing save of that name!");
 
-                System.out.println("Overwrite? (Y/N) : ");
+                Server.println("Overwrite? (Y/N) : ");
 
-                if (!(new Scanner(System.in)).nextLine().equalsIgnoreCase("Y")){
-                    System.out.println("Aborting save . . .");
+                if (!Server.getInput().equalsIgnoreCase("Y")){
+                    Server.println("Aborting save . . .");
                     return;
                 }
+
+                stmt.executeUpdate(
+                "UPDATE "+ table + " " +
+                "SET configuration_json = '"+configuration_json+"'" +
+                "WHERE save_name = " + save);
+            } else {
+                stmt.executeUpdate(
+                        "INSERT INTO "+ table +" " +
+                                "(" +
+                                "save_name," +
+                                "configuration_json" +
+                                ") " +
+
+                                "VALUES " +
+                                "(" +
+                                "\"" + save + "\", " +
+                                "'" + configuration_json + "'" +
+                                ")"
+                );
             }
 
-            System.out.println("Saving this current server under the name: " + save);
-            stmt.executeUpdate(
-            "INSERT INTO "+ table +" " +
-                    "(" +
-                        "save_name," +
-                        "configuration_json" +
-                    ") " +
 
-                "VALUES " +
-                    "(" +
-                        "\"" + save + "\", " +
-                        "'" + configuration_json + "'" +
-                    ")"
-            );
 
-            System.out.println( "Saving complete!" );
+            Server.println( "Saving complete!" );
         }catch( SQLException e ){
             System.err.println( e.getMessage() );
 
@@ -108,15 +118,15 @@ public class DatabaseManager {
             ResultSet resultSet = stmt.executeQuery("SELECT * FROM " + table + " WHERE save_name = \""+save+"\"");
 
             if (resultSet.isClosed()){
-                System.out.println( "No save found. Aborting . . . ");
+                Server.println( "No save found. Aborting . . . ");
                 return;
             }
 
-            System.out.println("Loading " + resultSet.getString("save_name") + " . . .");
+            Server.println("Loading " + resultSet.getString("save_name") + " . . .");
 
             Configuration.loadConfiguration(resultSet.getString("configuration_json"));
 
-            System.out.println( "Loading complete!" );
+            Server.println( "Loading complete!" );
         }catch( SQLException e ){
             System.err.println( e.getMessage() );
         }
@@ -137,11 +147,11 @@ public class DatabaseManager {
                 "SELECT name FROM sqlite_master " +
                     "WHERE type='table' AND name='"+ table +"';"
             ).isClosed()){
-                System.out.println( "Found existing table!");
+                Server.println( "Found existing table!");
                 return;
             }
 
-            System.out.println( "Table not found, creating table . . .");
+            Server.println( "Table not found, creating table . . .");
             stmt.executeUpdate(
             "CREATE TABLE IF NOT EXISTS " +
                     table +" " +
@@ -151,7 +161,7 @@ public class DatabaseManager {
                         "PRIMARY KEY (save_name)" +
                     ")"
             );
-            System.out.println( "Success creating table!");
+            Server.println( "Success creating table!");
 
         }catch( SQLException e ){
             System.err.println( e.getMessage() );

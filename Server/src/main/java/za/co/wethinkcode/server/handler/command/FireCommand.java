@@ -1,9 +1,13 @@
 package za.co.wethinkcode.server.handler.command;
 
 import za.co.wethinkcode.Response;
+import za.co.wethinkcode.server.handler.world.World;
+import za.co.wethinkcode.server.handler.world.entity.Entity;
+import za.co.wethinkcode.server.handler.world.entity.movable.Bullet;
+import za.co.wethinkcode.server.handler.world.entity.movable.robot.Robot;
 
+import java.awt.*;
 import java.util.HashMap;
-
 
 public class FireCommand extends Command {
 
@@ -13,36 +17,39 @@ public class FireCommand extends Command {
      */
     @Override
     public Response execute() {
-        //TODO: Should make an acceptance test for this,
-        // then implement it correctly
+        Point position = World.getRobot(robot).getPosition();
+        int angle = World.getRobot(robot).getDirection().angle;
+        Integer distance = 0;
 
-        //        Position robotPosition = target.getWorld().getPosition();
-//
-//        if (target.shots > 0){
-//            target.shot();
-//            for (int i = 0; i < 5; i++) {
-//                int nrSteps = Integer.parseInt(String.valueOf(i));
-//        if (target.getWorld().updatePosition(nrSteps).equals(World.UpdateResponse.SUCCESS)){
-//                target.setStatus("bullet missed target by "+nrSteps+" steps.");
-//                target.getWorld().resetPosition(nrSteps);
-//            }else if (target.getWorld().updatePosition(nrSteps).equals(World.UpdateResponse.FAILED_OUTSIDE_WORLD)) {
-//                target.setStatus("bullet missed target and went outside safe zone.");
-//                target.getWorld().resetPosition(nrSteps);
-//            }else if (target.getWorld().updatePosition(nrSteps).equals(World.UpdateResponse.FAILED_OBSTRUCTED)) {
-//            target.getWorld().removeObstacle(target);
-//            target.getWorld().resetPosition(nrSteps);
-//            target.setStatus("bullet shot target in " + nrSteps + " steps.");
-//        }
-//        }
+        while (true){
+            distance++;
 
-//
-//        else if (target.shots == 0){
-//            target.setStatus("Shots left "+target.shots+" (no active attack available) please reload.");
-//        }
-//
-//        return true;
-//    }
-        Response response = Response.createOK(new HashMap<>());
-        return addRobotState(response);
+            Entity hit = World.seek(position, angle, 1);
+
+            if (hit == null){
+                continue;
+            }
+
+            String result = hit.collidedWith(new Bullet(position));
+
+            if (hit.getClass() == Robot.class){
+                HashMap<String, Object> data = new HashMap<>();
+                data.put("message", result);
+                data.put("distance", distance);
+                data.put("name", ((Robot) hit).getName());
+                data.put("state", ((Robot) hit).getState());
+                Response response = new Response("OK",data);
+                return addRobotState(response);
+            }
+
+            if (result.equals("Obstructed")){
+                Response response = new Response("OK", new HashMap<>(){{put("message", result);}});
+                return addRobotState(response);
+            }
+
+            position = new Point(
+                position.x + Math.toIntExact(Math.round(Math.sin(Math.toRadians(angle)))),
+                position.y + Math.toIntExact(Math.round(Math.cos(Math.toRadians(angle)))));
+        }
     }
 }

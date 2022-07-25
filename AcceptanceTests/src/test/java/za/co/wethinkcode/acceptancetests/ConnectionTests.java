@@ -1,6 +1,10 @@
 package za.co.wethinkcode.acceptancetests;
 
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import za.co.wethinkcode.acceptancetests.protocoldrivers.MockServer;
 import za.co.wethinkcode.acceptancetests.protocoldrivers.RobotWorldClient;
 import za.co.wethinkcode.acceptancetests.protocoldrivers.RobotWorldJsonClient;
 
@@ -19,9 +23,19 @@ public class ConnectionTests {
     private final static String DEFAULT_IP = "localhost";
     private final RobotWorldClient serverClient = new RobotWorldJsonClient();
 
+    @BeforeEach
+    void startServer() {
+        MockServer.startServer("-s=10 --port=" + DEFAULT_PORT);
+    }
+
+    @AfterEach
+    void getResult(){
+        MockServer.closeServer();
+        serverClient.disconnect();
+    }
+
     @Test
     void SingleClientConnectsToServer() {
-
         // Given that the Port and IP Address
         // are the default ones used by the server
         assertEquals(5000, DEFAULT_PORT);
@@ -32,8 +46,6 @@ public class ConnectionTests {
 
         // Then the client should be connected to the server
         assertTrue(serverClient.isConnected());
-
-        serverClient.disconnect();
     }
 
 
@@ -87,8 +99,6 @@ public class ConnectionTests {
 
         //Then you should receive a response
         assertNotNull(serverClient.getResponse());
-
-        serverClient.disconnect();
     }
 
 
@@ -110,7 +120,6 @@ public class ConnectionTests {
         // Then the client should be connected to the server
         assertTrue(serverClient.isConnected());
 
-        serverClient.disconnect();
         otherClient.disconnect();
     }
 
@@ -136,7 +145,6 @@ public class ConnectionTests {
         assertNotNull(serverClient.getResponse());
         assertNull(otherClient.getResponse());
 
-        serverClient.disconnect();
         otherClient.disconnect();
     }
 
