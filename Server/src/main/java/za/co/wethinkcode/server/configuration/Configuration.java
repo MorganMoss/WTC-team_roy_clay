@@ -3,6 +3,7 @@ package za.co.wethinkcode.server.configuration;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import picocli.CommandLine;
+import za.co.wethinkcode.server.Server;
 import za.co.wethinkcode.server.handler.world.World;
 import za.co.wethinkcode.server.handler.world.entity.immovable.Mine;
 import za.co.wethinkcode.server.handler.world.entity.immovable.Obstacle;
@@ -36,7 +37,7 @@ public final class Configuration implements Callable<Integer> {
     @CommandLine.Option(
             names = {"-s", "--size"},
             description = {"Size of the world as one side of a square grid"},
-            defaultValue = "4"
+            defaultValue = "1"
     )
     private static Integer SIZE;
     public static Integer size() {return  SIZE;}
@@ -44,7 +45,7 @@ public final class Configuration implements Callable<Integer> {
     @CommandLine.Option(
             names = {"-o", "--obstacle"},
             description = {"Position of fixed obstacle as [x,y] coordinate in form 'x,y', or 'none' or 'random'"},
-            defaultValue = "0,1"
+            defaultValue = "none"
     )
     private static String OBSTACLE;
     public static String obstacle() {return OBSTACLE;}
@@ -68,7 +69,7 @@ public final class Configuration implements Callable<Integer> {
     @CommandLine.Option(
             names = {"-v", "--visibility"},
             description = {"Visibility for robot in nr of steps"},
-            defaultValue = "10"
+            defaultValue = "2"
     )
     private static Integer VISIBILITY;
     public static Integer visibility() {return VISIBILITY;}
@@ -84,7 +85,7 @@ public final class Configuration implements Callable<Integer> {
     @CommandLine.Option(
             names = {"-l" , "--reload"},
             description = {"Instruct the robot to reload its weapons"},
-            defaultValue = "7"
+            defaultValue = "5"
     )
     private static Integer RELOAD;
     public static Integer reload() {return  RELOAD;}
@@ -92,7 +93,7 @@ public final class Configuration implements Callable<Integer> {
     @CommandLine.Option(
             names = {"-mt", "--mine_time"},
             description = {"Time it takes to place a mine"},
-            defaultValue = "3"
+            defaultValue = "5"
     )
     private static Integer MINE;
     public static Integer mine() { return MINE;}
@@ -139,13 +140,13 @@ public final class Configuration implements Callable<Integer> {
      */
     private static void inspect() {
         Field[] fields = Configuration.class.getDeclaredFields();
-        System.out.println("Configuration set: ");
+        Server.println("Configuration set: ");
 
         for (Field field : fields) {
             try {
                 String fieldName = field.getName().toLowerCase();
                 field.setAccessible(true);
-                System.out.println("\t" + fieldName + " = " + field.get(null));
+                Server.println("\t" + fieldName + " = " + field.get(null));
             } catch (IllegalAccessException e) {
                 throw new RuntimeException(e);
             }
@@ -215,7 +216,7 @@ public final class Configuration implements Callable<Integer> {
         try {
             values = new Gson().fromJson(configuration_json, Hashtable.class);
         } catch (JsonSyntaxException badJSON){
-            System.out.println("Bad configuration loaded. Aborting . . .");
+            Server.println("Bad configuration loaded. Aborting . . .");
             System.err.println(badJSON.getMessage());
             System.exit(1);
             return;
@@ -240,7 +241,7 @@ public final class Configuration implements Callable<Integer> {
 
                 field.set(null, value);
             } catch (IllegalAccessException e) {
-                System.out.println("Bad configuration loaded. Aborting . . .");
+                Server.println("Bad configuration loaded. Aborting . . .");
                 System.exit(1);
             }
         }

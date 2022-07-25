@@ -1,5 +1,6 @@
 package za.co.wethinkcode.server.handler.world;
 
+import za.co.wethinkcode.server.Server;
 import za.co.wethinkcode.server.configuration.BadConfigurationException;
 import za.co.wethinkcode.server.handler.world.entity.Entity;
 import za.co.wethinkcode.server.handler.world.entity.immovable.Edge;
@@ -24,7 +25,7 @@ import static za.co.wethinkcode.server.configuration.Configuration.*;
 public class World {
 
 
-    private static volatile World instance = initializeWorld();
+    private static volatile World instance;
 
     /**
      * Lookup Table for existing robots
@@ -296,12 +297,12 @@ public class World {
         for (int y = start; y <= end; y++) {
             for (int x = start; x <= end; x++) {
                 if (!instance.openPositions.contains(new Point(x,y))){
-                    System.out.print(instance.entityTable.getOrDefault(new Point(x,y), new Edge(new Point(x, y))).toString().charAt(0));
+                    Server.print(instance.entityTable.getOrDefault(new Point(x,y), new Edge(new Point(x, y))).toString().charAt(0));
                 } else {
-                    System.out.print("_");
+                    Server.print("_");
                 }
             }
-            System.out.println();
+            Server.println("");
         }
     }
 }

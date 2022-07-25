@@ -42,6 +42,7 @@ public final class Handler extends Thread{
 
     private static final LinkedBlockingQueue<Pair<String, Request>> requests = new LinkedBlockingQueue<>();
     private static final Hashtable<Pair<String, String>, Response> responses = new Hashtable<>();
+    private static final Handler instance = new Handler();
 
     /**
      * Adds a request specific to a client to a queue,
@@ -51,6 +52,9 @@ public final class Handler extends Thread{
      */
     public static void addRequest(String client, Request request){
         requests.add(new Pair<>(client, request));
+        synchronized (instance){
+            instance.notifyAll();
+        }
     }
 
     /**
@@ -144,18 +148,30 @@ public final class Handler extends Thread{
         }
     }
 
+    private synchronized Pair<String, Request> getNextRequest() {
+        try {
+            return requests.remove();
+        } catch (NoSuchElementException emptyQueue) {
+            return null;
+        }
+    }
 
     @SuppressWarnings("InfiniteLoopStatement")
     @Override
-    public void run() {
+    public synchronized void run() {
         while (true){
             //pop the queue
-            Pair<String, Request> requestFromClient;
-            try {
-               requestFromClient = requests.remove();
-            } catch (NoSuchElementException emptyQueue) {
+            Pair<String, Request> requestFromClient = getNextRequest();
+
+            if (requestFromClient == null) {
+                try {
+                    wait();
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
                 continue;
             }
+
             //execute that request
             Response response = executeRequest(requestFromClient.getValue1());
 
@@ -171,7 +187,8 @@ public final class Handler extends Thread{
     }
 
     public static synchronized void setup() {
-        new Handler().start();
+        instance.setName("Command Handler Thread");
+        instance.start();
     }
 
     /**
