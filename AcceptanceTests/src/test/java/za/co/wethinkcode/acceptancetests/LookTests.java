@@ -2,8 +2,8 @@ package za.co.wethinkcode.acceptancetests;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import za.co.wethinkcode.acceptancetests.protocoldrivers.MockServer;
 import za.co.wethinkcode.acceptancetests.protocoldrivers.RobotWorldClient;
 import za.co.wethinkcode.acceptancetests.protocoldrivers.RobotWorldJsonClient;
 
@@ -13,7 +13,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class LookRobotTests {
+public class LookTests {
 
     /**
      * As a player
@@ -25,17 +25,17 @@ public class LookRobotTests {
     private final static String DEFAULT_IP = "localhost";
     private final RobotWorldClient serverClient = new RobotWorldJsonClient();
 
-    @BeforeEach
-    void connectToServer(){serverClient.connect(DEFAULT_IP, DEFAULT_PORT);}
 
     @AfterEach
     void disconnectFromServer(){
         serverClient.disconnect();
+        MockServer.closeServer();
     }
 
     @Test
     void validLookAndWorldShouldBeEmpty(){
-
+        MockServer.startServer("");
+        serverClient.connect(DEFAULT_IP, DEFAULT_PORT);
         //Given that I am connected to a running Robot Worlds server.
         assertTrue(serverClient.isConnected());
 
@@ -58,6 +58,9 @@ public class LookRobotTests {
 
     @Test
     void robotShouldSeeAnObstacle(){
+        MockServer.startServer("-s=2 -o=0,1,1,1,-1,1");
+        serverClient.connect(DEFAULT_IP, DEFAULT_PORT);
+
         //Given a world of size 2x2.
         //and the world has an obstacle at coordinate [0,1].
         assertTrue((serverClient.isConnected()));
@@ -90,7 +93,8 @@ public class LookRobotTests {
     @Test
     void seeRobotsAndObstacles(){
         List<String> robotNames = Arrays.asList("R1", "R2", "R3", "R4", "R5", "R6", "R7", "R8");
-
+        MockServer.startServer("-s=2 -o=0,1");
+        serverClient.connect(DEFAULT_IP, DEFAULT_PORT);
         //Given a world of size 2x2.
         //and the world has an obstacle at coordinate [0,1].
         assertTrue(serverClient.isConnected());
@@ -99,7 +103,6 @@ public class LookRobotTests {
         for (String item : robotNames) {
             serverClient.sendRequest(item, "launch", "[\"shooter\",\"7\",\"4\"]");
             JsonNode response = serverClient.getResponse();
-            System.out.println(response);
             serverClient.assertResult(response, "OK");
         }
 
@@ -135,7 +138,8 @@ public class LookRobotTests {
 
     @Test
     void invalidLookCommandShouldFail(){
-
+        MockServer.startServer("");
+        serverClient.connect(DEFAULT_IP, DEFAULT_PORT);
         //Given that I am connected to a running Robot Worlds server.
         assertTrue(serverClient.isConnected());
 
@@ -155,7 +159,8 @@ public class LookRobotTests {
 
     @Test
     void invalidLookArgumentsShouldFail(){
-
+        MockServer.startServer("");
+        serverClient.connect(DEFAULT_IP, DEFAULT_PORT);
         //Given that I am connected to a running Robot Worlds server.
         assertTrue(serverClient.isConnected());
 

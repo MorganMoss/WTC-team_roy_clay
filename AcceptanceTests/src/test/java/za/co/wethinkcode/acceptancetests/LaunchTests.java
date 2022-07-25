@@ -1,9 +1,8 @@
 package za.co.wethinkcode.acceptancetests;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
+import za.co.wethinkcode.acceptancetests.protocoldrivers.MockServer;
 import za.co.wethinkcode.acceptancetests.protocoldrivers.RobotWorldJsonClient;
 
 import java.util.Arrays;
@@ -14,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 
 
-public class LaunchRobotTests {
+public class LaunchTests {
 
     /**
      * As a player
@@ -26,21 +25,18 @@ public class LaunchRobotTests {
     private final static String DEFAULT_IP = "localhost";
     private final RobotWorldJsonClient serverClient = new RobotWorldJsonClient();
 
-    @BeforeEach
-    void connectToServer() {
-        serverClient.connect(DEFAULT_IP, DEFAULT_PORT);
-    }
-
 
     @AfterEach
-    void disconnectFromServer() {
+    void stopServer(){
         serverClient.disconnect();
+        MockServer.closeServer();
     }
 
 
     @Test
     void validLaunchShouldSucceed() {
-
+        MockServer.startServer("-s=1");
+        serverClient.connect(DEFAULT_IP, DEFAULT_PORT);
         // Given that I am connected to a running Robot Worlds server
         // And the world is of size 1x1
         assertTrue(serverClient.isConnected());
@@ -57,14 +53,19 @@ public class LaunchRobotTests {
 
         // And I should also get the state of the robot
         assertNotNull(response.get("state"));
-
-        serverClient.disconnect();
     }
 
 
     @Test
     void invalidLaunchShouldFail() {
+        MockServer.startServer("-s=1");
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
 
+        serverClient.connect(DEFAULT_IP, DEFAULT_PORT);
         // Given that I am connected to a running Robot Worlds server
         assertTrue(serverClient.isConnected());
 
@@ -82,7 +83,8 @@ public class LaunchRobotTests {
 
     @Test
     void checkForDuplicateRobotName() {
-
+        MockServer.startServer("-s=1");
+        serverClient.connect(DEFAULT_IP, DEFAULT_PORT);
         // Given that I am connected to a running Robot Worlds server
         assertTrue(serverClient.isConnected());
 
@@ -110,7 +112,8 @@ public class LaunchRobotTests {
 
     @Test
     void worldFullNoSpaceToLaunchRobot() {
-
+        MockServer.startServer("-s=1");
+        serverClient.connect(DEFAULT_IP, DEFAULT_PORT);
         // Given that I am connected to a running Robot Worlds server
         //And the world is of size 1x1
         assertTrue(serverClient.isConnected());
@@ -142,6 +145,9 @@ public class LaunchRobotTests {
 
     @Test
     void canLaunchAnotherRobot() {
+        MockServer.startServer("-s=2");
+
+        serverClient.connect(DEFAULT_IP, DEFAULT_PORT);
         // Given a world of size 2x2
         // and robot "HAL" has already been launched into the world
         assertTrue(serverClient.isConnected());
@@ -156,13 +162,8 @@ public class LaunchRobotTests {
         assertNotNull(response.get("state"));
 
         // and a randomly allocated position of R2D2 should be returned.
-//        assertNotNull(response.get("data"));
         assertTrue(response.get("state").get("position").get(1).isInt());
         assertTrue(response.get("state").get("position").get(0).isInt());
-
-//
-//        assertTrue(serverClient.getX(response) >= -1 && serverClient.getX(response) <= 1);
-//        assertTrue(serverClient.getY(response) >= -1 && serverClient.getY(response) <= 1);
     }
 
 
@@ -170,7 +171,8 @@ public class LaunchRobotTests {
     void worldWithoutObsIsFull() {
 
         List<String> robotNames = Arrays.asList("R1", "R2", "R3", "R4", "R5", "R6", "R7", "R8", "R9");
-
+        MockServer.startServer("-s=2");
+        serverClient.connect(DEFAULT_IP, DEFAULT_PORT);
         // Given a world of size 2x2,
         // and I have successfully launched 9 robots into the world
         assertTrue(serverClient.isConnected());
@@ -194,7 +196,8 @@ public class LaunchRobotTests {
     void launchRobotWithObs() {
 
         List<String> robotNames = Arrays.asList("R1", "R2", "R3", "R4", "R5", "R6", "R7", "R8");
-
+        MockServer.startServer("-s=2");
+        serverClient.connect(DEFAULT_IP, DEFAULT_PORT);
         // Given a world of size 2x2
         // and the world has an obstacle at coordinate [1,1]
         assertTrue(serverClient.isConnected());
@@ -216,7 +219,8 @@ public class LaunchRobotTests {
 
     @Test
     void WorldWithAnObstacleIsFull() {
-
+        MockServer.startServer("-s=2 -o=1,1");
+        serverClient.connect(DEFAULT_IP, DEFAULT_PORT);
         // Given a world of size 2x2
         // and the world has an obstacle at coordinate [1,1]
         assertTrue(serverClient.isConnected());

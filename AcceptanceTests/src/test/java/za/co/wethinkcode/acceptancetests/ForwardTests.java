@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import za.co.wethinkcode.acceptancetests.protocoldrivers.MockServer;
 import za.co.wethinkcode.acceptancetests.protocoldrivers.RobotWorldClient;
 import za.co.wethinkcode.acceptancetests.protocoldrivers.RobotWorldJsonClient;
 
@@ -31,6 +32,16 @@ public class ForwardTests {
         serverClient.disconnect();
     }
 
+    @BeforeEach
+    void startServer() {
+        MockServer.startServer("-s=1");
+
+    }
+
+    @AfterEach
+    void getResult(){
+        MockServer.closeServer();
+    }
 
     @Test
     void movingAtTheEdgeOfTheWorldShouldFail(){

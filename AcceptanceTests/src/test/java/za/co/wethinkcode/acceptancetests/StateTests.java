@@ -4,12 +4,12 @@ import com.fasterxml.jackson.databind.JsonNode;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import za.co.wethinkcode.acceptancetests.protocoldrivers.RobotWorldClient;
+import za.co.wethinkcode.acceptancetests.protocoldrivers.MockServer;
 import za.co.wethinkcode.acceptancetests.protocoldrivers.RobotWorldJsonClient;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class StateRobotTests {
+public class StateTests {
 
     /**
      * As a player
@@ -24,6 +24,7 @@ public class StateRobotTests {
     @BeforeEach
     void connectToServer(){
         // connects client to server before each test
+        MockServer.startServer("");
         serverClient.connect(DEFAULT_IP, DEFAULT_PORT);
     }
 
@@ -32,6 +33,7 @@ public class StateRobotTests {
     void disconnectFromServer(){
         // disconnects client from server after each test
         serverClient.disconnect();
+        MockServer.closeServer();
     }
 
 
