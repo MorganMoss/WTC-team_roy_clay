@@ -32,7 +32,7 @@ public class Server {
         try {
             return input.nextLine();
         } catch (NoSuchElementException e){
-            return null;
+            return "";
         }
     }
 
@@ -41,6 +41,9 @@ public class Server {
         System.out.flush();
     }
 
+    /**
+     * Opens up connections and server input.
+     */
     private static void startRobotWorldServer(){
         Thread serverCommandHandler = new ServerCommandHandler();
         serverCommandHandler.setName("Server Input Thread");
@@ -71,6 +74,10 @@ public class Server {
         }
     }
 
+    /**
+     * Kills a robot in the world.
+     * @param robot to be PURGED!!!
+     */
     public static void purge(String robot) {
         World.removeRobot(robot);
         println("Purged " + robot);
@@ -83,60 +90,85 @@ public class Server {
      * the commands are terminal based.
      */
     private static class ServerCommandHandler extends Thread{
+        private boolean noArgs(String command){
+            return command.split(" ").length < 2;
+        }
+
+        private void quit(){
+            Server.running = false;
+        }
+
+        private void printRobots(){
+            println(World.getRobots().toString());
+        }
+
+        private void purge(String command){
+            if (noArgs(command)) {
+                println("Please enter the name of the robot to be purged");
+                return;
+            }
+
+            String robot = command.split(" ")[1];
+            purge(robot);
+        }
+
+        private void save(String command){
+            if (noArgs(command)) {
+                println("Please enter the name of the saved world");
+                return;
+            }
+
+            DatabaseManager.save(command.split(" ")[1]);
+        }
+
+        private void load(String command){
+            if (noArgs(command)) {
+                println("Please enter the name of the saved world");
+                return;
+            }
+
+            DatabaseManager.load(command.split(" ")[1]);
+        }
+
+        /**
+         * Takes a command string and executes a command corresponding to the command given
+         * @param command given by user
+         */
+        private void handleCommand(String command) {
+            switch (command.split(" ")[0].toLowerCase()) {
+                case "exit":
+                case "quit":
+                    quit();
+                    break;
+                case "dump":
+                    World.dump();
+                    break;
+                case "robots":
+                    printRobots();
+                    break;
+                case "purge":
+                    purge(command);
+                    break;
+                case "save":
+                    save(command);
+                    break;
+                case "load":
+                    load(command);
+                    break;
+                default:
+                    println("Invalid command");
+            }
+        }
+
         /**
          * Handles the input coming in to the server from commandline
          */
         @Override
         public void run() {
-            String command;
             while (running) {
-                command = getInput();
-                if (command == null){
-
-                    continue;
-                }
-                switch (command.split(" ")[0].toLowerCase()) {
-                    case "exit":
-                    case "quit":
-                        Server.running = false;
-                        break;
-                    case "dump":
-                        World.dump();
-                        break;
-                    case "robots":
-                        println(World.getRobots().toString());
-                        break;
-                    case "purge":
-                        if (command.split(" ").length < 2) {
-                            println("Please enter the name of the robot to be purged");
-                            break;
-                        }
-                        String robot = command.split(" ")[1];
-                        purge(robot);
-                        break;
-                    case "save":
-                        if (command.split(" ").length < 2) {
-                            println("Please enter the name of the saved world");
-                            break;
-                        }
-                        DatabaseManager.save(command.split(" ")[1]);
-                        break;
-                    case "load":
-                        if (command.split(" ").length < 2) {
-                            println("Please enter the name of the saved world");
-                            break;
-                        }
-                        DatabaseManager.load(command.split(" ")[1]);
-                        break;
-                    default:
-                        println("Invalid command");
-                }
-                try {
-                    Thread.sleep(2000);
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
-                }
+                handleCommand(getInput());
             }
+
             println("Server closing...");
             System.exit(0);
         }

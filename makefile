@@ -27,6 +27,7 @@ endef
 #Runs the test file with the given name
 #(add "#methodName" to have it run a single test)
 define test
+	@[ -d $(output) ] || mkdir -p $(output)
 	@echo "[1;33mRunning Test:[m[1;34m${1}[m"
 	-@mvn test -Dtest="${1}" > "$(output)/Test Results - ${test_running_in} -${1}.txt" || true
 	-@cat "$(output)/Test Results - ${test_running_in} -${1}.txt" | grep "Tests run" | grep -v "Time elapsed"
