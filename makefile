@@ -3,7 +3,7 @@
 ##############################################
 version=1.0.1-SNAPSHOT
 reference=libs/reference-server-0.2.3.jar
-ours=Server/target/Server-$(version).jar
+ours=libs/Server-$(version).jar
 our_server_class="Server"
 output="Test_Output"
 build_args=""
@@ -19,23 +19,18 @@ define run_as_jar
 	@echo "[1;33mRunning Jar:[m[1;34m${1}[m"
 	@test_running_in=jar
 endef
-# Sends input to in.txt for running jar
-define send_input
-	@echo ${1} > in.txt
-endef
 # exits running jar
 define close
-	@$(call send_input, "quit")
-	@./stop.sh
-	@rm in.txt
+	-@./stop.sh
+	-@rm in.txt
 endef
 #Runs the test file with the given name
 #(add "#methodName" to have it run a single test)
 define test
 	@echo "[1;33mRunning Test:[m[1;34m${1}[m"
-	@-mvn test -Dtest="${1}" > "$(output)/Test Results - ${test_running_in} -${1}.txt" || true
-	@cat "$(output)/Test Results - ${test_running_in} -${1}.txt" | grep "Tests run" | grep -v "Time elapsed"
-	@cat "$(output)/Test Results - ${test_running_in} -${1}.txt" | grep "expected" | grep -v "org.opentest"
+	-@mvn test -Dtest="${1}" > "$(output)/Test Results - ${test_running_in} -${1}.txt" || true
+	-@cat "$(output)/Test Results - ${test_running_in} -${1}.txt" | grep "Tests run" | grep -v "Time elapsed"
+	-@cat "$(output)/Test Results - ${test_running_in} -${1}.txt" | grep "expected" | grep -v "org.opentest" || true
 endef
 # Runs a .java file that has a main using maven with in.txt as System In
 define run_with_maven
@@ -68,7 +63,6 @@ endef
 ##############################################
 help: ## List of commands
 	##############################################
-	@echo $(ours)
 	@echo "[1mList of commands:[m"
 	@echo " [1;34mbuild[m\t\t\t\tbuilds our project"
 	@echo " [1;34mrun_acceptance_tests[m\t\ttests our and the reference projects"
@@ -95,11 +89,29 @@ build: ## Builds our project
 	@echo "[1;32mProject build complete![m"
 	##############################################
 
-.PHONY: test
-test: ## Run unit tests for our project
+test: unit_test acceptance_test
+
+	@echo "[1;32mProject testing complete![m"
+	##############################################
+
+.PHONY: unit_test
+unit_test: ## Run unit tests for our project
 #This will unit test our project
 	@mvn test
-	@echo "[1;32mProject testing complete![m"
+	@echo "[1;32mUnit testing complete![m"
+	##############################################
+
+.PHONY: acceptance_test
+acceptance_test: ## Run acceptance tests for our project
+#This will run the acceptance tests for our project
+	-$(call test, "ConnectionTests")
+	-$(call test, "LaunchTests")
+	-$(call test, "LookTests")
+	-$(call test, "ForwardTests")
+	-$(call test, "StateTests")
+	-$(call test, "DatabaseTests")
+
+	@echo "[1;32mAcceptance testing complete![m"
 	##############################################
 
 .PHONY: package
@@ -114,49 +126,26 @@ package_software_for_testing:
 	@echo "Completed packaging of software for testing."
 	##############################################
 
-.PHONY: run_acceptance_tests
-run_acceptance_tests:
-	##############################################
-	-$(call run_test, "ConnectionTests" , )
 
-	-$(call run_test, "LaunchRobotTests#validLaunchShouldSucceed+invalidLaunchShouldFail+checkForDuplicateRobotName+worldFullNoSpaceToLaunchRobot", )
-	-$(call run_test, "LaunchRobotTests#worldWithoutObsIsFull", "-s=3")
-	-$(call run_test, "LaunchRobotTests#WorldWithAnObstacleIsFull", "-s=3 -o=1$(,)1")
-
-	-$(call run_test, "StateRobotTests" , )
-
-	-$(call run_test, "LookRobotTests#invalidLookCommandShouldFail" , )
-	-$(call run_test, "LookRobotTests#validLookAndWorldShouldBeEmpty" , "--size=1")
-	-$(call run_test, "LookRobotTests#robotShouldSeeAnObstacle" , "-s=2 -o=0$(,)1")
-	-$(call run_test, "LookRobotTests#seeRobotsAndObstacles" , "-s=2 -o=0$(,)1")
-
-	-$(call run_test, "ForwardTests#movingAtTheEdgeOfTheWorldShouldFail" , "--size=1")
-
-#From Here-on, we don't have a reference.
-	-$(call run_test_own, "DatabaseTests" , "--size=1, -o=1$(,)1 -p=2$(,)2")
-
-	@echo "[1;32mAll testing complete![m"
-	##############################################
-
-.PHONY: run_test
-run_test: run_test_reference run_test_own ## Allows manual testing
-#Running tests against both servers in a more dynamic way
-	@echo "[1;32mAll testing complete![m"
-	##############################################
-.PHONY: run_test_reference
-run_test_reference: ## Allows manual testing from reference server
-	@echo "[1mStarting Run of custom tests on reference server.[m"
-	##############################################
-	-$(call run_test_ref,"$(t)",$(a))
-	@echo "[1mCompleted Run of custom tests on reference server.[m"
-	##############################################
-.PHONY: run_test_own
-run_test_own: ## Allows manual testing from our server
-	@echo "[1mStarting Run of custom tests on own server.[m"
-	##############################################
-	-$(call run_test_own,"$(t)",$(a))
-	@echo "[1mCompleted Run of custom tests on own server.[m"
-	##############################################
+#.PHONY: run_test
+#run_test: run_test_reference run_test_own ## Allows manual testing
+##Running tests against both servers in a more dynamic way
+#	@echo "[1;32mAll testing complete![m"
+#	##############################################
+#.PHONY: run_test_reference
+#run_test_reference: ## Allows manual testing from reference server
+#	@echo "[1mStarting Run of custom tests on reference server.[m"
+#	##############################################
+#	-$(call run_test_ref,"$(t)",$(a))
+#	@echo "[1mCompleted Run of custom tests on reference server.[m"
+#	##############################################
+#.PHONY: run_test_own
+#run_test_own: ## Allows manual testing from our server
+#	@echo "[1mStarting Run of custom tests on own server.[m"
+#	##############################################
+#	-$(call run_test_own,"$(t)",$(a))
+#	@echo "[1mCompleted Run of custom tests on own server.[m"
+#	##############################################
 
 .PHONY: release
 release: version_software_for_release ## Versions and packages our project
