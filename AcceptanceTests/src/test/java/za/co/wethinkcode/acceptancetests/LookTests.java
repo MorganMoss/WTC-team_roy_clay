@@ -17,14 +17,12 @@ public class LookTests {
 
     /**
      * As a player
-     * I want to look around the Robot World & see Robot(s)/Obstacle(s) in the way
-     * So I can avoid hitting Obstacle(s) & so I can be aware of other Robot(s) in the world
+     * I want to look around the Robot World & see Robot(s)/Obstacle(s) and other world artefacts in the way
+     * So I can be aware of other Robot(s) in the world and avoid hitting Obstacle(s) & other artefacts in the world
      */
-
     private final static int DEFAULT_PORT = 5000;
     private final static String DEFAULT_IP = "localhost";
     private final RobotWorldClient serverClient = new RobotWorldJsonClient();
-
 
     @AfterEach
     void disconnectFromServer(){
@@ -34,19 +32,20 @@ public class LookTests {
 
     @Test
     void validLookAndWorldShouldBeEmpty(){
+
+        //Given that I am connected to a running Robot Worlds server.
+        //And there is no other robot and no obstacle in the world.
         MockServer.startServer("");
         serverClient.connect(DEFAULT_IP, DEFAULT_PORT);
-        //Given that I am connected to a running Robot Worlds server.
         assertTrue(serverClient.isConnected());
 
         //And I have successfully launched a robot to the server
         assertTrue(serverClient.launchRobot("HAL"));
 
-        //And there is no other robot and no obstacle in the world.
-        //And I send a valid look request, "look", to the server.
+        //When I send a valid look request, "look", to the server.
         serverClient.sendRequest("HAL", "look", "[]");
 
-        //Then I should get a valid/successful response, " "result" = "OK" " from the server.
+        //Then I should get a valid/successful response, "result" = "OK" " from the server.
         JsonNode response = serverClient.getResponse();
         serverClient.assertResult(response, "OK");
 
@@ -58,17 +57,17 @@ public class LookTests {
 
     @Test
     void robotShouldSeeAnObstacle(){
-        MockServer.startServer("-s=2 -o=0,1,1,1,-1,1");
-        serverClient.connect(DEFAULT_IP, DEFAULT_PORT);
 
         //Given a world of size 2x2.
         //and the world has an obstacle at coordinate [0,1].
+        MockServer.startServer("-s=2 -o=0,1 -pt=-1,1,-1,0,-1,-1,0,-1,1,-1,1,0,1,1 -v=3");
+        serverClient.connect(DEFAULT_IP, DEFAULT_PORT);
         assertTrue((serverClient.isConnected()));
 
         //and I have successfully launched a robot into the world
         assertTrue(serverClient.launchRobot("HAL"));
 
-        //When I ask the first robot to look
+        //When I ask the robot to look
         serverClient.sendRequest("HAL", "look", "[]");
 
         //Then I should get a response back with an object of type OBSTACLE at a distance of 1 step.
@@ -79,39 +78,48 @@ public class LookTests {
         String artefactFound = "";
 
         for (JsonNode object : response.get("data").get("objects")){
+            System.out.println(object.get("type").asText());
+
             if (object.get("type").asText().equalsIgnoreCase("OBSTACLE")){
                 foundObstacle = true;
+                System.out.println(foundObstacle);
                 distanceToObstacle = object.get("distance").asInt();
                 artefactFound = "OBSTACLE";
             }
         }
         assertTrue(foundObstacle);
-        assertEquals("OBSTACLE", artefactFound);
         assertEquals(1, distanceToObstacle);
     }
 
     @Test
     void seeRobotsAndObstacles(){
-        List<String> robotNames = Arrays.asList("R1", "R2", "R3", "R4", "R5", "R6", "R7", "R8");
-        MockServer.startServer("-s=2 -o=0,1");
-        serverClient.connect(DEFAULT_IP, DEFAULT_PORT);
+
         //Given a world of size 2x2.
         //and the world has an obstacle at coordinate [0,1].
+        MockServer.startServer("-s=2 -o=0,1");
+        serverClient.connect(DEFAULT_IP, DEFAULT_PORT);
         assertTrue(serverClient.isConnected());
 
+
         //and I have successfully launched 8 robots into the world.
+        String robotAtZeroZero = "";
+        List<String> robotNames = Arrays.asList("R1", "R2", "R3", "R4", "R5", "R6", "R7", "R8");
         for (String item : robotNames) {
             serverClient.sendRequest(item, "launch", "[\"shooter\",\"7\",\"4\"]");
             JsonNode response = serverClient.getResponse();
             serverClient.assertResult(response, "OK");
+
+            //find robot that lands at position (0,0)
+            if (response.get("state").get("position").get(1).asInt() == 0 && response.get("state").get("position").get(0).asInt() == 0){
+                robotAtZeroZero = item;
+            }
         }
 
-        //When I ask the first robot to look
-        serverClient.sendRequest("R1", "look", "[]");
-        //TODO: check code base to see if robot is being placed randomly.
+        //When I ask the robot at position (0,0) to look
+        serverClient.sendRequest(robotAtZeroZero, "look", "[]");
 
-        //Then I should get a response back with one object being an OBSTACLE that is one step away.
-        //and three objects should be ROBOTs that is one step away
+        //Then I should get a valid response back with one object being an OBSTACLE that is one step away.
+        //and three objects should be ROBOTs that are each one step away
         JsonNode response = serverClient.getResponse();
         serverClient.assertResult(response, "OK");
 
@@ -124,16 +132,17 @@ public class LookTests {
             if (object.get("type").asText().equalsIgnoreCase("OBSTACLE")){
                 numObstaclesSeen +=1;
                 distanceToObstacle = object.get("distance").asInt();
+                assertEquals(1, numObstaclesSeen);
+                assertEquals(1, distanceToObstacle);
             }
             else if (object.get("type").asText().equalsIgnoreCase("ROBOT")){
                 numRobotsSeen +=1;
                 distanceToRobot = object.get("distance").asInt();
+                assertEquals(1, distanceToRobot);
             }
+
         }
-        assertEquals(1, numObstaclesSeen);
-        assertEquals(1, distanceToObstacle);
         assertEquals(3, numRobotsSeen);
-        assertEquals(1, distanceToRobot);
     }
 
     @Test

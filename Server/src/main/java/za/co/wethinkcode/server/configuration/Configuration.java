@@ -52,7 +52,7 @@ public final class Configuration implements Callable<Integer> {
 
     @CommandLine.Option(
             names = {"-pt", "--pit"},
-            description = {"Position of fixed pit as [x,y] coordinate in form 'x,y', or 'none' or 'random'"},
+            description = {"position of fixed pit as [x,y] coordinate in form 'x,y', or 'none' or 'random'"},
             defaultValue = "none"
     )
     private static String PITS;

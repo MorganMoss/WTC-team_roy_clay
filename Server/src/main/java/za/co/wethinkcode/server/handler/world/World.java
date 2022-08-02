@@ -155,6 +155,7 @@ public class World {
             Point position = new Point(x,y);
 
             Entity foundEntity = instance.entityTable.get(position);
+            System.out.println(foundEntity);
 
             //if occupied, stop moving and return obstruction
             if (foundEntity != null) {

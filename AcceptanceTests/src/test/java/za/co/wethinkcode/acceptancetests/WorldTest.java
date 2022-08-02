@@ -68,7 +68,7 @@
 //        String request = "{" +
 //                "\"robot\": \"any\"," +
 //                "\"command\": \"world\"," +
-//                "  \"arguments\": [height, width]" +
+//                "  \"arguments\": []" +
 //                "}";
 //        serverClient.sendRequest(request);
 //

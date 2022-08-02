@@ -26,7 +26,6 @@ public class ForwardTests {
     @BeforeEach
     void connectToServer(){serverClient.connect(DEFAULT_IP, DEFAULT_PORT);}
 
-
     @AfterEach
     void disconnectFromServer(){
         serverClient.disconnect();
@@ -35,7 +34,6 @@ public class ForwardTests {
     @BeforeEach
     void startServer() {
         MockServer.startServer("-s=1");
-
     }
 
     @AfterEach

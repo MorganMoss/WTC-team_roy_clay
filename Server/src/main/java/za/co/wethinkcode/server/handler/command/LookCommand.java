@@ -43,6 +43,7 @@ public class LookCommand extends Command {
 
             int directionAngle = direction.angle;
             Entity foundEntity = World.seek(currentPosition, directionAngle, visibility);
+            System.out.println(foundEntity);
 
             if (foundEntity != null) {
                 Integer distance = Math.toIntExact(round(currentPosition.distance(foundEntity.getPosition())));
