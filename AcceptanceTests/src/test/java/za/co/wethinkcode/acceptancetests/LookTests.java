@@ -78,7 +78,6 @@ public class LookTests {
         String artefactFound = "";
 
         for (JsonNode object : response.get("data").get("objects")){
-            System.out.println(object.get("type").asText());
 
             if (object.get("type").asText().equalsIgnoreCase("OBSTACLE")){
                 foundObstacle = true;
