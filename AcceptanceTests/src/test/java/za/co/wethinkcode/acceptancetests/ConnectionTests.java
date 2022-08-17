@@ -1,12 +1,10 @@
 package za.co.wethinkcode.acceptancetests;
 
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import za.co.wethinkcode.acceptancetests.protocoldrivers.MockServer;
-import za.co.wethinkcode.acceptancetests.protocoldrivers.RobotWorldClient;
-import za.co.wethinkcode.acceptancetests.protocoldrivers.RobotWorldJsonClient;
+import za.co.wethinkcode.acceptancetests.protocoldrivers.MockClient;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -21,15 +19,15 @@ public class ConnectionTests {
 
     private final static int DEFAULT_PORT = 5000;
     private final static String DEFAULT_IP = "localhost";
-    private final RobotWorldClient serverClient = new RobotWorldJsonClient();
+    private final MockClient serverClient = new MockClient();
 
     @BeforeEach
     void startServer() {
-        MockServer.startServer("-s=10 --port=" + DEFAULT_PORT);
+        MockServer.startServer("-s=2 --port=" + DEFAULT_PORT);
     }
 
     @AfterEach
-    void getResult(){
+    void disconnectServer(){
         MockServer.closeServer();
         serverClient.disconnect();
     }
@@ -106,7 +104,7 @@ public class ConnectionTests {
     void YouConnectAfterAnotherClientConnects() {
 
         //Given that another client has connected using the Port and IP Address
-        RobotWorldClient otherClient = new RobotWorldJsonClient();
+        MockClient otherClient = new MockClient();
         otherClient.connect(DEFAULT_IP,DEFAULT_PORT);
         assertTrue(otherClient.isConnected());
 
@@ -131,7 +129,7 @@ public class ConnectionTests {
         assertEquals(5000, DEFAULT_PORT);
         assertEquals("localhost", DEFAULT_IP);
 
-        RobotWorldClient otherClient = new RobotWorldJsonClient();
+        MockClient otherClient = new MockClient();
         otherClient.connect(DEFAULT_IP,DEFAULT_PORT);
         assertTrue(otherClient.isConnected());
 

@@ -41,20 +41,6 @@
             <scope>test</scope>
         </dependency>
 
-        <!-- JSON Serialization - OLD -->
-        <!-- TODO: Remove Dependency -->
-        <dependency>
-            <groupId>io.strikt</groupId>
-            <artifactId>strikt-jackson</artifactId>
-            <version>0.34.1</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-databind</artifactId>
-            <version>2.13.3</version>
-            <scope>test</scope>
-        </dependency>
 
         <!-- This is for CLI (Command Line Arguments) support in the Modules -->
         <dependency>

@@ -1,13 +1,13 @@
 package za.co.wethinkcode.acceptancetests;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
+import za.co.wethinkcode.Response;
+import za.co.wethinkcode.acceptancetests.protocoldrivers.MockClient;
 import za.co.wethinkcode.acceptancetests.protocoldrivers.MockServer;
-import za.co.wethinkcode.acceptancetests.protocoldrivers.RobotWorldClient;
-import za.co.wethinkcode.acceptancetests.protocoldrivers.RobotWorldJsonClient;
 
-import java.util.Arrays;
+import java.awt.*;
+import java.util.*;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -22,10 +22,10 @@ public class LookTests {
      */
     private final static int DEFAULT_PORT = 5000;
     private final static String DEFAULT_IP = "localhost";
-    private final RobotWorldClient serverClient = new RobotWorldJsonClient();
+    private final MockClient serverClient = new MockClient();
 
     @AfterEach
-    void disconnectFromServer(){
+    void disconnectServer(){
         serverClient.disconnect();
         MockServer.closeServer();
     }
@@ -46,12 +46,12 @@ public class LookTests {
         serverClient.sendRequest("HAL", "look", "[]");
 
         //Then I should get a valid/successful response, "result" = "OK" " from the server.
-        JsonNode response = serverClient.getResponse();
+        Response response = serverClient.getResponse();
         serverClient.assertResult(response, "OK");
 
         //And the object field, which would contain present artefacts, should be empty.
-        for (JsonNode item : response.get("data").get("objects")){
-            assertEquals("EDGE", item.get("type").asText());
+        for (Map<String, Object> object : serverClient.getObjects(response)){
+            assertEquals("EDGE", object.get("type"));
         }
     }
 
@@ -71,19 +71,16 @@ public class LookTests {
         serverClient.sendRequest("HAL", "look", "[]");
 
         //Then I should get a response back with an object of type OBSTACLE at a distance of 1 step.
-        JsonNode response = serverClient.getResponse();
+        Response response = serverClient.getResponse();
 
         boolean foundObstacle = false;
         int distanceToObstacle = 0;
         String artefactFound = "";
-
-        for (JsonNode object : response.get("data").get("objects")){
-
-            if (object.get("type").asText().equalsIgnoreCase("OBSTACLE")){
+        System.out.println(response.serialize());
+        for (Map<String, Object> object : serverClient.getObjects(response)){
+            if (((String) object.get("type")).equalsIgnoreCase("OBSTACLE")){
                 foundObstacle = true;
-                System.out.println(foundObstacle);
-                distanceToObstacle = object.get("distance").asInt();
-                artefactFound = "OBSTACLE";
+                distanceToObstacle = serverClient.getAsInt(object, "distance");;
             }
         }
         assertTrue(foundObstacle);
@@ -105,13 +102,14 @@ public class LookTests {
         List<String> robotNames = Arrays.asList("R1", "R2", "R3", "R4", "R5", "R6", "R7", "R8");
         for (String item : robotNames) {
             serverClient.sendRequest(item, "launch", "[\"shooter\",\"7\",\"4\"]");
-            JsonNode response = serverClient.getResponse();
+            Response response = serverClient.getResponse();
             serverClient.assertResult(response, "OK");
 
-            //find robot that lands at position (0,0)
-            if (response.get("state").get("position").get(1).asInt() == 0 && response.get("state").get("position").get(0).asInt() == 0){
+            Point position = serverClient.getPosition(response.getState());
+            if (0 == position.x && 0 == position.y) {
                 robotAtZeroZero = item;
             }
+            //find robot that lands at position (0,0)
         }
 
         //When I ask the robot at position (0,0) to look
@@ -119,7 +117,7 @@ public class LookTests {
 
         //Then I should get a valid response back with one object being an OBSTACLE that is one step away.
         //and three objects should be ROBOTs that are each one step away
-        JsonNode response = serverClient.getResponse();
+        Response response = serverClient.getResponse();
         serverClient.assertResult(response, "OK");
 
         int numObstaclesSeen = 0;
@@ -127,22 +125,23 @@ public class LookTests {
         int distanceToObstacle =0;
         int distanceToRobot =0;
 
-        for (JsonNode object : response.get("data").get("objects")){
-            if (object.get("type").asText().equalsIgnoreCase("OBSTACLE")){
+        for (Map<String, Object> object : serverClient.getObjects(response)){
+            if (((String) object.get("type")).equalsIgnoreCase("OBSTACLE")){
                 numObstaclesSeen +=1;
-                distanceToObstacle = object.get("distance").asInt();
+                distanceToObstacle = serverClient.getAsInt(object, "distance");
                 assertEquals(1, numObstaclesSeen);
                 assertEquals(1, distanceToObstacle);
             }
-            else if (object.get("type").asText().equalsIgnoreCase("ROBOT")){
+            else if (((String) object.get("type")).equalsIgnoreCase("ROBOT")){
                 numRobotsSeen +=1;
-                distanceToRobot = object.get("distance").asInt();
+                distanceToRobot = serverClient.getAsInt(object, "distance");
                 assertEquals(1, distanceToRobot);
             }
 
         }
         assertEquals(3, numRobotsSeen);
     }
+
 
     @Test
     void invalidLookCommandShouldFail(){
@@ -158,7 +157,7 @@ public class LookTests {
         serverClient.sendRequest("HAL", "loOok", "[]");
 
         //Then I should get an error result
-        JsonNode response = serverClient.getResponse();
+        Response response = serverClient.getResponse();
         serverClient.assertResult(response, "ERROR");
 
         //And a message informing me that I entered an unsupported command
@@ -179,10 +178,10 @@ public class LookTests {
         serverClient.sendRequest("HAL", "look", "[height, width]");
 
         //Then I should get an error-  result
-        JsonNode response = serverClient.getResponse();
+        Response response = serverClient.getResponse();
         serverClient.assertResult(response, "ERROR");
 
         //And a message informing me that server could not parse the request due to incorrect arguments
-        serverClient.assertMessage(response, "Invalid Request");
+        serverClient.assertMessage(response, "Could not parse arguments");
     }
 }

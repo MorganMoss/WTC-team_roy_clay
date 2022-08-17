@@ -1,6 +1,5 @@
 package za.co.wethinkcode.server.handler.world.entity.movable;
 
-import org.jetbrains.annotations.Nullable;
 import za.co.wethinkcode.server.handler.world.entity.Entity;
 
 import java.awt.*;
@@ -25,7 +24,6 @@ public abstract class Movable implements Entity {
             angle = degrees;
         }
 
-        @Nullable
         private Direction getDirection(Direction west, Direction north, Direction east, Direction south) {
             switch (this){
                 case NORTH:

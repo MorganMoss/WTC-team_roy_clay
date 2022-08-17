@@ -1,17 +1,15 @@
 package za.co.wethinkcode.acceptancetests;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import org.junit.jupiter.api.*;
+import za.co.wethinkcode.Response;
 import za.co.wethinkcode.acceptancetests.protocoldrivers.MockServer;
-import za.co.wethinkcode.acceptancetests.protocoldrivers.RobotWorldJsonClient;
+import za.co.wethinkcode.acceptancetests.protocoldrivers.MockClient;
 
 import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-
-
 
 public class LaunchTests {
 
@@ -23,11 +21,11 @@ public class LaunchTests {
 
     private final static int DEFAULT_PORT = 5000;
     private final static String DEFAULT_IP = "localhost";
-    private final RobotWorldJsonClient serverClient = new RobotWorldJsonClient();
+    private final MockClient serverClient = new MockClient();
 
 
     @AfterEach
-    void stopServer(){
+    void disconnectServer(){
         serverClient.disconnect();
         MockServer.closeServer();
     }
@@ -45,14 +43,13 @@ public class LaunchTests {
         assertTrue(serverClient.launchRobot());
 
         // Then I should get a valid response, "OK".
-        JsonNode response = serverClient.getResponse();
+        Response response = serverClient.getResponse();
         serverClient.assertResult(response, "OK");
-
         // And the position should be (x:0, y:0)
         serverClient.assertPosition(response, 0, 0);
 
         // And I should also get the state of the robot
-        assertNotNull(response.get("state"));
+        assertNotNull(response.getState());
     }
 
 
@@ -71,7 +68,7 @@ public class LaunchTests {
 
         // When I send an invalid launch request with the command "luanch" instead of "launch"
         serverClient.sendRequest("HAL", "luanch", "[\"shooter\",\"5\",\"5\"]");
-        JsonNode response = serverClient.getResponse();
+        Response response = serverClient.getResponse();
 
         // Then I should get an error response
         serverClient.assertResult(response, "ERROR");
@@ -92,17 +89,17 @@ public class LaunchTests {
         serverClient.sendRequest("HAL", "launch", "[\"shooter\",\"7\",\"4\"]");
 
         // Then I should get a valid response from the server
-        JsonNode response_1 = serverClient.getResponse();
+        Response response_1 = serverClient.getResponse();
         serverClient.assertResult(response_1, "OK");
 
         // And I should also get the state of the robot
-        assertNotNull(response_1.get("state"));
+        assertNotNull(response_1.getState());
 
         // When I send another valid launch request with the same robot name "HAL" to the server
         serverClient.sendRequest("HAL", "launch", "[\"shooter\",\"5\",\"5\"]");
 
         // Then I should get an "ERROR" response from the server
-        JsonNode response_2 = serverClient.getResponse();
+        Response response_2 = serverClient.getResponse();
         serverClient.assertResult(response_2, "ERROR");
 
         // And the message "Too many of you in this world"
@@ -122,20 +119,20 @@ public class LaunchTests {
         serverClient.sendRequest("HAL", "launch", "[\"shooter\",\"7\",\"4\"]");
 
         // Then I should get an "OK" response from the server
-        JsonNode response_1 = serverClient.getResponse();
+        Response response_1 = serverClient.getResponse();
         serverClient.assertResult(response_1, "OK");
 
         // And the position should be (x:0, y:0)
         serverClient.assertPosition(response_1, 0, 0);
 
         // And I should also get the state for the launched robot
-        assertNotNull(response_1.get("state"));
+        assertNotNull(response_1.getState());
 
         // When I send another valid launch request for a different robot named "TRAVIS" to the server
         serverClient.sendRequest("TRAVIS", "launch", "[\"shooter\",\"7\",\"4\"]");
 
         // Then I should get an error response from the server
-        JsonNode response_2 = serverClient.getResponse();
+        Response response_2 = serverClient.getResponse();
         serverClient.assertResult(response_2, "ERROR");
 
         // And the message "No more space in this world"
@@ -157,13 +154,13 @@ public class LaunchTests {
         serverClient.launchRobot("R2D2");
 
 //        // Then the launch should be successful
-        JsonNode response = serverClient.getResponse();
+        Response response = serverClient.getResponse();
         serverClient.assertResult(response, "OK");
-        assertNotNull(response.get("state"));
+        assertNotNull(response.getState());
 
         // and a randomly allocated position of R2D2 should be returned.
-        assertTrue(response.get("state").get("position").get(1).isInt());
-        assertTrue(response.get("state").get("position").get(0).isInt());
+        assertNotNull(response.getState().get("position"));
+
     }
 
 
@@ -184,7 +181,7 @@ public class LaunchTests {
         serverClient.sendRequest("R10", "launch", "[\"shooter\",\"7\",\"4\"]");
 
         // Then I should get an ""ERROR" response
-        JsonNode response = serverClient.getResponse();
+        Response response = serverClient.getResponse();
         serverClient.assertResult(response, "ERROR");
 
         // with the message "No more space in this world".
@@ -208,8 +205,8 @@ public class LaunchTests {
         while (noRobotAtPosition11) {
             for (String item : robotNames) {
                 serverClient.sendRequest(item, "launch", "[\"shooter\",\"7\",\"4\"]");
-                JsonNode response = serverClient.getResponse();
-                if (response.get("result").asText().equalsIgnoreCase("ERROR")){
+                Response response = serverClient.getResponse();
+                if (response.getResult().equalsIgnoreCase("ERROR")){
                     noRobotAtPosition11 = false;
                 }
             }
@@ -228,13 +225,13 @@ public class LaunchTests {
         // and I have successfully launched 8 robots into the world
 
         // when loop gets to 5th robot it stops/does not launch
-        RobotWorldJsonClient[] clients = new RobotWorldJsonClient[10];
+        MockClient[] clients = new MockClient[10];
         for (int i = 1; i < 9; i++) {
-            clients[i] = new RobotWorldJsonClient();
+            clients[i] = new MockClient();
             clients[i].connect(DEFAULT_IP, DEFAULT_PORT);
             assertTrue(clients[i].isConnected());
             clients[i].sendRequest("R"+i, "launch", "[\"shooter\",\"7\",\"4\"]");
-            JsonNode response = clients[i].getResponse();
+            Response response = clients[i].getResponse();
             clients[i].assertResult(response, "OK");
         }
 
@@ -242,7 +239,7 @@ public class LaunchTests {
         serverClient.sendRequest("R9", "launch", "[\"shooter\",\"7\",\"4\"]");
 
         //Then I should get an error response back with the message "No more space in this world"
-        JsonNode response = serverClient.getResponse();
+        Response response = serverClient.getResponse();
         serverClient.assertResult(response, "ERROR");
 
         //with the message "No more space in this world"

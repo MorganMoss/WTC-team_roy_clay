@@ -1,12 +1,9 @@
 package za.co.wethinkcode.acceptancetests;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import za.co.wethinkcode.acceptancetests.protocoldrivers.MockClient;
 import za.co.wethinkcode.acceptancetests.protocoldrivers.MockServer;
-import za.co.wethinkcode.acceptancetests.protocoldrivers.RobotWorldClient;
-import za.co.wethinkcode.acceptancetests.protocoldrivers.RobotWorldJsonClient;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -21,23 +18,11 @@ public class ForwardTests {
 
     private final static int DEFAULT_PORT = 5000;
     private final static String DEFAULT_IP = "localhost";
-    private final RobotWorldClient serverClient = new RobotWorldJsonClient();
-
-    @BeforeEach
-    void connectToServer(){serverClient.connect(DEFAULT_IP, DEFAULT_PORT);}
+    private final MockClient serverClient = new MockClient();
 
     @AfterEach
-    void disconnectFromServer(){
+    void disconnectServer(){
         serverClient.disconnect();
-    }
-
-    @BeforeEach
-    void startServer() {
-        MockServer.startServer("-s=1");
-    }
-
-    @AfterEach
-    void getResult(){
         MockServer.closeServer();
     }
 
@@ -57,7 +42,7 @@ public class ForwardTests {
 //        serverClient.sendRequest("HAL", "forward", "[5]");
 //
 //        //Then I should get an "OK" response with the message "At the NORTH edge"
-//        JsonNode response = serverClient.getResponse();
+//        Response response = serverClient.getResponse();
 //        serverClient.assertResult(response, "OK");
 //        serverClient.assertMessage(response, "At the NORTH edge");
 //
