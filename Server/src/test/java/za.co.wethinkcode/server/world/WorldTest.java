@@ -94,10 +94,6 @@ public class WorldTest {
     // (e.g. when a robot lands in a pit, the pit should remain)
 
     //TODO:
-    // Test the saving of a world instance
-    // Test the loading of a world instance
-
-    //TODO:
     // Test addition of mines
     // Test detonation of mines
 
