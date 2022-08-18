@@ -67,10 +67,11 @@ public class DatabaseManager {
         Server.println("Saving this current server under the name: " + save);
 
         try( final Statement stmt = connection.createStatement() ){
-            if (!
-                stmt.executeQuery(
-                "SELECT * FROM " + table + " WHERE save_name = \""+save+"\""
-            ).isClosed()){
+            ResultSet query = stmt.executeQuery(
+            "SELECT * FROM " + table +
+                    " WHERE save_name = \""+save+"\""
+            );
+            if (!query.isClosed()){
                 Server.println( "Found existing save of that name!");
 
                 Server.println("Overwrite? (Y/N) : ");
@@ -80,10 +81,9 @@ public class DatabaseManager {
                     return;
                 }
 
-                stmt.executeUpdate(
-                "UPDATE "+ table + " " +
-                "SET configuration_json = '"+configuration_json+"'" +
-                "WHERE save_name = " + save);
+                stmt.executeUpdate("UPDATE " + table
+                        + " SET configuration_json = '" + configuration_json
+                        + "' WHERE save_name = '" + save + "'" );
             } else {
                 stmt.executeUpdate(
                         "INSERT INTO "+ table +" " +
@@ -100,12 +100,9 @@ public class DatabaseManager {
                 );
             }
 
-
-
             Server.println( "Saving complete!" );
         }catch( SQLException e ){
             System.err.println( e.getMessage() );
-
         }
 
         closeDatabase();

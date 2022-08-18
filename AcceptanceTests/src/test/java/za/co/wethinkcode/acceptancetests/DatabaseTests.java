@@ -20,10 +20,11 @@ public class DatabaseTests {
 
     private void assertSaveSuccessful(String result, String save){
         assertTrue(
-                result.contains(
-                        "Saving this current server under the name: "+save+"\n" +
-                                "Saving complete!"
-                ), result
+            result.contains("Saving this current server under the name: "+save), result
+        );
+
+        assertTrue(
+            result.contains("Saving complete!"), result
         );
     }
 
