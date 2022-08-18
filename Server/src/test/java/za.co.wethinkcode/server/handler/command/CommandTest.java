@@ -138,7 +138,7 @@ class CommandTest {
         HashMap<String, ?> correct = new HashMap<>(){{put("message", "No more space in this world");}};
 
         for (String key: correct.keySet()){
-            assertEquals(correct.get(key), response.getState().get(key));
+            assertEquals(correct.get(key), response.getData().get(key));
         }
     }
     @Test
@@ -153,7 +153,7 @@ class CommandTest {
         HashMap<String, ?> correct = new HashMap<>(){{put("message", "Too many of you in this world");}};
 
         for (String key: correct.keySet()){
-            assertEquals(correct.get(key), response.getState().get(key));
+            assertEquals(correct.get(key), response.getData().get(key));
         }
     }
     @Test
@@ -210,11 +210,14 @@ class CommandTest {
             add("WEST");
         }};
 
-        Arrays.stream((Hashtable<String, ?>[]) response.getData().get("objects")).forEach(object -> {
-            assertTrue(directions.contains((String) object.get("direction")));
-            directions.remove((String) object.get("direction"));
-            assertEquals("EDGE", object.get("type"));
-            assertEquals(1, (Integer) object.get("distance"));
+        ArrayList<Object> objects = (ArrayList<Object>) response.getData().get("objects");
+
+        Arrays.stream(objects.toArray()).forEach(object -> {
+            HashMap<String, Object> map = (HashMap<String, Object>) object;
+            assertTrue(directions.contains((String) map.get("direction")));
+            directions.remove((String) map.get("direction"));
+            assertEquals("EDGE", map.get("type"));
+            assertEquals(1, (Integer) map.get("distance"));
         });
 
         assertEquals(new ArrayList<>(), directions);
@@ -226,12 +229,11 @@ class CommandTest {
         Integer shield = 5, shots = 5;
         launchRobot("HAL", shield, shots);
         look("HAL");
-
     }
 
     @Test
     void LookCommandTestSeeObstacle() {
-        TestHelper.modifyWorld(new String[]{"-o=12,13,12,11,11,12,13,12","-s=25"});
+        TestHelper.modifyWorld(new String[]{"-o=12,13,12,11,11,12,13,12","-s=50"});
 
         Integer shield = 5, shots = 5;
         launchRobot("HAL", shield, shots);
@@ -275,7 +277,7 @@ class CommandTest {
         assertEquals(response.getResult(), "OK");
 
         //Robot should move the full distance of steps
-        assertEquals("Obstructed", response.getData().get("message"));
+        assertEquals("At the NORTH edge", response.getData().get("message"));
         assertEquals(position, World.getRobot("HAL").getPosition());
     }
 
@@ -286,7 +288,8 @@ class CommandTest {
         TestHelper.modifyWorld(new String[]{"-o=0,1,1,1,1,0","-s=2"});
         launchRobot("HAL", 5, 5);
 
-        Point position = World.getRobot("HAL").getPosition();
+        Point position = new Point(0,0);
+        World.updatePosition("HAL", position);
 
         //command should be processed successfully with result "OK"
         response = executeForward("HAL", Collections.singletonList("1"));
@@ -302,10 +305,10 @@ class CommandTest {
     void ForwardCommandMineObstructTest() {
 
         //Given default visibility = 5 & world size > visibility
-        TestHelper.modifyWorld(new String[]{"-m=0,1,1,1,1,0","-s=2"});
+        TestHelper.modifyWorld(new String[]{"-m=0,1","-s=2"});
         launchRobot("HAL", 5, 5);
 
-        Point position = World.getRobot("HAL").getPosition();
+        World.updatePosition("HAL", new Point(0,0));
 
         //command should be processed successfully with result "OK"
         response = executeForward("HAL", Collections.singletonList("1"));
@@ -314,7 +317,7 @@ class CommandTest {
 
         //Robot should move the full distance of steps
         assertEquals("Mine", response.getData().get("message"));
-        assertEquals(position, World.getRobot("HAL").getPosition());
+        assertEquals(new Point(0,1), World.getRobot("HAL").getPosition());
     }
 
     @Test
@@ -324,8 +327,7 @@ class CommandTest {
         TestHelper.modifyWorld(new String[]{"-pt=0,1,1,1,1,0","-s=2"});
         launchRobot("HAL", 5, 5);
 
-        Point position = World.getRobot("HAL").getPosition();
-
+        World.updatePosition("HAL",  new Point(0,0));
         //command should be processed successfully with result "OK"
         response = executeForward("HAL", Collections.singletonList("1"));
 
@@ -333,29 +335,27 @@ class CommandTest {
 
         //Robot should move the full distance of steps
         assertEquals("Fell", response.getData().get("message"));
-        assertEquals(position, World.getRobot("HAL").getPosition());
     }
 
     @Test
     void ForwardCommandRobotObstructTest() {
 
         //Given default visibility = 5 & world size > visibility
-        TestHelper.modifyWorld(new String[]{"-o=0,1,1,1","-s=2"});
+        TestHelper.modifyWorld(new String[]{"-s=2"});
         launchRobot("R1", 5, 5);
+        World.updatePosition("R1", new Point(0,0));
         launchRobot("R2", 5, 5);
+        World.updatePosition("R2", new Point(0,1));
 
-        Point position_R1 = World.getRobot("R1").getPosition();
-
-        String robotToExecute = position_R1.equals(new Point(0,0)) ? "R1" : "R2";
 
         //command should be processed successfully with result "OK"
-        response = executeForward(robotToExecute, Collections.singletonList("1"));
+        response = executeForward("R1", Collections.singletonList("1"));
 
         assertEquals(response.getResult(), "OK");
 
         //Robot should move the full distance of steps
         assertEquals("Obstructed", response.getData().get("message"));
-        assertEquals(new Point(0,0) , World.getRobot(robotToExecute).getPosition());
+        assertEquals(new Point(0,0) , World.getRobot("R1").getPosition());
     }
 
     private Response executeForward(String name, List<String> arguments) {
@@ -366,52 +366,10 @@ class CommandTest {
         return response;
     }
 
-//    private Response executeForwardSuccessfully(String name, List<String> arguments) {
-//        response = executeForward(name, arguments);
-//
-//    }
-
-
-
-
-
-//        assertNotNull(response);
-//        assertEquals("OK", response.getResult());
-//        assertEquals(new HashMap<String,String>(), response.getData());
-//
-//        //TODO:
-//        // This should not necessarily be 0,0.
-//        // It should be pulled from the World.
-//        int x = 0, y = 0;
-//
-//        assertEquals(World.getRobot("HAL").getPosition().x, ((int[]) response.getState().get("position"))[0]);
-//        assertEquals(World.getRobot("HAL").getPosition().y, ((int[]) response.getState().get("position"))[1]);
-//
-//        HashMap<String, ?> correct = new HashMap<>(){{
-//            put("direction", "NORTH");
-//            put("shields", min(shield, max_shield()));
-//            put("shots", min(shots, max_shots()));
-//            put("status", "NORMAL");
-//        }};
-//
-//        for (String key: correct.keySet()){
-//            assertEquals(correct.get(key), response.getState().get(key));
-//        }
-
-
-
 
 
     //TODO:
     // - All the other command success and fail cases
-    // - Look
-    //      - Successful
-    // - Movement
-    //      - Successful
-    //      - Obstructed (by obstacle)
-    //      - Obstructed (by robot)
-    //      - Fell
-    //      - Mine
     // - Turn
     //      - Successful
     // - Repair

@@ -43,7 +43,7 @@ public class WorldTest {
 
     @Test
     void predefinedObstaclesAddedCorrectly() {
-        TestHelper.modifyWorld(new String[]{"-s=2", "-o=0,0,1,1,0,1"});
+        TestHelper.modifyWorld(new String[]{"-s=2", "-o=0,0,1,1,0,1,-1,-1,0,-1,-1,1,1,-1,-1,0"});
 
         //only one space should be left at 1,0 after adding 3 obstacles
         //should be noted that
@@ -61,7 +61,7 @@ public class WorldTest {
             assertEquals(new Point(0, 0), World.getOpenPosition());
         }
 
-        TestHelper.modifyWorld(new String[]{"-s=2", "-o=0,0,1,1,0,1"});
+        TestHelper.modifyWorld(new String[]{"-s=2", "-o=0,0,1,1,0,1,-1,-1,0,-1,-1,1,1,-1,-1,0"});
 
         for (int i = 0; i < 4; i++) {
             assertEquals(new Point(1, 0), World.getOpenPosition());
